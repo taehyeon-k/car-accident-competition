@@ -1,0 +1,37 @@
+seed: 42
+stage: fine
+output_dir: outputs/fine
+resume: null
+data:
+  manifest: data/train.jsonl
+  val_manifest: data/val.jsonl
+  num_workers: 2
+  batch_size: 1
+model:
+  dino_checkpoint: weights/dinov2_vits14.pth
+  dino_factory: null
+  rfdetr_checkpoint: weights/rfdetr_small.pth
+  rfdetr_factory: null
+  depth_checkpoint: weights/depth_anything_v2_small.pth
+  depth_factory: null
+  lora_rank: 8
+  lora_alpha: 16
+  lora_dropout: 0.05
+tracking:
+  detection_threshold: 0.20
+  max_center_distance: 0.20
+  max_match_cost: 0.65
+  max_gap: 2
+  loom_clip: 0.69314718056
+optimization:
+  epochs: 20
+  accumulation_steps: 1
+  mixed_precision: "no"
+  lora_lr: 0.0001
+  new_lr: 0.0003
+  weight_decay: 0.05
+  warmup_ratio: 0.05
+  grad_clip_norm: 1.0
+logging:
+  log_every: 20
+  val_every: 1

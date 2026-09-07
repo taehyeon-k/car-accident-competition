@@ -1,0 +1,31 @@
+# Python bytecode and tooling
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Virtual environments and local editor configuration
+.venv/
+venv/
+.idea/
+.vscode/
+
+# Training outputs, experiments, and generated caches
+outputs/
+checkpoints/
+wandb/
+tensorboard/
+*.log
+*.pt
+*.pth
+*.ckpt
+*.safetensors
+
+# Dataset and pretrained-weight locations are intentionally local.
+data/
+weights/
+
+# Keep source architecture documents and Stage 2 code tracked.
+!stage2/
+!stage2/**
