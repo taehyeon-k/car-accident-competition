@@ -17,6 +17,7 @@ from stage2.utils.losses import coarse_loss, fine_loss
 from stage2.utils.metrics import batch_metrics
 from stage2.utils.checkpoint import rank_rng_states, restore_rng, save_checkpoint
 from stage2.utils.utils import validate_config
+from stage2.utils.tracking import TrainingMetrics
 
 
 class Trainer:
@@ -339,14 +340,18 @@ class Trainer:
             ):
                 self.train_loader.set_epoch(epoch)
             accumulated_samples = 0
+            training_metrics = TrainingMetrics()
             for batch in self.train_loader:
                 with self.accelerator.accumulate(self.model):
                     with self.accelerator.autocast():
-                        sample_losses, _ = self._forward(
+                        sample_losses, components = self._forward(
                             batch,
                             reduction="none",
                         )
-                        loss = sample_losses.mean()
+                    training_metrics.update(
+                        sample_losses,
+                        components,
+                    )
                     accumulated_samples += sample_losses.numel()
 
                     # Accelerate divides by the accumulation count. Accumulate
@@ -383,22 +388,29 @@ class Trainer:
 
                 if (
                     self.accelerator.sync_gradients
+                    and not self.accelerator.optimizer_step_was_skipped
                     and self.step % logging["log_every"] == 0
                 ):
                     self.accelerator.log(
                         {
-                            "train/loss": loss.item(),
-                            "lr": self.scheduler.get_last_lr()[-1],
+                            **training_metrics.flush(self.accelerator),
+                            "train/epoch": epoch + 1,
+                            "lr/lora": self.scheduler.get_last_lr()[0],
+                            "lr/new_parameters": self.scheduler.get_last_lr()[-1],
                         },
                         step=self.step,
                     )
 
-            if (epoch + 1) % logging["val_every"] == 0:
-                validation_loss = self.validate()
+            # Include a short final interval rather than dropping its samples.
+            remaining_metrics = training_metrics.flush(self.accelerator)
+            if remaining_metrics:
                 self.accelerator.log(
-                    {"val/loss": validation_loss},
+                    {**remaining_metrics, "train/epoch": epoch + 1},
                     step=self.step,
                 )
+
+            if (epoch + 1) % logging["val_every"] == 0:
+                validation_loss = self.validate()
                 if validation_loss < self.best_validation_loss:
                     self.best_validation_loss = validation_loss
                     self.save(
@@ -410,4 +422,3 @@ class Trainer:
                 epoch,
                 "last.pt",
             )
-        self.accelerator.end_training()

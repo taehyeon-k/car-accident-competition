@@ -461,6 +461,14 @@ class ReviewTests(unittest.TestCase):
             def end_training(self):
                 pass
 
+            def log(
+                self,
+                values,
+                step,
+            ):
+                # Match Accelerate's logging interface, including final intervals.
+                self.logged_values = values
+
         class TinyTrainer(Trainer):
             def _forward(
                 self,

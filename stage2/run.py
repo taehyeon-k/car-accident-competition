@@ -9,7 +9,6 @@ from pathlib import Path
 
 import numpy as np
 import torch
-import yaml
 from accelerate import Accelerator
 from accelerate.utils import ProjectConfiguration
 
@@ -22,6 +21,7 @@ if __package__ in (None, ""):
 
 from stage2.trainer.trainer import Trainer
 from stage2.utils.utils import load_config
+from stage2.utils.tracking import initialize_tracking, tracker_backend
 
 
 def main() -> None:
@@ -48,6 +48,7 @@ def main() -> None:
     accelerator = Accelerator(
         gradient_accumulation_steps=optimization["accumulation_steps"],
         mixed_precision=optimization["mixed_precision"],
+        log_with=tracker_backend(config),
         project_config=ProjectConfiguration(project_dir=config["output_dir"]),
     )
 
@@ -56,7 +57,15 @@ def main() -> None:
         config,
     )
     trainer.build()
-    trainer.train_loop(arguments.resume or config.get("resume"))
+    try:
+        initialize_tracking(
+            accelerator,
+            config,
+        )
+        trainer.train_loop(arguments.resume or config.get("resume"))
+    finally:
+        # Flush local/online tracking even when training raises an exception.
+        accelerator.end_training()
 
 
 if __name__ == "__main__":
