@@ -23,9 +23,8 @@ tensorboard/
 *.safetensors
 
 # Dataset and pretrained-weight locations are intentionally local.
-data/
+/data/
 weights/
-
-# Keep source architecture documents and Stage 2 code tracked.
-!stage2/
-!stage2/**
+datasets/
+geometry_cache/
+# No broad !stage2/** exception: that re-includes checkpoints and bytecode.

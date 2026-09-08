@@ -7,14 +7,18 @@ data:
   val_manifest: data/val.jsonl
   num_workers: 4
   batch_size: 1
-  native_fps_field: native_fps
+  geometry_stats: weights/coarse_geometry_stats.pt
 model:
+  training_mode: lora
   vjepa_checkpoint: weights/vjepa2_1_vitb_dist_vitG_384.pt
   vjepa_factory: null
+  vjepa_checkpoint_key: ema_encoder
   rfdetr_checkpoint: weights/rfdetr_small.pth
   rfdetr_factory: null
   depth_checkpoint: weights/depth_anything_v2_small.pth
   depth_factory: null
+  depth_closer_is_larger: null # Set only after checking the local depth adapter.
+  geometry_batch_size: 4
   lora_rank: 8
   lora_alpha: 16
   lora_dropout: 0.05

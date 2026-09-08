@@ -7,13 +7,18 @@ data:
   val_manifest: data/val.jsonl
   num_workers: 2
   batch_size: 1
+  geometry_stats: weights/fine_geometry_stats.pt
 model:
+  training_mode: lora
+  frame_batch_size: 8
   dino_checkpoint: weights/dinov2_vits14.pth
   dino_factory: null
   rfdetr_checkpoint: weights/rfdetr_small.pth
   rfdetr_factory: null
   depth_checkpoint: weights/depth_anything_v2_small.pth
   depth_factory: null
+  depth_closer_is_larger: null
+  geometry_batch_size: 4
   lora_rank: 8
   lora_alpha: 16
   lora_dropout: 0.05
