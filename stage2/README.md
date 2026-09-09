@@ -4,9 +4,9 @@ The code follows [Stage2_Architecture.md](Stage2_Architecture.md), with the
 Diffusion-ISP organization: YAML configuration, entry points, data, model, trainer,
 and utilities. See [IMPLEMENTATION_AUDIT.md](IMPLEMENTATION_AUDIT.md) for findings.
 
-Native training and inference logic is CPU-tested. Local pretrained implementations
-and checkpoints still need to be supplied and verified; this is not a ready-to-run
-pretrained submission.
+For this instance, [WORKSPACE.md](WORKSPACE.md) connects the local pretrained
+weights and CSV/videos and documents the GPU smoke workflow. Full training and
+accuracy evaluation are still required before a submission.
 
 ## Native manifest
 

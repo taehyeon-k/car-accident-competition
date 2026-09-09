@@ -1,0 +1,54 @@
+seed: 42
+stage: fine
+output_dir: runs/fine
+resume: null
+data:
+  manifest: data/stage2/manifests/train.jsonl
+  val_manifest: data/stage2/manifests/val.jsonl
+  num_workers: 2
+  batch_size: 1
+  geometry_stats: cache/fine_geometry_stats.pt
+model:
+  training_mode: lora
+  frame_batch_size: 4
+  dino_checkpoint: pretrained/dinov2_small/model.safetensors
+  dino_factory: stage2.model.local_assets:dino
+  rfdetr_checkpoint: pretrained/rfdetr_small/rf-detr-small.pth
+  rfdetr_factory: stage2.model.local_assets:detector
+  depth_checkpoint: pretrained/depth_anything_v2_small/model.safetensors
+  depth_factory: stage2.model.local_assets:depth
+  depth_closer_is_larger: true
+  geometry_batch_size: 2
+  lora_rank: 8
+  lora_alpha: 16
+  lora_dropout: 0.05
+tracking:
+  detection_threshold: 0.2
+  max_center_distance: 0.2
+  max_match_cost: 0.65
+  max_gap: 2
+  loom_clip: 0.69314718056
+optimization:
+  epochs: 20
+  accumulation_steps: 1
+  mixed_precision: bf16
+  lora_lr: 0.0001
+  new_lr: 0.0003
+  weight_decay: 0.05
+  warmup_ratio: 0.05
+  grad_clip_norm: 1.0
+logging:
+  log_every: 20
+  val_every: 1
+  wandb:
+    enabled: false
+    project: stage2-localizer
+    entity: null
+    name: fine
+    group: null
+    tags:
+    - fine
+    mode: offline
+    run_id: null
+    resume: never
+root_dir: /workspace

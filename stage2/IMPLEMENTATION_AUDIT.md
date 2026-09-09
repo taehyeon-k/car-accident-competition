@@ -1,5 +1,9 @@
 # Architecture and original-plan audit
 
+Historical audit: the local integrations and single-GPU smoke checks described as
+outstanding below are now covered by [WORKSPACE.md](WORKSPACE.md). Full-data
+training, convergence, distributed operation, and submission validation remain separate.
+
 ## Conclusion
 
 The earlier implementation was incomplete. Prepared-feature datasets and generic

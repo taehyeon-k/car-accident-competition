@@ -1,6 +1,7 @@
 """Strict local-only adapters. Factories are project-owned Python callables, never Hub downloads."""
 
 from __future__ import annotations
+import argparse
 import importlib
 from pathlib import Path
 import torch
@@ -34,11 +35,15 @@ def load_local(
         raise FileNotFoundError(f"Required local checkpoint is missing: {path}")
     factory = resolve_factory(factory_path)
     model = factory(**kwargs)
-    state = torch.load(
-        path,
-        map_location="cpu",
-        weights_only=True,
-    )
+    if path.suffix == ".safetensors":
+        from safetensors.torch import load_file
+
+        state = load_file(str(path), device="cpu")
+    else:
+        with torch.serialization.safe_globals([argparse.Namespace]):
+            state = torch.load(path, map_location="cpu", weights_only=True)
+    if factory_path == "stage2.model.local_assets:detector":
+        state = state["model"]
     if checkpoint_key is not None:
         state = state[checkpoint_key]
     elif (
@@ -49,8 +54,13 @@ def load_local(
         and "state_dict" in state
     ):
         state = state["state_dict"]
+    expected = model.state_dict()
     state = {
-        name.removeprefix("module.").removeprefix("backbone."): value
+        (
+            name
+            if name in expected or factory_path == "stage2.model.local_assets:detector"
+            else name.removeprefix("module.").removeprefix("backbone.")
+        ): value
         for name, value in state.items()
     }
     model.load_state_dict(

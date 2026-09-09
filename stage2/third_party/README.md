@@ -1,6 +1,8 @@
 # Required local model integrations
 
-No pretrained implementation is vendored here yet. Factories configured as
+Workspace integrations are available in `model/local_assets.py`; see
+[WORKSPACE.md](../WORKSPACE.md) for the pinned official implementation and GPU
+smoke workflow. No pretrained implementation is vendored here. Factories configured as
 `package.module:callable` must construct a `torch.nn.Module` without downloading
 weights. Parameter names must match the local checkpoint exactly: loading is
 strict, and wrappers changing prefixes need explicit checkpoint conversion.

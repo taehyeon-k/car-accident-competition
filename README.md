@@ -3,8 +3,8 @@
 This repository implements the Stage 2 coarse-to-fine accident-event architecture.
 The fixed design is in [stage2/Stage2_Architecture.md](stage2/Stage2_Architecture.md).
 See the [workflow](stage2/README.md) and [implementation audit](stage2/IMPLEMENTATION_AUDIT.md).
-Native training/inference logic is CPU-tested; local pretrained integration and
-GPU validation remain outstanding.
+Native training/inference logic is CPU-tested. Local asset wiring and RTX 4090
+smoke-test instructions are in [the workspace guide](stage2/WORKSPACE.md).
 
 The code is organized like `Diffusion-ISP`:
 

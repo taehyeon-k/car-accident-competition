@@ -120,6 +120,18 @@ def add_lora_to_last_blocks(
     )
     for name, module in model.named_modules():
         match = pattern.search(name)
+        hf_match = re.search(
+            r"(?:^|\.)layer\.(\d+)\.attention\.(attention\.(?:query|key|value)|output\.dense)$",
+            name,
+        )
+        if hf_match:
+            leaf = {
+                "attention.query": "q_proj",
+                "attention.key": "k_proj",
+                "attention.value": "v_proj",
+                "output.dense": "out_proj",
+            }[hf_match[2]]
+            match = (None, hf_match[1], leaf)
         if (
             isinstance(
                 module,
