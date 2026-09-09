@@ -6,7 +6,7 @@ import importlib
 from pathlib import Path
 import torch
 import torch.nn as nn
-from .lora import add_lora_to_last_blocks
+from .lora import add_lora_to_last_blocks, unfreeze_last_blocks
 
 
 def resolve_factory(path: str):
@@ -82,6 +82,9 @@ class VJEPAAdapter(nn.Module):
         alpha=16,
         dropout=0.05,
         checkpoint_key="ema_encoder",
+        feature_dim=768,
+        unfreeze_blocks=0,
+        num_frames=32,
     ):
         super().__init__()
         self.encoder = load_local(
@@ -89,17 +92,23 @@ class VJEPAAdapter(nn.Module):
             checkpoint,
             checkpoint_key=checkpoint_key,
         )
+        self.num_frames = num_frames
+        self.tubelets = num_frames // 2
+        self.feature_dim = feature_dim
         self.targets = add_lora_to_last_blocks(
             self.encoder,
             rank,
             alpha,
             dropout,
         )
+        unfreeze_last_blocks(self.encoder, unfreeze_blocks)
 
     def forward(
         self,
         x,
     ):
+        if x.ndim != 5 or x.shape[2] != self.num_frames:
+            raise ValueError(f"V-JEPA requires {self.num_frames} input frames")
         out = self.encoder(x)
         out = (
             out["dense"]
@@ -109,15 +118,18 @@ class VJEPAAdapter(nn.Module):
             )
             else out
         )
-        if out.ndim == 3 and tuple(out.shape[1:]) == (16 * 24 * 24, 768):
+        if out.ndim == 3 and tuple(out.shape[1:]) == (
+            self.tubelets * 24 * 24,
+            self.feature_dim,
+        ):
             out = out.reshape(
                 out.shape[0],
-                16,
+                self.tubelets,
                 24,
                 24,
-                768,
+                self.feature_dim,
             )
-        if out.ndim == 5 and out.shape[1] == 768:
+        if out.ndim == 5 and out.shape[1] == self.feature_dim:
             out = out.permute(
                 0,
                 2,
@@ -125,9 +137,9 @@ class VJEPAAdapter(nn.Module):
                 4,
                 1,
             )
-        if tuple(out.shape[1:]) != (16, 24, 24, 768):
+        if tuple(out.shape[1:]) != (self.tubelets, 24, 24, self.feature_dim):
             raise RuntimeError(
-                f"V-JEPA returned {tuple(out.shape)}; expected [B,16,24,24,768]"
+                f"V-JEPA returned {tuple(out.shape)}; expected [B,{self.tubelets},24,24,{self.feature_dim}]"
             )
         return out
 
@@ -142,18 +154,22 @@ class DINOAdapter(nn.Module):
         rank=8,
         alpha=16,
         dropout=0.05,
+        feature_dim=384,
+        unfreeze_blocks=0,
     ):
         super().__init__()
         self.encoder = load_local(
             factory,
             checkpoint,
         )
+        self.feature_dim = feature_dim
         self.targets = add_lora_to_last_blocks(
             self.encoder,
             rank,
             alpha,
             dropout,
         )
+        unfreeze_last_blocks(self.encoder, unfreeze_blocks)
 
     def forward(
         self,
@@ -180,7 +196,7 @@ class DINOAdapter(nn.Module):
                     x.shape[0],
                     24,
                     24,
-                    384,
+                    self.feature_dim,
                 ),
             }
         global_token, dense = (
@@ -191,13 +207,15 @@ class DINOAdapter(nn.Module):
             )
             else out
         )
-        if tuple(global_token.shape[1:]) != (384,) or tuple(dense.shape[1:]) != (
+        if tuple(global_token.shape[1:]) != (self.feature_dim,) or tuple(
+            dense.shape[1:]
+        ) != (
             24,
             24,
-            384,
+            self.feature_dim,
         ):
             raise RuntimeError(
-                "DINO factory must return global [B,384] and dense [B,24,24,384]"
+                f"DINO factory must return global [B,{self.feature_dim}] and dense [B,24,24,{self.feature_dim}]"
             )
         return global_token, dense
 

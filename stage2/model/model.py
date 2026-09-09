@@ -87,22 +87,26 @@ def roi_appearance(
 
 
 class CoarseModel(nn.Module):
-    """32-bin event model operating on 16 V-JEPA tubelet feature maps."""
+    """Event-bin model operating on paired V-JEPA tubelet feature maps."""
 
-    def __init__(self) -> None:
+    def __init__(self, feature_dim: int = 768, num_frames: int = 32) -> None:
         super().__init__()
+
+        self.feature_dim = feature_dim
+        self.num_frames = num_frames
+        self.tubelets = num_frames // 2
 
         # Global scene and object appearance projections.
         self.global_projection = nn.Sequential(
             nn.Linear(
-                768,
+                feature_dim,
                 384,
             ),
             nn.LayerNorm(384),
         )
         self.roi_projection = nn.Sequential(
             nn.Linear(
-                768,
+                feature_dim,
                 256,
             ),
             nn.LayerNorm(256),
@@ -175,16 +179,18 @@ class CoarseModel(nn.Module):
         batch, tubelets, _, _, _ = dense_features.shape
         expected_geometry_shape = (12, 9)
         if (
-            tuple(dense_features.shape[1:]) != (16, 24, 24, 768)
+            tuple(dense_features.shape[1:]) != (self.tubelets, 24, 24, self.feature_dim)
             or tuple(tubelet_geometry.shape[2:]) != expected_geometry_shape
         ):
-            raise ValueError("Expected dense [B,16,24,24,768] and geometry [B,16,12,9]")
+            raise ValueError(
+                f"Expected dense [B,{self.tubelets},24,24,{self.feature_dim}] and geometry [B,{self.tubelets},12,9]"
+            )
 
         if not bin_valid.any(dim=1).all():
             raise ValueError("Every coarse sample must have a valid bin")
         tubelet_valid = bin_valid.reshape(
             batch,
-            16,
+            self.tubelets,
             2,
         ).any(dim=-1)
         object_valid = object_valid & tubelet_valid[..., None]
@@ -247,7 +253,7 @@ class CoarseModel(nn.Module):
 
         tubelet_valid = bin_valid.reshape(
             batch,
-            16,
+            self.tubelets,
             2,
         ).any(dim=-1)
         temporal_hidden = self.temporal_transformer(
@@ -261,11 +267,11 @@ class CoarseModel(nn.Module):
 
         entry_logits = self.entry_head(temporal_hidden).reshape(
             batch,
-            32,
+            self.num_frames,
         )
         collision_logits = self.collision_head(temporal_hidden).reshape(
             batch,
-            32,
+            self.num_frames,
         )
         entry_logits = entry_logits.masked_fill(
             ~bin_valid,
@@ -292,12 +298,15 @@ class CoarseModel(nn.Module):
 class FineModel(nn.Module):
     """Exact-frame localizer operating on a padded 64-frame native window."""
 
-    def __init__(self) -> None:
+    def __init__(self, feature_dim: int = 384) -> None:
         super().__init__()
 
+        self.global_projection = (
+            nn.Identity() if feature_dim == 384 else nn.Linear(feature_dim, 384)
+        )
         self.roi_projection = nn.Sequential(
             nn.Linear(
-                384,
+                feature_dim,
                 256,
             ),
             nn.LayerNorm(256),
@@ -357,6 +366,7 @@ class FineModel(nn.Module):
     ) -> dict[str, torch.Tensor]:
         """Return exact-frame and auxiliary before/after-state logits."""
         batch, frames, _ = global_tokens.shape
+        global_tokens = self.global_projection(global_tokens)
 
         if not time_valid.any(dim=1).all():
             raise ValueError("Every fine window must contain a valid native frame")

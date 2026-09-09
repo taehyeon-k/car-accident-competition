@@ -6,12 +6,14 @@ data:
   manifest: data/stage2/manifests/train.jsonl
   val_manifest: data/stage2/manifests/val.jsonl
   num_workers: 2
-  batch_size: 1
-  geometry_stats: cache/fine_geometry_stats.pt
+  batch_size: 4
+  geometry_stats: cache/fine_geometry_stats_t64.pt
 model:
   training_mode: lora
+  T_max: 64
+  feature_dim: 768
   frame_batch_size: 4
-  dino_checkpoint: pretrained/dinov2_small/model.safetensors
+  dino_checkpoint: pretrained/dinov2_base/model.safetensors
   dino_factory: stage2.model.local_assets:dino
   rfdetr_checkpoint: pretrained/rfdetr_small/rf-detr-small.pth
   rfdetr_factory: stage2.model.local_assets:detector
@@ -19,7 +21,8 @@ model:
   depth_factory: stage2.model.local_assets:depth
   depth_closer_is_larger: true
   geometry_batch_size: 2
-  lora_rank: 8
+  lora_rank: 16
+  unfreeze_last_blocks: 4
   lora_alpha: 16
   lora_dropout: 0.05
 tracking:
@@ -30,7 +33,7 @@ tracking:
   loom_clip: 0.69314718056
 optimization:
   epochs: 20
-  accumulation_steps: 1
+  accumulation_steps: 2
   mixed_precision: bf16
   lora_lr: 0.0001
   new_lr: 0.0003

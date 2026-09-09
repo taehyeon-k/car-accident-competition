@@ -139,6 +139,7 @@ class Stage2Pipeline:
             list(range(len(ids))),
             ids,
             training=False,
+            num_bins=getattr(self.coarse, "num_frames", 32),
         )
         records = {}
         images = {}
@@ -264,13 +265,13 @@ class Stage2Pipeline:
             first_global, first_dense = feature_cache[int(window[0])]
             globals_padded = first_global.new_zeros(
                 64,
-                384,
+                first_global.shape[-1],
             )
             dense_padded = first_dense.new_zeros(
                 64,
                 24,
                 24,
-                384,
+                first_dense.shape[-1],
             )
             for index, position in enumerate(window):
                 globals_padded[index], dense_padded[index] = feature_cache[

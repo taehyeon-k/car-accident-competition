@@ -105,18 +105,23 @@ def file_digest(path: str | Path) -> str:
 
 
 def validate_config(config: dict) -> None:
-    """Reject silent head-only training and changes to locked adapter settings."""
+    """Validate live-backbone training and configurable adapter settings."""
     if config["stage"] not in {"coarse", "fine"}:
         raise ValueError("stage must be coarse or fine")
     model = config["model"]
-    if (model["lora_rank"], model["lora_alpha"], model["lora_dropout"]) != (
-        8,
-        16,
-        0.05,
-    ):
-        raise ValueError(
-            "The fixed architecture requires LoRA rank=8, alpha=16, dropout=.05"
-        )
+    t_max = model.get("T_max", 32 if config["stage"] == "coarse" else 64)
+    if not isinstance(t_max, int) or isinstance(t_max, bool) or t_max < 2 or t_max % 2:
+        raise ValueError("T_max must be a positive even integer")
+    if config["stage"] == "fine" and t_max != 64:
+        raise ValueError("Fine native windows currently require T_max=64")
+    rank = model["lora_rank"]
+    if not isinstance(rank, int) or isinstance(rank, bool) or rank < 1:
+        raise ValueError("lora_rank must be a positive integer")
+    if model["lora_alpha"] <= 0 or not 0 <= model["lora_dropout"] < 1:
+        raise ValueError("LoRA alpha must be positive and dropout must be in [0, 1)")
+    count = model.get("unfreeze_last_blocks", 0)
+    if not isinstance(count, int) or isinstance(count, bool) or count < 0:
+        raise ValueError("unfreeze_last_blocks must be a nonnegative integer")
     if (
         model.get(
             "training_mode",

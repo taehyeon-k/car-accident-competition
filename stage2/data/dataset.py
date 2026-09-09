@@ -66,9 +66,11 @@ class NativeDataset(Dataset):
         training,
         seed=42,
         geometry_only=False,
+        coarse_t_max=32,
     ):
         self.rows = read_manifest(manifest)
         self.stage = stage
+        self.coarse_t_max = coarse_t_max
         self.tracking = tracking
         self.training = training
         self.seed = seed
@@ -136,6 +138,7 @@ class NativeDataset(Dataset):
                 ids,
                 self.training,
                 rng,
+                num_bins=self.coarse_t_max,
             )
             positions = bins.representative_native_pos
             valid = bins.valid
@@ -177,12 +180,14 @@ class NativeDataset(Dataset):
                     ids,
                     event,
                     rng,
+                    num_bins=self.coarse_t_max,
                 )
             else:
                 bins = build_coarse_bins(
                     list(range(len(ids))),
                     ids,
                     training=False,
+                    num_bins=self.coarse_t_max,
                 )
                 region = recover_region(
                     bins,

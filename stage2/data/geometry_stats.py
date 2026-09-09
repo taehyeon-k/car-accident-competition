@@ -100,6 +100,7 @@ def main() -> None:
         training=True,
         seed=config["seed"],
         geometry_only=True,
+        coarse_t_max=config["model"].get("T_max", 32),
     )
 
     def sampled_geometry():
@@ -113,6 +114,7 @@ def main() -> None:
         config["stage"],
         seed=config["seed"],
     )
+    statistics["coarse_t_max"] = config["model"].get("T_max", 32)
     statistics["source_ids"] = sorted({str(row["source_id"]) for row in dataset.rows})
     atomic_save(
         statistics,

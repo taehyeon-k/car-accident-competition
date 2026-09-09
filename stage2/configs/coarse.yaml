@@ -6,11 +6,13 @@ data:
   manifest: data/train.jsonl
   val_manifest: data/val.jsonl
   num_workers: 4
-  batch_size: 1
-  geometry_stats: weights/coarse_geometry_stats.pt
+  batch_size: 4
+  geometry_stats: weights/coarse_geometry_stats_t64.pt
 model:
   training_mode: lora
-  vjepa_checkpoint: weights/vjepa2_1_vitb_dist_vitG_384.pt
+  T_max: 64
+  feature_dim: 1024
+  vjepa_checkpoint: weights/vjepa2_1_vitl_dist_vitG_384.pt
   vjepa_factory: null
   vjepa_checkpoint_key: ema_encoder
   rfdetr_checkpoint: weights/rfdetr_small.pth
@@ -19,7 +21,8 @@ model:
   depth_factory: null
   depth_closer_is_larger: null # Set only after checking the local depth adapter.
   geometry_batch_size: 4
-  lora_rank: 8
+  lora_rank: 16
+  unfreeze_last_blocks: 4
   lora_alpha: 16
   lora_dropout: 0.05
 tracking:
@@ -30,7 +33,7 @@ tracking:
   loom_clip: 0.69314718056
 optimization:
   epochs: 20
-  accumulation_steps: 4
+  accumulation_steps: 2
   mixed_precision: "bf16"
   lora_lr: 0.0001
   new_lr: 0.0003
@@ -41,12 +44,12 @@ logging:
   log_every: 20
   val_every: 1
   wandb:
-    enabled: false
-    project: stage2-localizer
+    enabled: true
+    project: Car_Accident_Competition
     entity: null # Your W&B username or team; null uses the account default.
-    name: coarse
-    group: null
-    tags: [coarse]
-    mode: offline # Change to online to upload metrics.
+    name: coarse-baseline-v1
+    group: baseline-v1
+    tags: [coarse, lora, vjepa2]
+    mode: online
     run_id: null # Set the original run ID when resuming online logging.
     resume: never # never, allow, or must; separate from the model checkpoint.

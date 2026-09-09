@@ -15,18 +15,23 @@ class CoarseSystem(nn.Module):
         config,
     ):
         super().__init__()
+        self.num_frames = config.get("T_max", 32)
+        self.feature_dim = config.get("feature_dim", 768)
         self.visual = VJEPAAdapter(
             config["vjepa_factory"],
             config["vjepa_checkpoint"],
             config["lora_rank"],
             config["lora_alpha"],
             config["lora_dropout"],
+            feature_dim=self.feature_dim,
+            unfreeze_blocks=config.get("unfreeze_last_blocks", 0),
+            num_frames=self.num_frames,
             checkpoint_key=config.get(
                 "vjepa_checkpoint_key",
                 "ema_encoder",
             ),
         )
-        self.head = CoarseModel()
+        self.head = CoarseModel(self.feature_dim, self.num_frames)
 
     def forward(
         self,
@@ -49,14 +54,18 @@ class FineSystem(nn.Module):
         config,
     ):
         super().__init__()
+        self.max_frames = config.get("T_max", 64)
+        self.feature_dim = config.get("feature_dim", 384)
         self.visual = DINOAdapter(
             config["dino_factory"],
             config["dino_checkpoint"],
             config["lora_rank"],
             config["lora_alpha"],
             config["lora_dropout"],
+            feature_dim=self.feature_dim,
+            unfreeze_blocks=config.get("unfreeze_last_blocks", 0),
         )
-        self.head = FineModel()
+        self.head = FineModel(self.feature_dim)
         self.frame_batch_size = config.get(
             "frame_batch_size",
             8,
@@ -69,6 +78,8 @@ class FineSystem(nn.Module):
         batch,
     ):
         batch_size, window_length = batch["fine_rgb"].shape[:2]
+        if window_length > self.max_frames:
+            raise ValueError(f"Fine windows cannot exceed {self.max_frames} frames")
         rgb = batch["fine_rgb"].flatten(
             0,
             1,
@@ -91,13 +102,13 @@ class FineSystem(nn.Module):
         patch_features = torch.cat(dense_chunks)
         global_token = global_features.new_zeros(
             batch_size * window_length,
-            384,
+            self.feature_dim,
         )
         dense = patch_features.new_zeros(
             batch_size * window_length,
             24,
             24,
-            384,
+            self.feature_dim,
         )
         global_token = global_token.index_copy(
             0,
@@ -113,14 +124,14 @@ class FineSystem(nn.Module):
             global_token.reshape(
                 batch_size,
                 window_length,
-                384,
+                self.feature_dim,
             ),
             dense.reshape(
                 batch_size,
                 window_length,
                 24,
                 24,
-                384,
+                self.feature_dim,
             ),
             batch["boxes_grid"],
             batch["geometry"],

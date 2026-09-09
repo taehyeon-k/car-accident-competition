@@ -1,3 +1,9 @@
+> **2026-09-09 configuration update:** The implementation now uses V-JEPA 2.1
+> ViT-L/16 (1024D) and DINOv2 ViT-B/14 (768D), LoRA rank 16, and four fully
+> unfrozen final transformer blocks alongside LoRA. Both stages use batch size 4
+> with accumulation 2 and T_max=64 (32 coarse tubelets and 64 event bins). See [WORKSPACE.md](WORKSPACE.md) for current settings and
+> feature projections. The original design below records the preceding baseline.
+
 # Stage 2 Architecture — Final Codex Specification
 
 > **Status: final fixed Stage-2 architecture.** This specification supersedes all earlier Stage-2 architecture drafts. Any conflicting older tensor shape, temporal length, localization head, detector choice, or fine-window rule must be ignored.

@@ -619,7 +619,7 @@ class ReviewTests(unittest.TestCase):
     def test_live_fine_skips_padded_frames_and_keeps_gradients(self):
         with patch(
             "stage2.model.pipeline.DINOAdapter",
-            side_effect=lambda *args: CountingDINO(),
+            side_effect=lambda *args, **kwargs: CountingDINO(),
         ):
             system = FineSystem(
                 {

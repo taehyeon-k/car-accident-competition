@@ -87,10 +87,10 @@ def sinusoidal(
         batch,
         -1,
     )
-    # Coarse positions are always tau/15 even when some bins are empty.
+    # Coarse positions use the full tubelet grid even when some bins are empty.
     # Fine positions instead use the number of native frames in this window.
     denominator = (
-        15
+        max(1, length - 1)
         if coarse
         else (
             valid.sum(

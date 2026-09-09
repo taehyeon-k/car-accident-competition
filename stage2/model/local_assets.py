@@ -18,9 +18,9 @@ def vjepa():
             f"Install the pinned official V-JEPA source at {source}"
         )
     sys.path.insert(0, str(source))
-    from app.vjepa_2_1.models.vision_transformer import vit_base
+    from app.vjepa_2_1.models.vision_transformer import vit_large
 
-    return vit_base(
+    return vit_large(
         img_size=(384, 384),
         patch_size=16,
         num_frames=64,
@@ -45,7 +45,7 @@ def dino():
             }
 
     config = Dinov2Config.from_pretrained(
-        ASSETS / "dinov2_small", local_files_only=True
+        ASSETS / "dinov2_base", local_files_only=True
     )
     config._attn_implementation = "sdpa"
     model = DenseDINO(config)

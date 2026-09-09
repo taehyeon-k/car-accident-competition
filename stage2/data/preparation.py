@@ -75,7 +75,7 @@ def build_window_geometry(
     )
     tracks = rank_tracks(
         tracks,
-        total_frames=32 if coarse else int(valid.sum()),
+        total_frames=len(records) if coarse else int(valid.sum()),
         sizes=sizes,
         loom_clip=tracking_config["loom_clip"],
     )
@@ -104,13 +104,13 @@ def build_window_geometry(
         )
         geometry = geometry[0]
         pair_boxes = native_boxes.reshape(
-            16,
+            len(records) // 2,
             2,
             12,
             4,
         )
         pair_valid = object_valid.reshape(
-            16,
+            len(records) // 2,
             2,
             12,
         )

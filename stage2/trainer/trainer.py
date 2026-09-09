@@ -89,6 +89,10 @@ class Trainer:
                 map_location="cpu",
                 weights_only=True,
             )
+            if statistics.get("coarse_t_max", 32) != model_config.get("T_max", 32):
+                raise ValueError(
+                    "Geometry statistics must match the configured T_max; refit them"
+                )
             if statistics["stage"] != self.stage or statistics["split"] != "train":
                 raise ValueError(
                     "Geometry statistics must come from this stage's training split"
@@ -113,7 +117,7 @@ class Trainer:
         )
 
     def _build_optimizer(self) -> tuple[AdamW, LambdaLR]:
-        """Use the architecture's separate LoRA and newly initialized LR groups."""
+        """Use the visual-backbone LR for LoRA and unfrozen bases; heads use new_lr."""
         optimization = self.config["optimization"]
         lora_parameters = []
         new_parameters = []

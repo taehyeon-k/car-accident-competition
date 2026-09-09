@@ -25,6 +25,10 @@ def main() -> None:
         model = VJEPAAdapter(
             values["vjepa_factory"],
             values["vjepa_checkpoint"],
+            rank=values["lora_rank"],
+            feature_dim=values.get("feature_dim", 768),
+            unfreeze_blocks=values.get("unfreeze_last_blocks", 0),
+            num_frames=values.get("T_max", 32),
             checkpoint_key=values.get(
                 "vjepa_checkpoint_key",
                 "ema_encoder",
@@ -33,7 +37,7 @@ def main() -> None:
         image = torch.zeros(
             1,
             3,
-            32,
+            values.get("T_max", 32),
             384,
             384,
             device=arguments.device,
@@ -42,6 +46,9 @@ def main() -> None:
         model = DINOAdapter(
             values["dino_factory"],
             values["dino_checkpoint"],
+            rank=values["lora_rank"],
+            feature_dim=values.get("feature_dim", 384),
+            unfreeze_blocks=values.get("unfreeze_last_blocks", 0),
         )
         image = torch.zeros(
             1,

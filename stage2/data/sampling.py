@@ -53,8 +53,11 @@ def build_coarse_bins(
     frame_ids: list[int],
     training: bool,
     rng: np.random.Generator | None = None,
+    num_bins: int = COARSE_T,
 ) -> CoarseBins:
-    """Build exactly 32 half-open bins. Empty slots are invalid, never targets."""
+    """Build ordered half-open bins. Empty slots are invalid, never targets."""
+    if not isinstance(num_bins, int) or num_bins < 2 or num_bins % 2:
+        raise ValueError("num_bins must be a positive even integer")
     candidate = np.asarray(
         candidate_native_positions,
         dtype=np.int64,
@@ -66,11 +69,11 @@ def build_coarse_bins(
     if np.any(np.diff(candidate) <= 0):
         raise ValueError("Candidate positions must be strictly ordered")
     rng = rng or np.random.default_rng()
-    edges = np.floor(np.arange(COARSE_T + 1) * len(candidate) / COARSE_T).astype(int)
+    edges = np.floor(np.arange(num_bins + 1) * len(candidate) / num_bins).astype(int)
     starts, ends = edges[:-1], edges[1:]
     valid = ends > starts
     reps = np.full(
-        COARSE_T,
+        num_bins,
         candidate[-1],
         dtype=np.int64,
     )
@@ -86,7 +89,7 @@ def build_coarse_bins(
             else candidate[(starts[j] + ends[j] - 1) // 2]
         )
     native_start = np.full(
-        COARSE_T,
+        num_bins,
         -1,
         dtype=np.int64,
     )
@@ -194,7 +197,7 @@ def recover_region(
                 predicted_bin - radius,
             ),
             min(
-                COARSE_T,
+                len(bins.valid),
                 predicted_bin + radius + 1,
             ),
         )
@@ -231,12 +234,14 @@ def sample_fine_window(
     frame_ids: list[int],
     event_position: int,
     rng: np.random.Generator,
+    num_bins: int = COARSE_T,
 ) -> np.ndarray:
     """Simulate coarse error and select a GT-containing native training window."""
     bins = build_coarse_bins(
         list(range(len(frame_ids))),
         frame_ids,
         training=False,
+        num_bins=num_bins,
     )
     target_bin = event_bin(
         event_position,
@@ -252,7 +257,7 @@ def sample_fine_window(
         np.clip(
             target_bin + perturbation,
             0,
-            COARSE_T - 1,
+            len(bins.valid) - 1,
         )
     )
     region = recover_region(

@@ -27,7 +27,26 @@ Factories in `model/local_assets.py` construct models without downloading weight
 The loader checks all learned tensors strictly. V-JEPA uses `ema_encoder` and the
 official constructor settings, with activation checkpointing. Hugging Face DINOv2
 uses its local config, dense tokens at 336px, SDPA, and non-reentrant activation
-checkpointing. LoRA targets only attention projections in blocks 8–11.
+checkpointing. The upgraded coarse backbone is V-JEPA 2.1 ViT-L/16
+(1024-dimensional features); the fine backbone is DINOv2 ViT-B/14
+(768-dimensional features). The fine head projects global features to 384 dimensions.
+LoRA rank is 16, alpha 16, and dropout 0.05. LoRA targets attention projections
+in the final four blocks: 20–23 for V-JEPA and 8–11 for DINOv2 (zero-based).
+All parameters in those four blocks are also unfrozen, including MLPs, norms,
+and base attention weights. Earlier blocks remain frozen. The optimizer applies
+`lora_lr` to all trainable visual-backbone parameters and `new_lr` to the heads.
+Both stages set `model.T_max: 64`. Coarse sampling creates 64 representatives,
+32 tubelets, and 64 event bins; fine windows contain up to 64 native frames.
+Both stages use batch size 4 and accumulation 2 (8 samples per optimizer update
+on one GPU). Detector and depth weights remain frozen.
+
+Replacement assets are `vjepa2_1_vitl/vjepa2_1_vitl_dist_vitG_384.pt` from
+[Meta's official checkpoint](https://dl.fbaipublicfiles.com/vjepa2/vjepa2_1_vitl_dist_vitG_384.pt)
+and `dinov2_base/{config.json,model.safetensors,preprocessor_config.json}` from
+[facebook/dinov2-base](https://huggingface.co/facebook/dinov2-base).
+The pretrained root is mirrored at `r2:car-accident-dataset/stage2/pretrained/`.
+Start new training runs for these architectures; older smaller-backbone training
+checkpoints cannot resume into the larger models.
 
 RF-DETR uses the 91-logit COCO checkpoint; vehicle IDs are 3/car, 4/motorcycle,
 6/bus, and 8/truck. Its older checkpoint lacks RF-DETR 1.10's empty derived
@@ -58,8 +77,8 @@ For full training, finish frozen geometry preprocessing and training-only statis
 
 ```bash
 python -m stage2.data.cache_geometry --config stage2/configs/coarse.workspace.yaml --manifest /workspace/data/stage2/manifests/all.jsonl --device cuda
-python -m stage2.data.geometry_stats --config stage2/configs/coarse.workspace.yaml --output /workspace/cache/coarse_geometry_stats.pt
-python -m stage2.data.geometry_stats --config stage2/configs/fine.workspace.yaml --output /workspace/cache/fine_geometry_stats.pt
+python -m stage2.data.geometry_stats --config stage2/configs/coarse.workspace.yaml --output /workspace/cache/coarse_geometry_stats_t64.pt
+python -m stage2.data.geometry_stats --config stage2/configs/fine.workspace.yaml --output /workspace/cache/fine_geometry_stats_t64.pt
 python -m stage2.run --config stage2/configs/coarse.workspace.yaml
 python -m stage2.run --config stage2/configs/fine.workspace.yaml
 ```
@@ -82,6 +101,22 @@ python -m stage2.test --coarse-ckpt /workspace/runs/smoke/coarse/last.pt --fine-
 
 The prediction command requires a new output filename on subsequent runs.
 The smoke trainer exercises real Accelerate, BF16, the native dataset, learned
-heads, LoRA backward/optimizer updates, validation, checkpoint save and resume.
+heads, LoRA and unfrozen base-weight backward/optimizer updates, validation,
+checkpoint save and resume. It repeats the real training clip across at least two full
+batches of four and the held-out clip across one validation batch of four.
 Reports are `runs/smoke/{coarse,fine}/report.json`. These tiny runs verify execution,
 not localization accuracy, convergence, or multi-GPU behavior. W&B is disabled.
+
+## Backbone upgrade verification (2026-09-09)
+
+Both upgraded stages passed the real-data RTX 4090 BF16 smoke test at batch 4
+with accumulation 2 and four fully unfrozen final blocks. Coarse performed one
+optimizer update; fine performed two because it samples both event windows.
+All adapted LoRA B tensors and all unfrozen base tensors updated, gradients were
+finite, validation loss was finite, and checkpoint resume returned epoch 1.
+Peak allocated GPU memory was 4.01 GiB coarse and 3.17 GiB fine on these clips.
+Those measurements preceded the coarse T_max increase to 64 frames.
+Full-run memory can differ with frame validity and object counts. Reports are at
+`/workspace/runs/smoke-backbone-upgrade/{coarse,fine}/report.json`.
+Replacement source URLs, byte sizes and SHA-256 hashes are recorded in
+[configs/pretrained-assets.json](configs/pretrained-assets.json).

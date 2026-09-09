@@ -134,20 +134,21 @@ def tubelet_geometry(
 ) -> tuple[torch.Tensor, torch.Tensor]:
     """Average first 7 features, take latest observed looming features."""
     b, t, n, _ = frame.shape
-    assert t == 32
+    if t < 2 or t % 2:
+        raise ValueError("Tubelet geometry requires an even temporal length")
     f = frame.masked_fill(
         ~mask[..., None],
         0,
     ).reshape(
         b,
-        16,
+        t // 2,
         2,
         n,
         9,
     )
     m = mask.reshape(
         b,
-        16,
+        t // 2,
         2,
         n,
     )

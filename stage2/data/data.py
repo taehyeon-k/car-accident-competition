@@ -27,6 +27,7 @@ def get_data(
             config["tracking"],
             shuffle,
             config["seed"],
+            coarse_t_max=config["model"].get("T_max", 32),
         )
     else:
         ds = Stage2Dataset(manifest)

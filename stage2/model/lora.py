@@ -102,10 +102,7 @@ def add_lora_to_last_blocks(
     rank: int = 8,
     alpha: int = 16,
     dropout: float = 0.05,
-    blocks=range(
-        8,
-        12,
-    ),
+    blocks=None,
 ) -> list[str]:
     """Validate complete attention projection sets before adding any adapters.
 
@@ -113,6 +110,10 @@ def add_lora_to_last_blocks(
     attention submodules and require QKV plus an output projection in each block.
     """
     targets = []
+    if blocks is None:
+        blocks = range(
+            len(transformer_blocks(model)) - 4, len(transformer_blocks(model))
+        )
     required_blocks = set(blocks)
     pattern = re.compile(
         r"(?:^|\.)(?:blocks|layer|layers)\.(\d+)\."
@@ -179,3 +180,29 @@ def merge_lora(model: nn.Module):
                 name,
                 module.merge(),
             )
+
+
+def transformer_blocks(model: nn.Module):
+    """Find the ordered transformer stack in official Meta and HF encoders."""
+    for path in ("blocks", "encoder.layer", "layer", "layers"):
+        try:
+            blocks = model.get_submodule(path)
+        except AttributeError:
+            continue
+        if isinstance(blocks, (nn.ModuleList, nn.Sequential)) and len(blocks):
+            return blocks
+    raise ValueError("Backbone must expose an ordered transformer block stack")
+
+
+def unfreeze_last_blocks(model: nn.Module, count: int = 0):
+    """Unfreeze complete final blocks, including the LoRA base projections."""
+    blocks = transformer_blocks(model)
+    if (
+        not isinstance(count, int)
+        or isinstance(count, bool)
+        or not 0 <= count <= len(blocks)
+    ):
+        raise ValueError(f"unfreeze_last_blocks must be between 0 and {len(blocks)}")
+    if count:
+        for block in blocks[-count:]:
+            block.requires_grad_(True)
