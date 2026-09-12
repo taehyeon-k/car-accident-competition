@@ -34,25 +34,14 @@ def vjepa():
 
 
 def dino():
-    from transformers import Dinov2Config, Dinov2Model
+    """Construct the official DINOv3 ViT-B/16 used by the joint cache."""
+    source = ASSETS / "dinov3-source"
+    if not (source / "dinov3/hub/backbones.py").is_file():
+        raise FileNotFoundError(f"Install the official DINOv3 source at {source}")
+    sys.path.insert(0, str(source))
+    from dinov3.hub.backbones import dinov3_vitb16
 
-    class DenseDINO(Dinov2Model):
-        def forward_features(self, x):
-            tokens = self(pixel_values=x).last_hidden_state
-            return {
-                "x_norm_clstoken": tokens[:, 0],
-                "x_norm_patchtokens": tokens[:, 1:],
-            }
-
-    config = Dinov2Config.from_pretrained(
-        ASSETS / "dinov2_base", local_files_only=True
-    )
-    config._attn_implementation = "sdpa"
-    model = DenseDINO(config)
-    model.gradient_checkpointing_enable(
-        gradient_checkpointing_kwargs={"use_reentrant": False}
-    )
-    return model
+    return dinov3_vitb16(pretrained=False)
 
 
 def depth():

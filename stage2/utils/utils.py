@@ -27,7 +27,7 @@ def load_config(path: str | Path) -> dict:
     ).resolve()
     config["root_dir"] = str(root)
     for section, names in {
-        "data": ("manifest", "val_manifest", "geometry_stats"),
+        "data": ("manifest", "val_manifest", "geometry_stats", "feature_dir"),
         "model": (
             "vjepa_checkpoint",
             "dino_checkpoint",
@@ -106,9 +106,15 @@ def file_digest(path: str | Path) -> str:
 
 def validate_config(config: dict) -> None:
     """Validate live-backbone training and configurable adapter settings."""
-    if config["stage"] not in {"coarse", "fine"}:
-        raise ValueError("stage must be coarse or fine")
+    if config["stage"] not in {"coarse", "fine", "joint"}:
+        raise ValueError("stage must be coarse, fine, or joint")
     model = config["model"]
+    if config["stage"] == "joint":
+        if model.get("training_mode", "cached_features") != "cached_features":
+            raise ValueError("The reviewed joint model trains from frozen feature caches")
+        if not config["data"].get("feature_dir"):
+            raise ValueError("Joint training requires data.feature_dir")
+        return
     t_max = model.get("T_max", 32 if config["stage"] == "coarse" else 64)
     if not isinstance(t_max, int) or isinstance(t_max, bool) or t_max < 2 or t_max % 2:
         raise ValueError("T_max must be a positive even integer")

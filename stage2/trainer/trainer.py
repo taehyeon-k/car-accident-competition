@@ -12,8 +12,10 @@ from torch.optim.lr_scheduler import LambdaLR
 
 from stage2.data.data import get_data
 from stage2.model.model import CoarseModel, FineModel
+from stage2.model.joint import JointStage2Model
 from stage2.model.pipeline import CoarseSystem, FineSystem
 from stage2.utils.losses import coarse_loss, fine_loss
+from stage2.utils.joint_losses import joint_loss
 from stage2.utils.metrics import batch_metrics
 from stage2.utils.checkpoint import rank_rng_states, restore_rng, save_checkpoint
 from stage2.utils.utils import validate_config
@@ -80,6 +82,8 @@ class Trainer:
                 if self.stage == "coarse"
                 else FineSystem(model_config)
             )
+        elif self.stage == "joint":
+            self.model = JointStage2Model(model_config.get("geometry_dim", 13))
         else:
             self.model = CoarseModel() if self.stage == "coarse" else FineModel()
 
@@ -174,7 +178,9 @@ class Trainer:
         """Select the correct feature source and loss for the active training stage."""
         has_live_images = "coarse_rgb" in batch or "fine_rgb" in batch
 
-        if has_live_images:
+        if self.stage == "joint":
+            outputs = self.model(batch)
+        elif has_live_images:
             outputs = self.model(batch)
         elif self.stage == "coarse":
             outputs = self.model(
@@ -194,7 +200,10 @@ class Trainer:
                 batch["time_valid"].bool(),
             )
 
-        objective = coarse_loss if self.stage == "coarse" else fine_loss
+        if self.stage == "joint":
+            objective = joint_loss
+        else:
+            objective = coarse_loss if self.stage == "coarse" else fine_loss
         loss, components = objective(
             outputs,
             batch,
@@ -202,10 +211,10 @@ class Trainer:
         )
         return loss, {
             **components,
-            **batch_metrics(
-                outputs,
-                batch,
-                self.stage,
+            **(
+                {}
+                if self.stage == "joint"
+                else batch_metrics(outputs, batch, self.stage)
             ),
         }
 

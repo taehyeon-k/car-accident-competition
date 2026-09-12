@@ -1,0 +1,48 @@
+seed: 42
+stage: joint
+output_dir: car-accident/runs/joint
+resume: null
+data:
+  manifest: data/stage2/manifests/train.jsonl
+  val_manifest: data/stage2/manifests/val.jsonl
+  feature_dir: cache/joint_features_v1
+  num_workers: 4
+  batch_size: 4
+  censored_entry_probability: 0.15
+model:
+  training_mode: cached_features
+  geometry_dim: 13
+  dino_checkpoint: pretrained/dinov3_vitb16/dinov3_vitb16_pretrain_lvd1689m-73cec8be.pth
+  dino_factory: stage2.model.local_assets:dino
+  dino_batch_size: 64
+  vjepa_checkpoint: pretrained/vjepa2_1_vitl/vjepa2_1_vitl_dist_vitG_384.pt
+  vjepa_factory: stage2.model.local_assets:vjepa
+  vjepa_checkpoint_key: ema_encoder
+tracking:
+  detection_threshold: 0.2
+  max_center_distance: 0.2
+  max_match_cost: 0.65
+  max_gap: 2
+optimization:
+  epochs: 40
+  accumulation_steps: 4
+  mixed_precision: bf16
+  lora_lr: 0.0
+  new_lr: 0.0003
+  weight_decay: 0.05
+  warmup_ratio: 0.08
+  grad_clip_norm: 1.0
+logging:
+  log_every: 10
+  val_every: 1
+  wandb:
+    enabled: True
+    project: Car_Accident_Competition
+    entity: null
+    name: joint-dinov3-vjepa21
+    group: null
+    tags: [joint, dinov3, vjepa2.1]
+    mode: online
+    run_id: null
+    resume: never
+root_dir: /workspace

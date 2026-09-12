@@ -3,6 +3,7 @@
 import torch
 from torch.utils.data import DataLoader
 from .dataset import NativeDataset, Stage2Dataset, collate
+from .joint import JointFeatureDataset, joint_collate
 
 
 def get_data(
@@ -13,6 +14,24 @@ def get_data(
     *,
     config=None,
 ):
+    if config is not None and config["stage"] == "joint":
+        ds = JointFeatureDataset(
+            manifest,
+            config["data"]["feature_dir"],
+            training=shuffle,
+            censor_probability=config["data"].get(
+                "censored_entry_probability", 0.15
+            ),
+        )
+        return ds, DataLoader(
+            ds,
+            batch_size,
+            shuffle=shuffle,
+            num_workers=num_workers,
+            pin_memory=torch.cuda.is_available(),
+            persistent_workers=num_workers > 0,
+            collate_fn=joint_collate,
+        )
     if (
         config is not None
         and config["model"].get(
