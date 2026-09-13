@@ -30,10 +30,10 @@ loss:
   collision_sigma_seconds: 0.10
 optimization:
   epochs: 20
-  accumulation_steps: 1
+  accumulation_steps: 2
   mixed_precision: bf16
   lora_lr: 0.0
-  new_lr: 0.0005
+  new_lr: 0.0003
   weight_decay: 0.05
   warmup_ratio: 0.08
   grad_clip_norm: 1.0
@@ -41,7 +41,7 @@ early_stopping:
   enabled: true
   monitor: competition_score
   mode: max
-  patience: 4
+  patience: 6
   min_delta: 0.002
 logging:
   log_every: 10
