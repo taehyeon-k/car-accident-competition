@@ -21,6 +21,7 @@ from stage2.utils.metrics import batch_metrics
 from stage2.utils.checkpoint import rank_rng_states, restore_rng, save_checkpoint
 from stage2.utils.utils import validate_config
 from stage2.utils.tracking import TrainingMetrics
+from stage2.utils.early_stopping import EarlyStopping
 
 
 class Trainer:
@@ -39,6 +40,10 @@ class Trainer:
         self.best_competition_score = -float("inf")
         self.joint_train_metrics = JointMetricAccumulator()
         self.last_validation_metrics = {}
+        self.early_stopping = EarlyStopping(
+            config.get("early_stopping"),
+            config.get("logging", {}).get("checkpoint_metric", "loss"),
+        )
 
     def build(self) -> None:
         """Build loaders, choose live-visual or cached-feature training, and prepare state."""
@@ -302,6 +307,8 @@ class Trainer:
             "best_validation_loss": self.best_validation_loss,
             "best_competition_score": self.best_competition_score,
             "joint_train_metrics": self.joint_train_metrics.state_dict(),
+            "early_stopping": self.early_stopping.state_dict(),
+            "validation_metrics": self.last_validation_metrics,
             "rng_states": rng_states,
             "scaler": (
                 self.accelerator.scaler.state_dict()
@@ -344,6 +351,8 @@ class Trainer:
             self.joint_train_metrics.load_state_dict(
                 checkpoint["joint_train_metrics"], self.accelerator.device
             )
+        self.early_stopping.load_state_dict(checkpoint.get("early_stopping", {}))
+        self.last_validation_metrics = checkpoint.get("validation_metrics", {})
         if len(checkpoint["rng_states"]) != self.accelerator.num_processes:
             raise ValueError("Exact resume requires the same process count")
         restore_rng(checkpoint["rng_states"][self.accelerator.process_index])
@@ -377,6 +386,7 @@ class Trainer:
                 "set_epoch",
             ):
                 self.train_loader.set_epoch(epoch)
+            stop_training = False
             accumulated_samples = 0
             if self.stage != "joint":
                 training_metrics = TrainingMetrics()
@@ -501,6 +511,17 @@ class Trainer:
                     self.best_validation_loss, validation_loss
                 )
                 self.best_competition_score = max(self.best_competition_score, score)
+                stop_training = self.early_stopping.update(
+                    {"loss": validation_loss, **self.last_validation_metrics}
+                )
+                if self.early_stopping.enabled:
+                    self.accelerator.log(
+                        {
+                            "train_config/early_stopping_bad_validations": self.early_stopping.bad_validations,
+                            "train_config/early_stopping_triggered": int(stop_training),
+                        },
+                        step=self.step,
+                    )
                 if improved:
                     self.save(epoch, "best.pt")
 
@@ -508,3 +529,11 @@ class Trainer:
                 epoch,
                 "last.pt",
             )
+            if stop_training:
+                if self.accelerator.is_main_process:
+                    print(
+                        f"Early stopping at epoch {epoch + 1}: {self.early_stopping.monitor} "
+                        f"did not improve for {self.early_stopping.patience} validations. "
+                        "Use best.pt for inference."
+                    )
+                break
