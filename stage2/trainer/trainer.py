@@ -160,6 +160,14 @@ class Trainer:
             1,
             int(total_updates * optimization["warmup_ratio"]),
         )
+        # LambdaLR.state_dict() excludes the closure, so a resume only restores
+        # last_epoch. Record the curve's geometry here; load() rejects a
+        # checkpoint whose schedule was built from different settings rather
+        # than replaying a restored step count against a different curve.
+        self.schedule_geometry = {
+            "total_updates": total_updates,
+            "warmup_updates": warmup_updates,
+        }
 
         def cosine_with_warmup(step: int) -> float:
             if step < warmup_updates:
@@ -303,6 +311,7 @@ class Trainer:
             "model": self.accelerator.unwrap_model(self.model).state_dict(),
             "optimizer": self.optimizer.state_dict(),
             "scheduler": self.scheduler.state_dict(),
+            "schedule_geometry": self.schedule_geometry,
             "config": self.config,
             "best_validation_loss": self.best_validation_loss,
             "best_competition_score": self.best_competition_score,
@@ -338,6 +347,19 @@ class Trainer:
         if checkpoint["config"]["stage"] != self.stage:
             raise ValueError(
                 "Checkpoint stage differs from the requested training stage"
+            )
+        saved_geometry = checkpoint.get("schedule_geometry")
+        if saved_geometry is None:
+            raise ValueError(
+                "Checkpoint predates schedule-geometry tracking; its learning-rate "
+                "curve cannot be verified. Start a new run instead of resuming."
+            )
+        if saved_geometry != self.schedule_geometry:
+            raise ValueError(
+                "Learning-rate schedule differs from the checkpoint's: "
+                f"{saved_geometry} vs {self.schedule_geometry}. The restored step "
+                "count would replay against a different curve. Restore the original "
+                "epochs/accumulation_steps/batch_size, or start a new run."
             )
         self.accelerator.unwrap_model(self.model).load_state_dict(checkpoint["model"])
         self.optimizer.load_state_dict(checkpoint["optimizer"])
