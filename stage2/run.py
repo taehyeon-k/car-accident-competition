@@ -29,7 +29,7 @@ def main() -> None:
     parser.add_argument(
         "--config",
         required=True,
-        help="Path to coarse.yaml or fine.yaml",
+        help="Path to a coarse, fine, or joint training YAML",
     )
     parser.add_argument(
         "--resume",

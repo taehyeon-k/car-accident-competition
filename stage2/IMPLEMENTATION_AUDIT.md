@@ -1,3 +1,7 @@
+> **Joint-model update (2026-09-13):** The current single-stage joint path is
+> documented in [JOINT.md](JOINT.md) and [Stage2_code_modifications.md](Stage2_code_modifications.md).
+> The coarse/fine architecture and historical checks below describe the earlier pipeline.
+
 # Architecture and original-plan audit
 
 Historical audit: the local integrations and single-GPU smoke checks described as

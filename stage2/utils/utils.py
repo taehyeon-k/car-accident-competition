@@ -110,10 +110,23 @@ def validate_config(config: dict) -> None:
         raise ValueError("stage must be coarse, fine, or joint")
     model = config["model"]
     if config["stage"] == "joint":
-        if model.get("training_mode", "cached_features") != "cached_features":
-            raise ValueError("The reviewed joint model trains from frozen feature caches")
+        if model.get("training_mode") != "online_frozen":
+            raise ValueError(
+                "Joint training requires online_frozen V-JEPA and schema-2 local caches"
+            )
         if not config["data"].get("feature_dir"):
             raise ValueError("Joint training requires data.feature_dir")
+        if not model.get("vjepa_factory") or not model.get("vjepa_checkpoint"):
+            raise ValueError(
+                "Joint training requires a local V-JEPA factory and checkpoint"
+            )
+        if model.get("geometry_dim", 13) != 13:
+            raise ValueError("Joint local caches use 13D geometry")
+        if config["logging"].get("checkpoint_metric", "loss") not in {
+            "loss",
+            "competition_score",
+        }:
+            raise ValueError("checkpoint_metric must be loss or competition_score")
         return
     t_max = model.get("T_max", 32 if config["stage"] == "coarse" else 64)
     if not isinstance(t_max, int) or isinstance(t_max, bool) or t_max < 2 or t_max % 2:

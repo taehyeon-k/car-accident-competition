@@ -1,3 +1,7 @@
+> **Joint-model update (2026-09-13):** The current single-stage joint path is
+> documented in [JOINT.md](JOINT.md) and [Stage2_code_modifications.md](Stage2_code_modifications.md).
+> The coarse/fine architecture and historical checks below describe the earlier pipeline.
+
 > **2026-09-09 configuration update:** The implementation now uses V-JEPA 2.1
 > ViT-L/16 (1024D) and DINOv2 ViT-B/14 (768D), LoRA rank 16, and four fully
 > unfrozen final transformer blocks alongside LoRA. Both stages use batch size 4

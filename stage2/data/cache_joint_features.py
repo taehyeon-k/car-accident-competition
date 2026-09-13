@@ -1,4 +1,4 @@
-"""Cache frozen DINOv3 local features and sparse V-JEPA 2.1 context.
+"""Cache frozen DINOv3 local features with video-global persistent track slots.
 
 The output is one ``.pt`` file per complete video. Detector/depth observations
 must already exist in each manifest row's ``geometry_dir``.
@@ -10,7 +10,6 @@ import argparse
 import json
 from pathlib import Path
 
-import numpy as np
 import torch
 import torch.nn.functional as F
 from torchvision.io import ImageReadMode, read_image
@@ -20,18 +19,8 @@ from stage2.data.cache_geometry import frame_paths
 from stage2.data.transforms import box_to_grid, letterbox
 from stage2.model.backbones import load_local
 from stage2.model.tracking import Detection, HungarianTracker
+from stage2.model.joint_tracking import object_tensors
 from stage2.utils.utils import atomic_save, file_digest, load_config, read_manifest
-
-
-def clip_positions(length: int, span: int = 61, stride: int = 48) -> list[torch.Tensor]:
-    """Return 16-frame native-stride-4 clips with deterministic tail coverage."""
-    if length < 1:
-        raise ValueError("A video must contain at least one frame")
-    if length < span:
-        return [torch.linspace(0, length - 1, 16).round().long()]
-    starts = list(range(0, length - span + 1, stride))
-    starts.append(length - span)
-    return [start + torch.arange(16) * 4 for start in sorted(set(starts))]
 
 
 def _observations(row: dict, frame_ids: list[int], tracking: dict):
@@ -63,73 +52,6 @@ def _observations(row: dict, frame_ids: list[int], tracking: dict):
     return tracker.track(frames, sizes), sizes
 
 
-def object_tensors(tracks, sizes, fps: float, max_objects: int = 12):
-    """Build frame-local top objects with history-only motion geometry."""
-    length = len(sizes)
-    boxes = torch.zeros(length, max_objects, 4)
-    geometry = torch.zeros(length, max_objects, 13)
-    valid = torch.zeros(length, max_objects, dtype=torch.bool)
-    by_frame: list[list[tuple]] = [[] for _ in range(length)]
-    for track in tracks:
-        history = []
-        for t, detection in sorted(track.observations.items()):
-            width, height = sizes[t]
-            box = np.asarray(detection.box, dtype=np.float32)
-            bw, bh = box[2] - box[0], box[3] - box[1]
-            area = float(bw * bh / (width * height))
-            previous = history[-1] if history else None
-            if previous is None:
-                dx = dy = dlog = slope = 0.0
-            else:
-                pt, pbox, parea = previous
-                dt = max((t - pt) / fps, 1e-6)
-                center = (box[:2] + box[2:]) / 2
-                pcenter = (pbox[:2] + pbox[2:]) / 2
-                dx = float((center[0] - pcenter[0]) / width / dt)
-                dy = float((center[1] - pcenter[1]) / height / dt)
-                dlog = float(np.log(area + 1e-8) - np.log(parea + 1e-8))
-                slope = dlog / dt
-            continuity = min(1.0, (len(history) + 1) / 5)
-            priority = (
-                0.35 * area
-                + 0.25 * float(box[3] / height)
-                + 0.20 * float(detection.score)
-                + 0.20 * continuity
-            )
-            values = [
-                float((box[0] + box[2]) / (2 * width)),
-                float(box[3] / height),
-                float(bw / width),
-                float(bh / height),
-                area,
-                float(np.clip((detection.proximity or 0.0) / 5, -1, 1)),
-                0.0,
-                float(np.clip(dlog, -2, 2)),
-                float(np.clip(slope, -5, 5)),
-                float(np.clip(dx, -5, 5)),
-                float(np.clip(dy, -5, 5)),
-                float(detection.score),
-                continuity,
-            ]
-            by_frame[t].append((priority, detection.proximity, box, values))
-            history.append((t, box, area))
-    for t, candidates in enumerate(by_frame):
-        selected = sorted(candidates, key=lambda x: x[0], reverse=True)[:max_objects]
-        proximity_order = {
-            id(item): rank / max(1, len(selected) - 1)
-            for rank, item in enumerate(
-                sorted(selected, key=lambda x: float(x[1] or 0.0))
-            )
-        }
-        for slot, item in enumerate(selected):
-            _, _, box, values = item
-            values[6] = proximity_order[id(item)]
-            boxes[t, slot] = torch.from_numpy(box)
-            geometry[t, slot] = torch.tensor(values)
-            valid[t, slot] = True
-    return boxes, geometry, valid
-
-
 @torch.inference_mode()
 def extract_local(model, paths, boxes, valid, device, batch_size):
     scenes, rois = [], []
@@ -145,12 +67,12 @@ def extract_local(model, paths, boxes, valid, device, batch_size):
         with torch.autocast(
             device_type=torch.device(device).type,
             dtype=torch.bfloat16,
-            enabled=device != "cpu",
+            enabled=torch.device(device).type == "cuda",
         ):
             output = model.forward_features(images)
         cls = output["x_norm_clstoken"]
         dense = output["x_norm_patchtokens"].reshape(len(chunk), 24, 24, 768)
-        cells = F.adaptive_avg_pool2d(dense.permute(0, 3, 1, 2), (2, 3))
+        cells = F.adaptive_avg_pool2d(dense.permute(0, 3, 1, 2), (4, 4))
         scene = torch.cat((cls[:, None], cells.flatten(2).transpose(1, 2)), dim=1)
         batch_rois = dense.new_zeros(len(chunk), 12, 768)
         roi_boxes = []
@@ -167,40 +89,13 @@ def extract_local(model, paths, boxes, valid, device, batch_size):
             ).flatten(1)
             cursor = 0
             for offset, selected in enumerate(roi_boxes):
-                batch_rois[offset, : len(selected)] = pooled[
+                batch_rois[offset, valid[start + offset].to(device)] = pooled[
                     cursor : cursor + len(selected)
                 ]
                 cursor += len(selected)
         scenes.append(scene.cpu().half())
         rois.append(batch_rois.cpu().half())
     return torch.cat(scenes), torch.cat(rois)
-
-
-@torch.inference_mode()
-def extract_global(model, paths, device):
-    features, anchors, support = [], [], []
-    for positions in clip_positions(len(paths)):
-        frames = [
-            letterbox(read_image(str(paths[int(i)]), mode=ImageReadMode.RGB), 384)[0]
-            for i in positions
-        ]
-        video = torch.stack(frames, dim=1)[None].to(device)
-        with torch.autocast(
-            device_type=torch.device(device).type,
-            dtype=torch.bfloat16,
-            enabled=device != "cpu",
-        ):
-            output = model(video)
-        if isinstance(output, dict):
-            output = output.get("dense", output.get("x"))
-        tokens = output.reshape(1, 8, 24, 24, 1024).mean(dim=(2, 3))[0]
-        pair_anchors = positions.reshape(8, 2).float().mean(1)
-        features.append(tokens.cpu().half())
-        anchors.append(pair_anchors)
-        support.append(
-            torch.tensor([[int(positions.min()), int(positions.max())]]).repeat(8, 1)
-        )
-    return torch.cat(features), torch.cat(anchors), torch.cat(support)
 
 
 def cache_manifest(config: dict, manifest: str, device: str, limit: int | None = None):
@@ -214,72 +109,44 @@ def cache_manifest(config: dict, manifest: str, device: str, limit: int | None =
     rows = read_manifest(manifest)[:limit]
     output_dir = Path(config["data"]["feature_dir"])
     output_dir.mkdir(parents=True, exist_ok=True)
-    prepared = []
+    dino = load_local(model_config["dino_factory"], dino_path).eval().to(device)
+    if torch.device(device).type == "cuda":
+        dino.to(dtype=torch.bfloat16)
+    provenance = {
+        "dino_sha256": file_digest(dino_path),
+        "scene_grid": [4, 4],
+        "tracking": config["tracking"],
+        "geometry_units": "per_frame",
+        "track_selection": "video_global_percentile",
+    }
+    # Stream one video at a time rather than retaining the whole dataset in RAM.
     for row in rows:
         paths, frame_ids = frame_paths(row["frames_dir"])
         tracks, sizes = _observations(row, frame_ids, config["tracking"])
-        boxes, geometry, valid = object_tensors(tracks, sizes, float(row["native_fps"]))
-        prepared.append((row, paths, frame_ids, boxes, geometry, valid))
-
-    dino = load_local(model_config["dino_factory"], dino_path).eval().to(device)
-    if device != "cpu":
-        dino.to(dtype=torch.bfloat16)
-    local_values = []
-    for row, paths, _, boxes, _, valid in prepared:
-        local_values.append(
-            extract_local(
-                dino,
-                paths,
-                boxes,
-                valid,
-                device,
-                model_config.get("dino_batch_size", 8),
-            )
+        boxes, geometry, valid, track_ids = object_tensors(
+            tracks,
+            sizes,
+            track_percentile=config["tracking"].get("track_percentile", 90),
+            return_track_ids=True,
         )
-        print(json.dumps({"sample_id": row["sample_id"], "branch": "dino_v3"}))
-    del dino
-    if device != "cpu":
-        torch.cuda.empty_cache()
-
-    vjepa = (
-        load_local(
-            model_config["vjepa_factory"],
-            model_config["vjepa_checkpoint"],
-            checkpoint_key=model_config.get("vjepa_checkpoint_key", "ema_encoder"),
+        scene, roi = extract_local(
+            dino, paths, boxes, valid, device, model_config.get("dino_batch_size", 8)
         )
-        .eval()
-        .to(device)
-    )
-    if device != "cpu":
-        vjepa.to(dtype=torch.bfloat16)
-    provenance = {
-        "dino_sha256": file_digest(dino_path),
-        "vjepa_sha256": file_digest(model_config["vjepa_checkpoint"]),
-        "sampling": "16 frames, native stride 4, start stride 48, deterministic tail",
-    }
-    for prepared_item, local in zip(prepared, local_values):
-        row, paths, frame_ids, _, geometry, valid = prepared_item
-        global_features, global_anchor, global_support = extract_global(
-            vjepa, paths, device
-        )
-        scene, roi = local
         atomic_save(
             {
-                "schema": 1,
+                "schema": 2,
                 "sample_id": row["sample_id"],
                 "frame_ids": torch.tensor(frame_ids),
+                "track_ids": track_ids,
                 "scene_features": scene,
                 "roi_features": roi,
                 "geometry": geometry.half(),
                 "object_valid": valid,
-                "global_features": global_features,
-                "global_anchor": global_anchor,
-                "global_support": global_support,
                 "provenance": provenance,
             },
             output_dir / f"{row['sample_id']}.pt",
         )
-        print(json.dumps({"sample_id": row["sample_id"], "branch": "complete"}))
+        print(json.dumps({"sample_id": row["sample_id"], "branch": "local_complete"}))
 
 
 def main():

@@ -7,6 +7,8 @@ import torch.nn.functional as F
 
 
 def _event_loss(logits, target, valid, seconds, sigma_seconds=0.1):
+    if sigma_seconds <= 0:
+        raise ValueError("Gaussian sigma must be positive")
     distance = seconds - seconds.gather(1, target[:, None])
     soft = torch.exp(-0.5 * (distance / sigma_seconds).square()) * valid
     soft = soft / soft.sum(-1, keepdim=True).clamp_min(1e-8)
@@ -21,25 +23,27 @@ def _event_loss(logits, target, valid, seconds, sigma_seconds=0.1):
     return distribution + 0.05 * cdf, distribution, cdf
 
 
-def joint_loss(outputs, batch, reduction="mean"):
+def joint_loss(
+    outputs,
+    batch,
+    reduction="mean",
+    entry_sigma_seconds=0.15,
+    collision_sigma_seconds=0.10,
+):
     valid = batch["time_valid"].bool()
     entry, entry_dist, entry_cdf = _event_loss(
         outputs["entry_logits"],
         batch["entry_index"],
         valid,
         batch["frame_seconds"].float(),
+        sigma_seconds=entry_sigma_seconds,
     )
-    supervised = batch.get(
-        "entry_supervised", torch.ones_like(entry, dtype=torch.bool)
-    ).to(entry.dtype)
-    entry = entry * supervised
-    entry_dist = entry_dist * supervised
-    entry_cdf = entry_cdf * supervised
     collision, collision_dist, collision_cdf = _event_loss(
         outputs["collision_logits"],
         batch["collision_index"],
         valid,
         batch["frame_seconds"].float(),
+        sigma_seconds=collision_sigma_seconds,
     )
     side = F.cross_entropy(
         outputs["side_logits"].float(), batch["entry_side"], reduction="none"
@@ -55,13 +59,11 @@ def joint_loss(outputs, batch, reduction="mean"):
     total = 0.35 * entry + 0.35 * collision + 0.15 * side + 0.15 * evasion
     total = total + 0.05 * invalid
     parts = {
-        "entry": entry_dist.detach(),
-        "collision": collision_dist.detach(),
-        "entry_cdf": entry_cdf.detach(),
-        "collision_cdf": collision_cdf.detach(),
-        "side": side.detach(),
-        "evasion": evasion.detach(),
-        "invalid_order": invalid.detach(),
+        "loss_entry": entry.detach(),
+        "loss_collision": collision.detach(),
+        "loss_entry_side": side.detach(),
+        "loss_evasion_space": evasion.detach(),
+        "loss_invalid_order": invalid.detach(),
     }
     if reduction == "mean":
         return total.mean(), {k: v.mean() for k, v in parts.items()}

@@ -12,7 +12,8 @@ from torch.optim.lr_scheduler import LambdaLR
 
 from stage2.data.data import get_data
 from stage2.model.model import CoarseModel, FineModel
-from stage2.model.joint import JointStage2Model
+from stage2.model.joint_system import JointSystem
+from stage2.utils.joint_metrics import JointMetricAccumulator, joint_metric_packet
 from stage2.model.pipeline import CoarseSystem, FineSystem
 from stage2.utils.losses import coarse_loss, fine_loss
 from stage2.utils.joint_losses import joint_loss
@@ -35,6 +36,9 @@ class Trainer:
         self.stage = config["stage"]
         self.step = 0
         self.best_validation_loss = float("inf")
+        self.best_competition_score = -float("inf")
+        self.joint_train_metrics = JointMetricAccumulator()
+        self.last_validation_metrics = {}
 
     def build(self) -> None:
         """Build loaders, choose live-visual or cached-feature training, and prepare state."""
@@ -83,7 +87,7 @@ class Trainer:
                 else FineSystem(model_config)
             )
         elif self.stage == "joint":
-            self.model = JointStage2Model(model_config.get("geometry_dim", 13))
+            self.model = JointSystem(model_config)
         else:
             self.model = CoarseModel() if self.stage == "coarse" else FineModel()
 
@@ -204,15 +208,17 @@ class Trainer:
             objective = joint_loss
         else:
             objective = coarse_loss if self.stage == "coarse" else fine_loss
+        loss_options = self.config.get("loss", {}) if self.stage == "joint" else {}
         loss, components = objective(
             outputs,
             batch,
             reduction=reduction,
+            **loss_options,
         )
         return loss, {
             **components,
             **(
-                {}
+                joint_metric_packet(outputs, batch)
                 if self.stage == "joint"
                 else batch_metrics(outputs, batch, self.stage)
             ),
@@ -227,6 +233,7 @@ class Trainer:
         )
         count = 0
         metrics_sum = {}
+        joint_metrics = JointMetricAccumulator()
 
         with torch.no_grad():
             for batch in self.validation_loader:
@@ -238,6 +245,10 @@ class Trainer:
                 gathered = self.accelerator.gather_for_metrics(
                     {"loss": losses, **metrics}
                 )
+                joint_metrics.update(
+                    {k: v for k, v in gathered.items() if k.startswith("_")}
+                )
+                gathered = {k: v for k, v in gathered.items() if not k.startswith("_")}
                 total += gathered["loss"].sum()
                 count += gathered["loss"].numel()
                 for name, values in gathered.items():
@@ -251,10 +262,14 @@ class Trainer:
 
         if count == 0:
             raise ValueError("Validation loader is empty")
+        self.last_validation_metrics = {
+            **{name: value.item() / count for name, value in metrics_sum.items()},
+            **joint_metrics.compute(),
+        }
         self.accelerator.log(
             {
-                f"val/{name}": value.item() / count
-                for name, value in metrics_sum.items()
+                f"val/{name}": value
+                for name, value in self.last_validation_metrics.items()
             },
             step=self.step,
         )
@@ -285,6 +300,8 @@ class Trainer:
             "scheduler": self.scheduler.state_dict(),
             "config": self.config,
             "best_validation_loss": self.best_validation_loss,
+            "best_competition_score": self.best_competition_score,
+            "joint_train_metrics": self.joint_train_metrics.state_dict(),
             "rng_states": rng_states,
             "scaler": (
                 self.accelerator.scaler.state_dict()
@@ -320,6 +337,13 @@ class Trainer:
         self.scheduler.load_state_dict(checkpoint["scheduler"])
         self.step = checkpoint["step"]
         self.best_validation_loss = checkpoint["best_validation_loss"]
+        self.best_competition_score = checkpoint.get(
+            "best_competition_score", -float("inf")
+        )
+        if "joint_train_metrics" in checkpoint:
+            self.joint_train_metrics.load_state_dict(
+                checkpoint["joint_train_metrics"], self.accelerator.device
+            )
         if len(checkpoint["rng_states"]) != self.accelerator.num_processes:
             raise ValueError("Exact resume requires the same process count")
         restore_rng(checkpoint["rng_states"][self.accelerator.process_index])
@@ -338,6 +362,7 @@ class Trainer:
         self.model.train()
         self.optimizer.zero_grad(set_to_none=True)
 
+        training_metrics = TrainingMetrics()
         for epoch in range(
             start_epoch,
             optimization["epochs"],
@@ -353,7 +378,8 @@ class Trainer:
             ):
                 self.train_loader.set_epoch(epoch)
             accumulated_samples = 0
-            training_metrics = TrainingMetrics()
+            if self.stage != "joint":
+                training_metrics = TrainingMetrics()
             for batch in self.train_loader:
                 with self.accelerator.accumulate(self.model):
                     with self.accelerator.autocast():
@@ -361,9 +387,16 @@ class Trainer:
                             batch,
                             reduction="none",
                         )
+                    if self.stage == "joint":
+                        packet = {
+                            k: v for k, v in components.items() if k.startswith("_")
+                        }
+                        self.joint_train_metrics.update(
+                            self.accelerator.gather_for_metrics(packet)
+                        )
                     training_metrics.update(
                         sample_losses,
-                        components,
+                        {k: v for k, v in components.items() if not k.startswith("_")},
                     )
                     accumulated_samples += sample_losses.numel()
 
@@ -407,15 +440,27 @@ class Trainer:
                     self.accelerator.log(
                         {
                             **training_metrics.flush(self.accelerator),
-                            "train/epoch": epoch + 1,
-                            "lr/lora": self.scheduler.get_last_lr()[0],
-                            "lr/new_parameters": self.scheduler.get_last_lr()[-1],
+                            **(
+                                {}
+                                if self.stage == "joint"
+                                else {
+                                    "train/epoch": epoch + 1,
+                                    "lr/lora": self.scheduler.get_last_lr()[0],
+                                    "lr/new_parameters": self.scheduler.get_last_lr()[
+                                        -1
+                                    ],
+                                }
+                            ),
                         },
                         step=self.step,
                     )
 
             # Include a short final interval rather than dropping its samples.
-            remaining_metrics = training_metrics.flush(self.accelerator)
+            remaining_metrics = (
+                {}
+                if self.stage == "joint"
+                else training_metrics.flush(self.accelerator)
+            )
             if remaining_metrics:
                 self.accelerator.log(
                     {**remaining_metrics, "train/epoch": epoch + 1},
@@ -424,12 +469,40 @@ class Trainer:
 
             if (epoch + 1) % logging["val_every"] == 0:
                 validation_loss = self.validate()
-                if validation_loss < self.best_validation_loss:
-                    self.best_validation_loss = validation_loss
-                    self.save(
-                        epoch,
-                        "best.pt",
+                if self.stage == "joint":
+                    self.accelerator.log(
+                        {
+                            **{
+                                f"train/{k}": v
+                                for k, v in self.joint_train_metrics.compute().items()
+                            },
+                            "train_config/epoch": epoch + 1,
+                            "train_config/lr_lora": self.scheduler.get_last_lr()[0],
+                            "train_config/lr_new_parameters": self.scheduler.get_last_lr()[
+                                -1
+                            ],
+                        },
+                        step=self.step,
                     )
+                    self.joint_train_metrics = JointMetricAccumulator()
+                score = self.last_validation_metrics.get(
+                    "competition_score", -float("inf")
+                )
+                select_score = (
+                    self.stage == "joint"
+                    and logging.get("checkpoint_metric", "loss") == "competition_score"
+                )
+                improved = (
+                    score > self.best_competition_score
+                    if select_score
+                    else validation_loss < self.best_validation_loss
+                )
+                self.best_validation_loss = min(
+                    self.best_validation_loss, validation_loss
+                )
+                self.best_competition_score = max(self.best_competition_score, score)
+                if improved:
+                    self.save(epoch, "best.pt")
 
             self.save(
                 epoch,

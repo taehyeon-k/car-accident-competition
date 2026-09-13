@@ -1,4 +1,4 @@
-"""Run the single-stage model on precomputed joint feature caches."""
+"""Run the joint model using cached local features and online frozen V-JEPA."""
 
 from __future__ import annotations
 
@@ -8,8 +8,8 @@ from pathlib import Path
 
 import torch
 
-from stage2.data.joint import joint_collate
-from stage2.model.joint import JointStage2Model
+from stage2.data.joint import joint_collate, joint_item, load_joint_cache
+from stage2.model.joint_system import JointSystem
 from stage2.test import evasion_label, side_label
 from stage2.utils.joint_losses import constrained_decode
 from stage2.utils.utils import read_manifest
@@ -22,43 +22,14 @@ def load_model(path: str, device: str):
         or checkpoint["config"]["stage"] != "joint"
     ):
         raise ValueError("Expected a Stage 2 joint-format checkpoint")
-    model = JointStage2Model(checkpoint["config"]["model"].get("geometry_dim", 13))
+    model = JointSystem(checkpoint["config"]["model"])
     model.load_state_dict(checkpoint["model"], strict=True)
     return model.eval().to(device)
 
 
 def cache_item(row: dict, feature_dir: Path):
-    cache = torch.load(
-        feature_dir / f"{row['sample_id']}.pt",
-        map_location="cpu",
-        weights_only=True,
-    )
-    if cache.get("schema") != 1 or cache.get("sample_id") != row["sample_id"]:
-        raise ValueError(f"Invalid feature cache for {row['sample_id']}")
-    length = len(cache["frame_ids"])
-    global_length = len(cache["global_anchor"])
-    return {
-        "scene_features": cache["scene_features"],
-        "roi_features": cache["roi_features"],
-        "geometry": cache["geometry"].float(),
-        "object_valid": cache["object_valid"].bool(),
-        "time_valid": torch.ones(length, dtype=torch.bool),
-        "local_time": torch.linspace(0, 1, length),
-        "frame_seconds": torch.arange(length, dtype=torch.float32)
-        / float(row.get("native_fps") or 1.0),
-        "global_features": cache["global_features"],
-        "global_time": (cache["global_anchor"] / max(1, length - 1)).float(),
-        "global_valid": torch.ones(global_length, dtype=torch.bool),
-        # Collation keeps a single contract; these values are unused at inference.
-        "entry_index": 0,
-        "entry_supervised": False,
-        "collision_index": 0,
-        "entry_side": 0,
-        "evasion": 0.0,
-        "frame_ids": cache["frame_ids"].long(),
-        "sample_id": row["sample_id"],
-        "source_id": row.get("source_id", row["sample_id"]),
-    }
+    cache, paths = load_joint_cache(row, feature_dir)
+    return joint_item(row, cache, paths)
 
 
 @torch.inference_mode()
@@ -68,7 +39,12 @@ def predict(model, item, device):
         key: value.to(device) if isinstance(value, torch.Tensor) else value
         for key, value in batch.items()
     }
-    output = model(tensor_batch)
+    with torch.autocast(
+        device_type=torch.device(device).type,
+        dtype=torch.bfloat16,
+        enabled=torch.device(device).type == "cuda",
+    ):
+        output = model(tensor_batch)
     entry, collision = constrained_decode(
         output["entry_logits"], output["collision_logits"]
     )

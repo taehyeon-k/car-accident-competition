@@ -5,13 +5,14 @@ resume: null
 data:
   manifest: data/stage2/manifests/train.jsonl
   val_manifest: data/stage2/manifests/val.jsonl
-  feature_dir: cache/joint_features_v1
+  feature_dir: cache/joint_features_v2
   num_workers: 4
   batch_size: 4
-  censored_entry_probability: 0.15
 model:
-  training_mode: cached_features
+  training_mode: online_frozen
   geometry_dim: 13
+  temporal_radius: 16
+  vjepa_clip_batch_size: 1
   dino_checkpoint: pretrained/dinov3_vitb16/dinov3_vitb16_pretrain_lvd1689m-73cec8be.pth
   dino_factory: stage2.model.local_assets:dino
   dino_batch_size: 64
@@ -23,6 +24,10 @@ tracking:
   max_center_distance: 0.2
   max_match_cost: 0.65
   max_gap: 2
+  track_percentile: 90
+loss:
+  entry_sigma_seconds: 0.15
+  collision_sigma_seconds: 0.10
 optimization:
   epochs: 40
   accumulation_steps: 4
@@ -34,12 +39,14 @@ optimization:
   grad_clip_norm: 1.0
 logging:
   log_every: 10
+  # Switch to competition_score after confirming official evaluator equivalence.
+  checkpoint_metric: loss
   val_every: 1
   wandb:
     enabled: True
     project: Car_Accident_Competition
     entity: null
-    name: joint-dinov3-vjepa21
+    name: joint-hybrid-dinov3-vjepa21
     group: null
     tags: [joint, dinov3, vjepa2.1]
     mode: online

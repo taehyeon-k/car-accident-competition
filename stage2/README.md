@@ -1,5 +1,8 @@
 # Stage 2 training and inference
 
+For the current **joint model** (cached DINOv3 + online frozen V-JEPA), use
+[JOINT.md](JOINT.md). The coarse/fine workflow below remains separately available.
+
 The code follows [Stage2_Architecture.md](Stage2_Architecture.md), with the
 Diffusion-ISP organization: YAML configuration, entry points, data, model, trainer,
 and utilities. See [IMPLEMENTATION_AUDIT.md](IMPLEMENTATION_AUDIT.md) for findings.

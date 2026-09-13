@@ -19,9 +19,7 @@ def get_data(
             manifest,
             config["data"]["feature_dir"],
             training=shuffle,
-            censor_probability=config["data"].get(
-                "censored_entry_probability", 0.15
-            ),
+            seed=config["seed"],
         )
         return ds, DataLoader(
             ds,
