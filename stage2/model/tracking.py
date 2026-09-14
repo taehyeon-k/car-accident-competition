@@ -15,7 +15,6 @@ class Detection:
     box: np.ndarray
     score: float
     label: str
-    proximity: float | None = None
 
 
 @dataclass
@@ -126,7 +125,6 @@ class HungarianTracker:
                             box,
                             detection.score,
                             detection.label,
-                            detection.proximity,
                         )
                     )
             detections = filtered

@@ -101,7 +101,7 @@ def main():
             source_id=r["source"] + ":" + r["source_id"],
             video_path=str(base / r["video_relative_path"]),
             frames_dir=str(base / "frames" / r["sample_id"]),
-            geometry_dir=str(args.workspace / "cache/geometry" / r["sample_id"]),
+            geometry_dir=str(args.workspace / "cache/geometry_v2" / r["sample_id"]),
             native_fps=float(r["fps"]),
             num_frames=int(r["num_frames"]),
             entry_frame=int(r["entry_frame"]),

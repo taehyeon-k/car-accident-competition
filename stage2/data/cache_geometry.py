@@ -1,10 +1,9 @@
-"""Cache frozen per-frame observations, never sampled tracks or LoRA features.
+"""Cache frozen per-frame RF-DETR observations, never sampled tracks or features.
 
 Run ``python -m stage2.data.cache_geometry --config ... --manifest ...``.
-Factories must construct locally loaded inference adapters. Detector output is a
-list of dictionaries with native xyxy boxes, scores and canonical class names.
-Depth output is a list of native-resolution relative-depth tensors. Both receive
-the original RGB CHW uint8 tensors, with no photometric augmentation.
+The factory must construct a locally loaded inference adapter. Detector output is
+a list of dictionaries with native xyxy boxes, scores and canonical class names,
+computed on the original RGB CHW uint8 frames with no photometric augmentation.
 """
 
 from __future__ import annotations
@@ -38,31 +37,14 @@ def frame_paths(directory: str) -> tuple[list[Path], list[int]]:
 
 def compact_observations(
     detections: dict,
-    depth: torch.Tensor,
     width: int,
     height: int,
     threshold: float,
-    closer_is_larger: bool,
 ) -> dict:
-    """Keep normalized per-detection proximity instead of a full dense depth map.
-
-    Relative object ranks are deliberately deferred until the window's top-12
-    tracks have been selected. This compact cache is reusable across all windows.
-    """
-    depth = torch.as_tensor(depth).detach().float().cpu().numpy()
-    if depth.shape != (height, width) or not np.isfinite(depth).all():
-        raise ValueError("Depth adapter must return a finite map in native coordinates")
-    if not closer_is_larger:
-        depth = -depth
-    median = float(np.median(depth))
-    mad = max(
-        float(np.median(np.abs(depth - median))),
-        1e-6,
-    )
+    """Keep compact per-detection boxes reusable across every window."""
     boxes = []
     scores = []
     labels = []
-    proximity = []
     if not (
         len(detections["boxes"])
         == len(detections["scores"])
@@ -88,16 +70,9 @@ def compact_observations(
         x1, y1, x2, y2 = box
         if x2 <= x1 or y2 <= y1:
             continue
-        left = int(x1 + 0.25 * (x2 - x1))
-        right = int(x2 - 0.25 * (x2 - x1))
-        top = int(y1 + 0.55 * (y2 - y1))
-        bottom = int(y2 - 0.10 * (y2 - y1))
-        patch = depth[top:bottom, left:right]
-        value = float(np.median(patch)) if patch.size else median
         boxes.append(box.tolist())
         scores.append(score)
         labels.append(label)
-        proximity.append((value - median) / mad)
     return {
         "boxes": torch.tensor(
             boxes,
@@ -108,7 +83,6 @@ def compact_observations(
         ),
         "scores": torch.tensor(scores),
         "labels": labels,
-        "proximity": torch.tensor(proximity),
         "size": [width, height],
     }
 
@@ -121,29 +95,15 @@ def cache_manifest(
 ) -> None:
     """Create compact caches with source and checkpoint provenance checks."""
     model_config = config["model"]
-    orientation = model_config.get("depth_closer_is_larger")
-    if not isinstance(
-        orientation,
-        bool,
-    ):
-        raise ValueError(
-            "Verify the depth adapter's orientation, then set depth_closer_is_larger"
-        )
     detector = FrozenAdapter(
         model_config["rfdetr_factory"],
         model_config["rfdetr_checkpoint"],
     ).to(device)
-    depth_model = FrozenAdapter(
-        model_config["depth_factory"],
-        model_config["depth_checkpoint"],
-    ).to(device)
+    # Schema 2 dropped the depth channels; schema-1 caches must not load silently.
     provenance = {
-        "schema": 1,
+        "schema": 2,
         "detector_sha256": file_digest(model_config["rfdetr_checkpoint"]),
-        "depth_sha256": file_digest(model_config["depth_checkpoint"]),
         "detector_factory": model_config["rfdetr_factory"],
-        "depth_factory": model_config["depth_factory"],
-        "depth_closer_is_larger": orientation,
         "threshold": config["tracking"]["detection_threshold"],
     }
     chunk_size = model_config.get(
@@ -204,24 +164,20 @@ def cache_manifest(
                 for path, _ in chunk
             ]
             detections = detector(images)
-            depth_maps = depth_model(images)
-            if len(detections) != len(images) or len(depth_maps) != len(images):
+            if len(detections) != len(images):
                 raise ValueError(
-                    "Frozen adapters must return one output per original frame"
+                    "The frozen detector must return one output per original frame"
                 )
-            for (path, original_id), image, detected, depth in zip(
+            for (path, original_id), image, detected in zip(
                 chunk,
                 images,
                 detections,
-                depth_maps,
             ):
                 observations = compact_observations(
                     detected,
-                    depth,
                     image.shape[-1],
                     image.shape[-2],
                     provenance["threshold"],
-                    orientation,
                 )
                 observations["source_sha256"] = file_digest(path)
                 observations["frame_id"] = original_id

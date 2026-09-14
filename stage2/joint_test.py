@@ -6,13 +6,27 @@ import argparse
 import json
 from pathlib import Path
 
+import numpy as np
 import torch
 
-from stage2.data.joint import joint_collate, joint_item, load_joint_cache
+from stage2.data.joint import (
+    frame_paths,
+    joint_collate,
+    joint_item,
+    load_detections,
+)
 from stage2.model.joint_system import JointSystem
-from stage2.test import evasion_label, side_label
 from stage2.utils.joint_losses import constrained_decode
 from stage2.utils.utils import read_manifest
+
+
+def side_label(direction_logit: np.ndarray) -> str:
+    return "LEFT" if int(np.argmax(direction_logit)) == 0 else "RIGHT"
+
+
+def evasion_label(logit: float) -> int:
+    """sigmoid(logit) >= .5 is equivalent to logit >= 0, without overflow."""
+    return int(logit >= 0)
 
 
 def load_model(path: str, device: str):
@@ -22,14 +36,20 @@ def load_model(path: str, device: str):
         or checkpoint["config"]["stage"] != "joint"
     ):
         raise ValueError("Expected a Stage 2 joint-format checkpoint")
+    # LoRA adapters are rebuilt on top of the frozen local pretrained backbones,
+    # then the trained adapter and head weights are loaded onto them.
     model = JointSystem(checkpoint["config"]["model"])
     model.load_state_dict(checkpoint["model"], strict=True)
-    return model.eval().to(device)
+    return model.eval().to(device), checkpoint["config"]
 
 
-def cache_item(row: dict, feature_dir: Path):
-    cache, paths = load_joint_cache(row, feature_dir)
-    return joint_item(row, cache, paths)
+def cache_item(row: dict, tracking: dict | None = None):
+    """Inference reads the whole supplied video with no training augmentation."""
+    paths, frame_ids = frame_paths(row["frames_dir"])
+    records = load_detections(row["geometry_dir"], frame_ids)
+    return joint_item(
+        row, paths, frame_ids, records, 0, len(paths), tracking=tracking or {}
+    )
 
 
 @torch.inference_mode()
@@ -61,15 +81,14 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--checkpoint", required=True)
     parser.add_argument("--manifest", required=True)
-    parser.add_argument("--feature-dir", required=True)
     parser.add_argument("--output", required=True)
     parser.add_argument("--device", default="cuda")
     args = parser.parse_args()
-    model = load_model(args.checkpoint, args.device)
-    feature_dir = Path(args.feature_dir)
+    model, config = load_model(args.checkpoint, args.device)
+    tracking = config.get("tracking", {})
     with open(args.output, "x", encoding="utf-8") as stream:
         for row in read_manifest(args.manifest):
-            result = predict(model, cache_item(row, feature_dir), args.device)
+            result = predict(model, cache_item(row, tracking), args.device)
             stream.write(json.dumps({"sample_id": row["sample_id"], **result}) + "\n")
 
 

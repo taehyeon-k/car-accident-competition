@@ -1,4 +1,4 @@
-"""Accelerate training loop shared by coarse and fine Stage 2 models."""
+"""Accelerate training loop for the joint Stage 2 model."""
 
 from __future__ import annotations
 
@@ -11,13 +11,9 @@ from torch.optim import AdamW
 from torch.optim.lr_scheduler import LambdaLR
 
 from stage2.data.data import get_data
-from stage2.model.model import CoarseModel, FineModel
 from stage2.model.joint_system import JointSystem
 from stage2.utils.joint_metrics import JointMetricAccumulator, joint_metric_packet
-from stage2.model.pipeline import CoarseSystem, FineSystem
-from stage2.utils.losses import coarse_loss, fine_loss
 from stage2.utils.joint_losses import joint_loss
-from stage2.utils.metrics import batch_metrics
 from stage2.utils.checkpoint import rank_rng_states, restore_rng, save_checkpoint
 from stage2.utils.utils import source_name, validate_config
 from stage2.utils.tracking import TrainingMetrics
@@ -101,57 +97,7 @@ class Trainer:
             }
         )
 
-        model_config = self.config["model"]
-        live_visual = (
-            model_config.get(
-                "training_mode",
-                "lora",
-            )
-            == "lora"
-        )
-        train_sources = {
-            str(row["source_id"])
-            for row in self.train_dataset.rows
-            if "source_id" in row
-        }
-        val_sources = {
-            str(row["source_id"])
-            for row in self.validation_dataset.rows
-            if "source_id" in row
-        }
-        if train_sources & val_sources:
-            raise ValueError("Training and validation share original source IDs")
-
-        if live_visual:
-            self.model = (
-                CoarseSystem(model_config)
-                if self.stage == "coarse"
-                else FineSystem(model_config)
-            )
-        elif self.stage == "joint":
-            self.model = JointSystem(model_config)
-        else:
-            self.model = CoarseModel() if self.stage == "coarse" else FineModel()
-
-        if live_visual:
-            statistics = torch.load(
-                data_config["geometry_stats"],
-                map_location="cpu",
-                weights_only=True,
-            )
-            if statistics.get("coarse_t_max", 32) != model_config.get("T_max", 32):
-                raise ValueError(
-                    "Geometry statistics must match the configured T_max; refit them"
-                )
-            if statistics["stage"] != self.stage or statistics["split"] != "train":
-                raise ValueError(
-                    "Geometry statistics must come from this stage's training split"
-                )
-            if set(statistics["source_ids"]) != train_sources:
-                raise ValueError(
-                    "Geometry statistics do not match the training source split"
-                )
-            self.model.head.geometry_embedding.set_statistics(statistics)
+        self.model = JointSystem(self.config["model"])
 
         # Compute scheduler lengths after distributed loader sharding. Keep the
         # scheduler unwrapped and advance it exactly once per successful update.
@@ -167,22 +113,14 @@ class Trainer:
         )
 
     def _build_optimizer(self) -> tuple[AdamW, LambdaLR]:
-        """Use the visual-backbone LR for LoRA and unfrozen bases; heads use new_lr."""
+        """Each backbone's adapters get their own LR; the joint head uses new_lr."""
         optimization = self.config["optimization"]
-        lora_parameters = []
-        new_parameters = []
-
-        for name, parameter in self.model.named_parameters():
-            if not parameter.requires_grad:
-                continue
-            if "visual.encoder" in name:
-                lora_parameters.append(parameter)
-            else:
-                new_parameters.append(parameter)
-
+        groups = self.model.parameter_groups()
+        # Group order is fixed: the scheduler and the LR logs index into it.
         parameter_groups = [
-            {"params": lora_parameters, "lr": optimization["lora_lr"]},
-            {"params": new_parameters, "lr": optimization["new_lr"]},
+            {"params": groups["dino_lora"], "lr": optimization["dino_lora_lr"]},
+            {"params": groups["vjepa_lora"], "lr": optimization["vjepa_lora_lr"]},
+            {"params": groups["new"], "lr": optimization["new_lr"]},
         ]
         optimizer = AdamW(
             parameter_groups,
@@ -229,50 +167,15 @@ class Trainer:
         batch: dict[str, torch.Tensor],
         reduction: str = "mean",
     ):
-        """Select the correct feature source and loss for the active training stage."""
-        has_live_images = "coarse_rgb" in batch or "fine_rgb" in batch
-
-        if self.stage == "joint":
-            outputs = self.model(batch)
-        elif has_live_images:
-            outputs = self.model(batch)
-        elif self.stage == "coarse":
-            outputs = self.model(
-                batch["dense"],
-                batch["boxes_grid"],
-                batch["geometry"],
-                batch["object_valid"].bool(),
-                batch["bin_valid"].bool(),
-            )
-        else:
-            outputs = self.model(
-                batch["global_tokens"],
-                batch["dense"],
-                batch["boxes_grid"],
-                batch["geometry"],
-                batch["object_valid"].bool(),
-                batch["time_valid"].bool(),
-            )
-
-        if self.stage == "joint":
-            objective = joint_loss
-        else:
-            objective = coarse_loss if self.stage == "coarse" else fine_loss
-        loss_options = self.config.get("loss", {}) if self.stage == "joint" else {}
-        loss, components = objective(
+        """Run the joint model and pair its losses with per-sample metric counts."""
+        outputs = self.model(batch)
+        loss, components = joint_loss(
             outputs,
             batch,
             reduction=reduction,
-            **loss_options,
+            **self.config.get("loss", {}),
         )
-        return loss, {
-            **components,
-            **(
-                joint_metric_packet(outputs, batch)
-                if self.stage == "joint"
-                else batch_metrics(outputs, batch, self.stage)
-            ),
-        }
+        return loss, {**components, **joint_metric_packet(outputs, batch)}
 
     def validate(self) -> float:
         """Return globally averaged validation loss without updating model state."""
@@ -458,13 +361,10 @@ class Trainer:
                             batch,
                             reduction="none",
                         )
-                    if self.stage == "joint":
-                        packet = {
-                            k: v for k, v in components.items() if k.startswith("_")
-                        }
-                        self.joint_train_metrics.update(
-                            self.accelerator.gather_for_metrics(packet)
-                        )
+                    packet = {k: v for k, v in components.items() if k.startswith("_")}
+                    self.joint_train_metrics.update(
+                        self.accelerator.gather_for_metrics(packet)
+                    )
                     training_metrics.update(
                         sample_losses,
                         {k: v for k, v in components.items() if not k.startswith("_")},
@@ -509,59 +409,33 @@ class Trainer:
                     and self.step % logging["log_every"] == 0
                 ):
                     self.accelerator.log(
-                        {
-                            **training_metrics.flush(self.accelerator),
-                            **(
-                                {}
-                                if self.stage == "joint"
-                                else {
-                                    "train/epoch": epoch + 1,
-                                    "lr/lora": self.scheduler.get_last_lr()[0],
-                                    "lr/new_parameters": self.scheduler.get_last_lr()[
-                                        -1
-                                    ],
-                                }
-                            ),
-                        },
+                        training_metrics.flush(self.accelerator),
                         step=self.step,
                     )
-
-            # Include a short final interval rather than dropping its samples.
-            remaining_metrics = (
-                {}
-                if self.stage == "joint"
-                else training_metrics.flush(self.accelerator)
-            )
-            if remaining_metrics:
-                self.accelerator.log(
-                    {**remaining_metrics, "train/epoch": epoch + 1},
-                    step=self.step,
-                )
 
             if (epoch + 1) % logging["val_every"] == 0:
                 validation_loss = self.validate()
-                if self.stage == "joint":
-                    self.accelerator.log(
-                        {
-                            **{
-                                f"train/{k}": v
-                                for k, v in self.joint_train_metrics.compute().items()
-                            },
-                            "train_config/epoch": epoch + 1,
-                            "train_config/lr_lora": self.scheduler.get_last_lr()[0],
-                            "train_config/lr_new_parameters": self.scheduler.get_last_lr()[
-                                -1
-                            ],
+                self.accelerator.log(
+                    {
+                        **{
+                            f"train/{k}": v
+                            for k, v in self.joint_train_metrics.compute().items()
                         },
-                        step=self.step,
-                    )
-                    self.joint_train_metrics = JointMetricAccumulator()
+                        "train_config/epoch": epoch + 1,
+                        "train_config/lr_dino_lora": self.scheduler.get_last_lr()[0],
+                        "train_config/lr_vjepa_lora": self.scheduler.get_last_lr()[1],
+                        "train_config/lr_new_parameters": self.scheduler.get_last_lr()[
+                            -1
+                        ],
+                    },
+                    step=self.step,
+                )
+                self.joint_train_metrics = JointMetricAccumulator()
                 score = self.last_validation_metrics.get(
                     "competition_score", -float("inf")
                 )
                 select_score = (
-                    self.stage == "joint"
-                    and logging.get("checkpoint_metric", "loss") == "competition_score"
+                    logging.get("checkpoint_metric", "loss") == "competition_score"
                 )
                 improved = (
                     score > self.best_competition_score

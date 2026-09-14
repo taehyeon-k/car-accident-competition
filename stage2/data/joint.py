@@ -1,4 +1,15 @@
-"""Cached local features and crop-local RGB paths for online frozen V-JEPA."""
+"""Online joint Stage 2 data: cached detections, crop-local geometry, live RGB.
+
+DINOv3 and V-JEPA both train with LoRA, so no visual feature may come from a
+cache. Only the frozen RF-DETR detections are cached, and even those are never
+reused as a finished geometry vector: tracking and motion are rebuilt from the
+frames that are actually visible inside the sampled crop, so the first frame of
+a synthetic crop cannot inherit motion history from before it.
+
+One augmentation decision is drawn per sample and applied to every frame, so the
+RGB stack handed to both backbones is identical and stays consistent with the
+detector boxes the geometry was computed from.
+"""
 
 from pathlib import Path
 import math
@@ -7,85 +18,181 @@ import numpy as np
 import torch
 from torch.utils.data import Dataset
 
+from stage2.data.augment import (
+    augmentation_config,
+    flip_boxes,
+    flip_side,
+    sample_horizontal_flip,
+    sample_photometric,
+)
 from stage2.data.cache_geometry import frame_paths
+from stage2.data.joint_sampling import choose_crop, temporal_probabilities
+from stage2.data.transforms import box_to_grid, letterbox, letterbox_metadata
+from stage2.model.joint_tracking import GEOMETRY_DIM, object_tensors
+from stage2.model.tracking import Detection, HungarianTracker
 from stage2.utils.utils import read_manifest
 
+DETECTOR_CACHE_SCHEMA = 2
+MAX_OBJECTS = 12
+IMAGE_SIZE = 384
+PATCH_SIZE = 16
 
-def load_joint_cache(row, feature_dir):
-    cache = torch.load(
-        Path(feature_dir) / f"{row['sample_id']}.pt",
-        map_location="cpu",
-        weights_only=True,
-    )
-    if cache.get("schema") != 2 or cache.get("sample_id") != row["sample_id"]:
-        raise ValueError(
-            "Joint model needs schema-2 local caches; regenerate the cache"
+
+def load_detections(geometry_dir, frame_ids):
+    """Read cached frozen RF-DETR observations for exactly these frames."""
+    directory = Path(geometry_dir)
+    metadata = directory / "metadata.pt"
+    if not metadata.is_file():
+        raise FileNotFoundError(
+            f"Missing detector cache metadata {metadata}; run stage2.data.cache_geometry"
         )
-    length = len(cache["frame_ids"])
-    expected = {
-        "scene_features": (length, 17, 768),
-        "roi_features": (length, 12, 768),
-        "geometry": (length, 12, 13),
-        "object_valid": (length, 12),
-        "track_ids": (12,),
-    }
-    for name, shape in expected.items():
-        if tuple(cache[name].shape) != shape:
-            raise ValueError(f"Invalid {name} shape in {row['sample_id']}")
-    paths, ids = frame_paths(row["frames_dir"])
-    if ids != cache["frame_ids"].tolist():
-        raise ValueError("RGB frame IDs and local cache do not match")
-    if not length:
-        raise ValueError("Empty joint sequence")
-    return cache, paths
+    schema = torch.load(metadata, map_location="cpu", weights_only=True).get("schema")
+    if schema != DETECTOR_CACHE_SCHEMA:
+        raise ValueError(
+            f"Detector cache {directory} is schema {schema}; schema "
+            f"{DETECTOR_CACHE_SCHEMA} is required. Regenerate it with "
+            "stage2.data.cache_geometry."
+        )
+    records = []
+    for frame_id in frame_ids:
+        saved = torch.load(
+            directory / f"{int(frame_id)}.pt", map_location="cpu", weights_only=True
+        )
+        if saved["frame_id"] != int(frame_id):
+            raise ValueError(f"Mismatched cached frame id in {directory}")
+        records.append(saved)
+    return records
 
 
-def joint_item(row, cache, paths, start=0, stop=None, supervised=False):
-    stop = len(paths) if stop is None else stop
+def crop_objects(records, flip, tracking):
+    """Rebuild tracks and geometry using only the frames inside this crop.
+
+    Flipping the detector boxes here, before association, is what keeps the
+    geometry consistent with the flipped pixels: ``center_x`` becomes
+    ``1 - center_x`` and ``dx`` negates as a consequence rather than as a patch.
+    Mirroring is an isometry on the association costs and leaves detection order
+    untouched, so track identities survive the flip.
+    """
+    sizes = [tuple(record["size"]) for record in records]
+    if len(set(sizes)) != 1:
+        raise ValueError("Frames in a sample must use a common native resolution")
+    frames = []
+    for record in records:
+        boxes = record["boxes"]
+        if flip:
+            boxes = flip_boxes(boxes, record["size"][0])
+        frames.append(
+            [
+                Detection(box.numpy(), float(score), label)
+                for box, score, label in zip(boxes, record["scores"], record["labels"])
+            ]
+        )
+    tracker = HungarianTracker(
+        max_gap=tracking.get("max_gap", 2),
+        max_center_distance=tracking.get("max_center_distance", 0.2),
+        max_match_cost=tracking.get("max_match_cost", 0.65),
+        detection_threshold=tracking.get("detection_threshold", 0.2),
+    )
+    tracks = tracker.track(frames, sizes)
+    boxes, geometry, valid, track_ids = object_tensors(
+        tracks,
+        sizes,
+        max_objects=MAX_OBJECTS,
+        track_percentile=tracking.get("track_percentile", 90),
+        return_track_ids=True,
+    )
+    return boxes, geometry, valid, track_ids, sizes[0]
+
+
+def load_clip_rgb(paths, flip, photometric, generator=None):
+    """Decode, augment and letterbox one clip with a single shared configuration."""
+    from torchvision.io import ImageReadMode, read_image
+    from torchvision.transforms import functional as TVF
+
+    frames = []
+    for path in paths:
+        image = read_image(str(path), mode=ImageReadMode.RGB)
+        unit = TVF.convert_image_dtype(image, torch.float32)
+        if flip:
+            unit = TVF.hflip(unit)
+        if photometric is not None:
+            unit = photometric(unit, generator=generator)
+        frames.append(letterbox(unit, IMAGE_SIZE)[0])
+    return torch.stack(frames)
+
+
+def joint_item(
+    row,
+    paths,
+    frame_ids,
+    records,
+    start,
+    stop,
+    entry_index=None,
+    collision_index=None,
+    flip=False,
+    photometric=None,
+    tracking=None,
+    generator=None,
+):
+    """Build one training/inference sample for the window ``[start, stop)``."""
     length = stop - start
     if not 0 <= start < stop <= len(paths):
         raise ValueError("Invalid joint crop")
-    ids = cache["frame_ids"][start:stop].long()
+    window = records[start:stop]
+    boxes, geometry, valid, track_ids, size = crop_objects(window, flip, tracking or {})
+    transform = letterbox_metadata(size[0], size[1], IMAGE_SIZE)
     item = {
-        name: cache[name][start:stop]
-        for name in ("scene_features", "roi_features", "geometry", "object_valid")
+        "rgb": load_clip_rgb(paths[start:stop], flip, photometric, generator),
+        "roi_boxes": box_to_grid(boxes.reshape(-1, 4), transform, PATCH_SIZE).reshape(
+            length, MAX_OBJECTS, 4
+        ),
+        "geometry": geometry,
+        "object_valid": valid,
+        "time_valid": torch.ones(length, dtype=torch.bool),
+        "local_time": torch.linspace(0, 1, length),
+        "frame_ids": torch.as_tensor(frame_ids[start:stop]).long(),
+        "track_ids": track_ids,
+        "sample_id": row["sample_id"],
+        "source_id": row.get("source_id", row["sample_id"]),
+        "flipped": bool(flip),
     }
-    item.update(
-        time_valid=torch.ones(length, dtype=torch.bool),
-        local_time=torch.linspace(0, 1, length),
-        frame_ids=ids,
-        frame_paths=[str(p) for p in paths[start:stop]],
-        sample_id=row["sample_id"],
-        source_id=row.get("source_id", row["sample_id"]),
-    )
-    if supervised:
-        fps = float(row.get("native_fps") or 0)
-        if not math.isfinite(fps) or fps <= 0:
-            raise ValueError(
-                "Training/evaluation seconds-based losses require native_fps; inference does not"
-            )
-        for event in ("entry", "collision"):
-            matches = (ids == int(row[f"{event}_frame"])).nonzero().flatten()
-            if len(matches) != 1:
-                raise ValueError(f"Crop must contain exactly one {event} label")
-            item[f"{event}_index"] = int(matches[0])
-        if item["entry_index"] > item["collision_index"]:
-            raise ValueError("ENTRY must not follow COLLISION")
-        side = row["entry_side"]
-        if side not in ("LEFT", "RIGHT", 0, 1) or row["evasion_space"] not in (0, 1):
-            raise ValueError("Invalid joint attribute labels")
-        item.update(
-            frame_seconds=torch.arange(length, dtype=torch.float32) / fps,
-            entry_side=int(side == "RIGHT") if isinstance(side, str) else int(side),
-            evasion=float(row["evasion_space"]),
+    if entry_index is None:
+        return item
+
+    fps = float(row.get("native_fps") or 0)
+    if not math.isfinite(fps) or fps <= 0:
+        raise ValueError(
+            "Training/evaluation seconds-based losses require native_fps; inference does not"
         )
+    if not 0 <= entry_index <= collision_index < length:
+        raise ValueError("ENTRY must precede COLLISION inside the crop")
+    side = row["entry_side"]
+    if side not in ("LEFT", "RIGHT", 0, 1) or row["evasion_space"] not in (0, 1):
+        raise ValueError("Invalid joint attribute labels")
+    if flip:
+        side = flip_side(side)
+    item.update(
+        entry_index=int(entry_index),
+        collision_index=int(collision_index),
+        frame_seconds=torch.arange(length, dtype=torch.float32) / fps,
+        entry_side=int(side == "RIGHT") if isinstance(side, str) else int(side),
+        evasion=float(row["evasion_space"]),
+    )
     return item
 
 
 class JointFeatureDataset(Dataset):
-    def __init__(self, manifest, feature_dir, training=False, seed=42):
+    """Cached detections plus online RGB; no cached DINO/V-JEPA features."""
+
+    def __init__(self, manifest, training=False, seed=42, config=None):
         self.rows = read_manifest(manifest)
-        self.feature_dir, self.training, self.seed = Path(feature_dir), training, seed
+        self.training = training
+        self.seed = seed
+        config = config or {}
+        self.tracking = config.get("tracking", {})
+        self.augmentation = augmentation_config(config.get("augmentation"))
+        self.temporal = temporal_probabilities(config.get("temporal_augmentation"))
         self.epoch = torch.zeros((), dtype=torch.long).share_memory_()
 
     def set_epoch(self, epoch):
@@ -94,36 +201,70 @@ class JointFeatureDataset(Dataset):
     def __len__(self):
         return len(self.rows)
 
-    def __getitem__(self, index):
-        row = self.rows[index]
-        cache, paths = load_joint_cache(row, self.feature_dir)
-        ids = cache["frame_ids"].long()
+    def _events(self, row, frame_ids):
+        ids = torch.as_tensor(frame_ids).long()
         positions = []
         for event in ("entry", "collision"):
             matches = (ids == int(row[f"{event}_frame"])).nonzero().flatten()
             if len(matches) != 1:
                 raise ValueError(f"Missing or duplicated {event} frame")
             positions.append(int(matches[0]))
-        entry, collision = positions
-        if entry > collision:
+        if positions[0] > positions[1]:
             raise ValueError("ENTRY must not follow COLLISION")
-        start, stop = 0, len(ids)
-        if self.training:
-            rng = np.random.default_rng(
-                np.random.SeedSequence([self.seed, int(self.epoch), index])
+        return positions
+
+    def __getitem__(self, index):
+        row = self.rows[index]
+        paths, frame_ids = frame_paths(row["frames_dir"])
+        records = load_detections(row["geometry_dir"], frame_ids)
+        entry, collision = self._events(row, frame_ids)
+
+        if not self.training:
+            # Validation and inference see the complete, unaugmented video.
+            return joint_item(
+                row,
+                paths,
+                frame_ids,
+                records,
+                0,
+                len(paths),
+                entry,
+                collision,
+                tracking=self.tracking,
             )
-            start = int(rng.integers(0, entry + 1))
-            stop = int(rng.integers(collision + 1, len(ids) + 1))
-        return joint_item(row, cache, paths, start, stop, supervised=True)
+
+        rng = np.random.default_rng(
+            np.random.SeedSequence([self.seed, int(self.epoch), index])
+        )
+        start, stop, entry_index, collision_index, _ = choose_crop(
+            len(paths), entry, collision, row.get("native_fps"), self.temporal, rng
+        )
+        flip = sample_horizontal_flip(self.augmentation, rng)
+        photometric = sample_photometric(self.augmentation, rng)
+        generator = torch.Generator().manual_seed(int(rng.integers(0, 2**31 - 1)))
+        return joint_item(
+            row,
+            paths,
+            frame_ids,
+            records,
+            start,
+            stop,
+            entry_index,
+            collision_index,
+            flip=flip,
+            photometric=photometric,
+            tracking=self.tracking,
+            generator=generator,
+        )
 
 
 def joint_collate(items):
-    """Pad local features; keep RGB paths on the host and decode on demand."""
+    """Pad every temporal tensor, including the shared augmented RGB stack."""
     max_time = max(len(item["time_valid"]) for item in items)
     output = {}
     for name in (
-        "scene_features",
-        "roi_features",
+        "rgb",
+        "roi_boxes",
         "geometry",
         "object_valid",
         "time_valid",
@@ -140,6 +281,7 @@ def joint_collate(items):
     for name in ("entry_index", "collision_index", "entry_side", "evasion"):
         if name in items[0]:
             output[name] = torch.tensor([item[name] for item in items])
-    for name in ("frame_ids", "frame_paths", "sample_id", "source_id"):
-        output[name] = [item[name] for item in items]
+    for name in ("frame_ids", "sample_id", "source_id", "track_ids", "flipped"):
+        if name in items[0]:
+            output[name] = [item[name] for item in items]
     return output

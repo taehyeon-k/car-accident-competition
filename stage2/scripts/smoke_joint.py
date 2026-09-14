@@ -1,4 +1,4 @@
-"""Real frozen-backbone joint smoke: local cache, update, validation, resume, inference."""
+"""Online LoRA joint smoke: one real update, validation, resume and inference."""
 
 import argparse
 import json
@@ -7,7 +7,6 @@ from pathlib import Path
 import torch
 from accelerate import Accelerator
 
-from stage2.data.cache_joint_features import cache_manifest
 from stage2.joint_test import cache_item, predict
 from stage2.trainer.trainer import Trainer
 from stage2.utils.utils import load_config, read_manifest
@@ -23,9 +22,7 @@ def main():
     output = Path(args.output_dir).resolve()
     output.mkdir(parents=True, exist_ok=True)
     config["output_dir"] = str(output)
-    config["data"].update(
-        feature_dir=str(output / "local_cache"), batch_size=1, num_workers=0
-    )
+    config["data"].update(batch_size=1, num_workers=0)
     config["model"]["dino_batch_size"] = 8
     config["optimization"].update(
         epochs=1,
@@ -39,7 +36,6 @@ def main():
         path = output / f"{key}.jsonl"
         path.write_text(json.dumps(row) + "\n")
         config["data"][key] = str(path)
-        cache_manifest(config, str(path), args.device)
     accelerator = Accelerator(
         cpu=args.device == "cpu",
         gradient_accumulation_steps=1,
@@ -51,16 +47,36 @@ def main():
     trainer.build()
     system = accelerator.unwrap_model(trainer.model)
     before = system.head.global_projection[0].weight.detach().clone()
+    dino_lora = {
+        name: p.detach().clone()
+        for name, p in system.local_visual.named_parameters()
+        if p.requires_grad
+    }
+    vjepa_lora = {
+        name: p.detach().clone()
+        for name, p in system.global_visual.named_parameters()
+        if p.requires_grad
+    }
     if args.device == "cuda":
         torch.cuda.reset_peak_memory_stats()
     trainer.train_loop()
     assert trainer.step == 1
     assert not torch.equal(before, system.head.global_projection[0].weight)
+    # Adapters must move; every pretrained base weight must stay frozen.
+    for group, saved in (("dino", dino_lora), ("vjepa", vjepa_lora)):
+        assert saved, f"{group} has no trainable LoRA parameters"
+        current = dict(
+            (
+                system.local_visual if group == "dino" else system.global_visual
+            ).named_parameters()
+        )
+        assert any(
+            not torch.equal(value, current[name].detach())
+            for name, value in saved.items()
+        ), f"{group} LoRA parameters did not update"
     assert all(
-        p.grad is None and not p.requires_grad
-        for p in system.global_visual.parameters()
+        not p.requires_grad for name, p in system.named_parameters() if ".base." in name
     )
-    assert not system.global_visual.encoder.training
     assert trainer.load(str(output / "last.pt")) == 1
     row = read_manifest(config["data"]["val_manifest"])[0]
     for key in (
@@ -72,7 +88,7 @@ def main():
     ):
         row.pop(key, None)
     prediction = predict(
-        system.eval(), cache_item(row, Path(config["data"]["feature_dir"])), args.device
+        system.eval(), cache_item(row, config.get("tracking", {})), args.device
     )
     assert prediction["entry_frame"] <= prediction["collision_frame"]
     report = {
@@ -83,7 +99,9 @@ def main():
         "peak_cuda_bytes": (
             torch.cuda.max_memory_allocated() if args.device == "cuda" else None
         ),
-        "frozen_vjepa": True,
+        "frozen_base_weights": True,
+        "dino_lora_parameters": sum(p.numel() for p in dino_lora.values()),
+        "vjepa_lora_parameters": sum(p.numel() for p in vjepa_lora.values()),
         "projection_updated": True,
         "resume_epoch": 1,
     }

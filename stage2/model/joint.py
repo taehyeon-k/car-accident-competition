@@ -1,6 +1,10 @@
 """Single-stage local/global Stage 2 event spotter.
 
-DINO features are cached; frozen V-JEPA runs online in JointSystem.
+DINOv3 and V-JEPA run online with LoRA in JointSystem; every module here is
+randomly initialised, so its width and depth are the part of the model that can
+overfit 251 labelled videos. All dimensions are configurable and default to the
+narrow setting: 256-D hidden, four heads, one spatial layer, one hybrid temporal
+block.
 """
 
 from __future__ import annotations
@@ -11,18 +15,66 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
+from .joint_tracking import GEOMETRY_DIM
 from .modules import Transformer
+
+SCENE_TOKENS = 17
+
+HEAD_DEFAULTS = {
+    "hidden_dim": 256,
+    "roi_dim": 192,
+    "geometry_embedding_dim": 64,
+    "spatial": {"layers": 1, "heads": 4, "ffn_dim": 768, "dropout": 0.10},
+    "temporal": {"hybrid_blocks": 1, "heads": 4, "ffn_dim": 768, "dropout": 0.10},
+    "attribute_hidden_dim": 64,
+    "attribute_dropout": 0.15,
+}
+
+
+def head_config(config: dict | None = None) -> dict:
+    """Resolve and validate the joint head's dimensions."""
+    config = config or {}
+    resolved = {}
+    for key, default in HEAD_DEFAULTS.items():
+        value = config.get(key, default)
+        resolved[key] = (
+            {**default, **(value or {})} if isinstance(default, dict) else value
+        )
+    hidden = int(resolved["hidden_dim"])
+    roi, geometry = int(resolved["roi_dim"]), int(resolved["geometry_embedding_dim"])
+    if hidden < 1:
+        raise ValueError("hidden_dim must be positive")
+    # The object token is the concatenation of appearance and geometry, so the two
+    # must add up exactly rather than being reconciled by a projection.
+    if roi + geometry != hidden:
+        raise ValueError(
+            f"roi_dim + geometry_embedding_dim must equal hidden_dim "
+            f"({roi} + {geometry} != {hidden})"
+        )
+    for section in ("spatial", "temporal"):
+        heads = int(resolved[section]["heads"])
+        if heads < 1 or hidden % heads:
+            raise ValueError(
+                f"hidden_dim ({hidden}) must be divisible by {section}.heads ({heads})"
+            )
+    if int(resolved["spatial"]["layers"]) != 1:
+        raise ValueError("The spatial stack is exactly one layer")
+    if int(resolved["temporal"]["hybrid_blocks"]) < 1:
+        raise ValueError("temporal.hybrid_blocks must be at least one")
+    resolved["hidden_dim"], resolved["roi_dim"] = hidden, roi
+    resolved["geometry_embedding_dim"] = geometry
+    return resolved
 
 
 class MaskedDilatedConv(nn.Module):
-    def __init__(self, dilation: int) -> None:
+    def __init__(self, dilation: int, dim: int = 256, dropout: float = 0.1) -> None:
         super().__init__()
-        self.norm = nn.LayerNorm(384)
+        self.norm = nn.LayerNorm(dim)
         self.depthwise = nn.Conv1d(
-            384, 384, 5, padding=2 * dilation, dilation=dilation, groups=384
+            dim, dim, 5, padding=2 * dilation, dilation=dilation, groups=dim
         )
-        self.pointwise = nn.Conv1d(384, 384, 1)
-        self.dropout = nn.Dropout(0.1)
+        self.pointwise = nn.Conv1d(dim, dim, 1)
+        self.dropout = nn.Dropout(dropout)
 
     def forward(self, x: torch.Tensor, valid: torch.Tensor) -> torch.Tensor:
         clean = self.norm(x).masked_fill(~valid[..., None], 0)
@@ -34,32 +86,44 @@ class MaskedDilatedConv(nn.Module):
 class HybridTemporalBlock(nn.Module):
     """Windowed MHSA in parallel with three depthwise temporal scales."""
 
-    def __init__(self, radius=16):
+    def __init__(self, radius=16, dim=256, heads=4, ffn_dim=768, dropout=0.1):
         super().__init__()
         if not isinstance(radius, int) or radius < 0:
             raise ValueError("Attention radius must be a nonnegative integer")
+        if dim % heads:
+            raise ValueError("Temporal dim must be divisible by the head count")
         self.radius = radius
-        self.norm = nn.LayerNorm(384)
-        self.qkv = nn.Linear(384, 1152)
-        self.attention_out = nn.Linear(384, 384)
-        self.relative_bias = nn.Parameter(torch.zeros(6, 2 * radius + 1))
+        self.dim = dim
+        self.heads = heads
+        self.head_dim = dim // heads
+        self.norm = nn.LayerNorm(dim)
+        self.qkv = nn.Linear(dim, 3 * dim)
+        self.attention_out = nn.Linear(dim, dim)
+        self.relative_bias = nn.Parameter(torch.zeros(heads, 2 * radius + 1))
         self.convs = nn.ModuleList(
             [
-                nn.Conv1d(384, 384, 5, padding=2 * d, dilation=d, groups=384)
+                nn.Conv1d(dim, dim, 5, padding=2 * d, dilation=d, groups=dim)
                 for d in (1, 2, 4)
             ]
         )
-        self.conv_projection = nn.Linear(1152, 384)
-        self.dropout = nn.Dropout(0.1)
-        self.ffn_norm = nn.LayerNorm(384)
+        self.conv_projection = nn.Linear(3 * dim, dim)
+        self.dropout = nn.Dropout(dropout)
+        self.ffn_norm = nn.LayerNorm(dim)
         self.ffn = nn.Sequential(
-            nn.Linear(384, 1536), nn.GELU(), nn.Dropout(0.1), nn.Linear(1536, 384)
+            nn.Linear(dim, ffn_dim),
+            nn.GELU(),
+            nn.Dropout(dropout),
+            nn.Linear(ffn_dim, dim),
         )
 
     def forward(self, x, valid):
         clean = self.norm(x).masked_fill(~valid[..., None], 0)
         batch, length, _ = x.shape
-        q, k, v = self.qkv(clean).reshape(batch, length, 3, 6, 64).unbind(2)
+        q, k, v = (
+            self.qkv(clean)
+            .reshape(batch, length, 3, self.heads, self.head_dim)
+            .unbind(2)
+        )
         window = 2 * self.radius + 1
 
         def neighbors(value):
@@ -67,7 +131,9 @@ class HybridTemporalBlock(nn.Module):
             return value.unfold(1, window, 1).permute(0, 2, 1, 4, 3)
 
         keys, values = neighbors(k), neighbors(v)
-        scores = torch.einsum("bthd,bhtwd->bhtw", q, keys).float() / 8
+        scores = torch.einsum("bthd,bhtwd->bhtw", q, keys).float() / math.sqrt(
+            self.head_dim
+        )
         scores = scores + self.relative_bias[None, :, None, :]
         allowed = F.pad(valid, (self.radius, self.radius)).unfold(1, window, 1)
         # Padded queries get one harmless key, then their outputs are cleared.
@@ -76,7 +142,7 @@ class HybridTemporalBlock(nn.Module):
         attention = torch.softmax(scores.masked_fill(~allowed[:, None], -torch.inf), -1)
         attention = self.dropout(attention).to(values.dtype)
         context = torch.einsum("bhtw,bhtwd->bthd", attention, values).reshape(
-            batch, length, 384
+            batch, length, self.dim
         )
         conv = torch.cat(
             [
@@ -95,12 +161,16 @@ class HybridTemporalBlock(nn.Module):
 class EventSpatialAttention(nn.Module):
     """An event query attends to 16 scene cells and 12 persistent objects."""
 
-    def __init__(self):
+    def __init__(self, dim: int = 256, heads: int = 4, dropout: float = 0.1):
         super().__init__()
-        self.query_norm = nn.LayerNorm(384)
-        self.token_norm = nn.LayerNorm(384)
-        self.attention = nn.MultiheadAttention(384, 6, dropout=0.1, batch_first=True)
-        self.out_norm = nn.LayerNorm(384)
+        if dim % heads:
+            raise ValueError("Event attention dim must be divisible by the head count")
+        self.query_norm = nn.LayerNorm(dim)
+        self.token_norm = nn.LayerNorm(dim)
+        self.attention = nn.MultiheadAttention(
+            dim, heads, dropout=dropout, batch_first=True
+        )
+        self.out_norm = nn.LayerNorm(dim)
 
     def forward(self, probability, hidden, tokens, valid):
         weights = probability.detach().float()
@@ -122,18 +192,21 @@ class EventSpatialAttention(nn.Module):
 class TemporalCrossAttention(nn.Module):
     """Local queries retrieve sparse global context with signed time bias."""
 
-    def __init__(self, heads: int = 6) -> None:
+    def __init__(self, dim: int = 256, heads: int = 4) -> None:
         super().__init__()
+        if dim % heads:
+            raise ValueError("Fusion dim must be divisible by the head count")
+        self.dim = dim
         self.heads = heads
-        self.head_dim = 384 // heads
-        self.local_norm = nn.LayerNorm(384)
-        self.global_norm = nn.LayerNorm(384)
-        self.q = nn.Linear(384, 384)
-        self.k = nn.Linear(384, 384)
-        self.v = nn.Linear(384, 384)
-        self.out = nn.Linear(384, 384)
+        self.head_dim = dim // heads
+        self.local_norm = nn.LayerNorm(dim)
+        self.global_norm = nn.LayerNorm(dim)
+        self.q = nn.Linear(dim, dim)
+        self.k = nn.Linear(dim, dim)
+        self.v = nn.Linear(dim, dim)
+        self.out = nn.Linear(dim, dim)
         self.time_mlp = nn.Sequential(nn.Linear(3, 32), nn.GELU(), nn.Linear(32, heads))
-        self.gate = nn.Linear(768, 1)
+        self.gate = nn.Linear(2 * dim, 1)
         nn.init.zeros_(self.gate.weight)
         nn.init.constant_(self.gate.bias, -2.0)
 
@@ -165,7 +238,7 @@ class TemporalCrossAttention(nn.Module):
         scores = scores.masked_fill(~global_valid[:, None, None, :], -torch.inf)
         attention = torch.softmax(scores, dim=-1).to(v.dtype)
         context = torch.einsum("bhtg,bghd->bthd", attention, v).reshape(
-            batch, length, 384
+            batch, length, self.dim
         )
         context = self.out(context)
         gate = torch.sigmoid(self.gate(torch.cat((local, context), dim=-1)))
@@ -175,43 +248,82 @@ class TemporalCrossAttention(nn.Module):
 class JointStage2Model(nn.Module):
     """Consume compact frozen features and predict every Stage 2 target."""
 
-    def __init__(self, geometry_dim: int = 13, temporal_radius: int = 16) -> None:
+    def __init__(
+        self,
+        geometry_dim: int = GEOMETRY_DIM,
+        temporal_radius: int = 16,
+        config: dict | None = None,
+    ) -> None:
         super().__init__()
-        self.scene_projection = nn.Sequential(nn.Linear(768, 384), nn.LayerNorm(384))
-        self.roi_projection = nn.Sequential(nn.Linear(768, 256), nn.LayerNorm(256))
+        settings = head_config(config)
+        hidden = settings["hidden_dim"]
+        roi_dim = settings["roi_dim"]
+        geometry_embedding = settings["geometry_embedding_dim"]
+        spatial, temporal = settings["spatial"], settings["temporal"]
+        self.settings = settings
+        self.hidden_dim = hidden
+
+        self.scene_projection = nn.Sequential(
+            nn.Linear(768, hidden), nn.LayerNorm(hidden)
+        )
+        self.roi_projection = nn.Sequential(
+            nn.Linear(768, roi_dim), nn.LayerNorm(roi_dim)
+        )
+        # A deliberately small geometry embedding: nine scalars do not need width.
         self.geometry_projection = nn.Sequential(
-            nn.Linear(geometry_dim, 64),
-            nn.LayerNorm(64),
+            nn.Linear(geometry_dim, geometry_embedding // 2),
+            nn.LayerNorm(geometry_embedding // 2),
             nn.GELU(),
-            nn.Linear(64, 128),
-            nn.LayerNorm(128),
+            nn.Linear(geometry_embedding // 2, geometry_embedding),
+            nn.LayerNorm(geometry_embedding),
         )
-        self.scene_positions = nn.Parameter(torch.randn(17, 384) / math.sqrt(384))
-        self.spatial = Transformer(num_layers=1)
-        self.global_projection = nn.Sequential(nn.Linear(1024, 384), nn.LayerNorm(384))
-        self.fusion = TemporalCrossAttention()
+        self.scene_positions = nn.Parameter(
+            torch.randn(SCENE_TOKENS, hidden) / math.sqrt(hidden)
+        )
+        self.spatial = Transformer(
+            num_layers=spatial["layers"],
+            d_model=hidden,
+            heads=spatial["heads"],
+            ffn_dim=spatial["ffn_dim"],
+            dropout=spatial["dropout"],
+        )
+        self.global_projection = nn.Sequential(
+            nn.Linear(1024, hidden), nn.LayerNorm(hidden)
+        )
+        self.fusion = TemporalCrossAttention(hidden, temporal["heads"])
         self.temporal = nn.ModuleList(
-            [HybridTemporalBlock(temporal_radius) for _ in range(2)]
-            + [MaskedDilatedConv(1)]
+            [
+                HybridTemporalBlock(
+                    temporal_radius,
+                    dim=hidden,
+                    heads=temporal["heads"],
+                    ffn_dim=temporal["ffn_dim"],
+                    dropout=temporal["dropout"],
+                )
+                for _ in range(temporal["hybrid_blocks"])
+            ]
+            + [MaskedDilatedConv(1, dim=hidden, dropout=temporal["dropout"])]
         )
-        self.entry_head = self._event_head()
-        self.collision_head = self._event_head()
-        self.entry_spatial = EventSpatialAttention()
-        self.collision_spatial = EventSpatialAttention()
-        self.side_head = self._attribute_head(384, 2)
-        self.evasion_head = self._attribute_head(384, 1)
+        self.entry_head = self._event_head(hidden, settings["attribute_hidden_dim"])
+        self.collision_head = self._event_head(hidden, settings["attribute_hidden_dim"])
+        self.entry_spatial = EventSpatialAttention(hidden, temporal["heads"])
+        self.collision_spatial = EventSpatialAttention(hidden, temporal["heads"])
+        self.side_head = self._attribute_head(hidden, 2, settings)
+        self.evasion_head = self._attribute_head(hidden, 1, settings)
 
     @staticmethod
-    def _event_head() -> nn.Module:
-        return nn.Sequential(nn.Linear(384, 128), nn.GELU(), nn.Linear(128, 1))
-
-    @staticmethod
-    def _attribute_head(input_dim: int, output_dim: int) -> nn.Module:
+    def _event_head(input_dim: int, hidden_dim: int) -> nn.Module:
         return nn.Sequential(
-            nn.Linear(input_dim, 128),
+            nn.Linear(input_dim, hidden_dim), nn.GELU(), nn.Linear(hidden_dim, 1)
+        )
+
+    @staticmethod
+    def _attribute_head(input_dim: int, output_dim: int, settings: dict) -> nn.Module:
+        return nn.Sequential(
+            nn.Linear(input_dim, settings["attribute_hidden_dim"]),
             nn.GELU(),
-            nn.Dropout(0.1),
-            nn.Linear(128, output_dim),
+            nn.Dropout(settings["attribute_dropout"]),
+            nn.Linear(settings["attribute_hidden_dim"], output_dim),
         )
 
     @staticmethod
@@ -235,13 +347,14 @@ class JointStage2Model(nn.Module):
         objects = objects.masked_fill(~object_valid[..., None], 0)
         tokens = torch.cat((scene, objects), dim=2)
         spatial_valid = torch.cat(
-            (valid[..., None].expand(-1, -1, 17), object_valid), dim=2
+            (valid[..., None].expand(-1, -1, SCENE_TOKENS), object_valid), dim=2
         )
         batch_size, length = valid.shape
+        tokens_per_frame = tokens.shape[2]
         spatial = self.spatial(
-            tokens.reshape(batch_size * length, 29, 384),
-            spatial_valid.reshape(batch_size * length, 29),
-        ).reshape(batch_size, length, 29, 384)
+            tokens.reshape(batch_size * length, tokens_per_frame, self.hidden_dim),
+            spatial_valid.reshape(batch_size * length, tokens_per_frame),
+        ).reshape(batch_size, length, tokens_per_frame, self.hidden_dim)
         local = spatial[:, :, 0]
 
         if not batch["global_valid"].any(1).all():

@@ -3,6 +3,19 @@
 import numpy as np
 import torch
 
+GEOMETRY_CHANNELS = (
+    "center_x",
+    "bottom_y",
+    "width",
+    "height",
+    "dx_per_frame",
+    "dy_per_frame",
+    "log_area_growth_per_frame",
+    "detection_confidence",
+    "track_continuity",
+)
+GEOMETRY_DIM = len(GEOMETRY_CHANNELS)
+
 
 def ego_lane_score(x, y):
     y = float(np.clip(y, 0, 1))
@@ -27,9 +40,10 @@ def object_tensors(
 ):
     """Select tracks once per video. Motion geometry uses frames, never FPS.
 
-    Geometry: x, bottom-y, width, height, area, proximity, proximity rank,
-    log-area delta, log-area/frame, signed x/frame, signed y/frame, confidence,
-    continuity. Ranking uses an absolute least-squares x slope over <=5 observations.
+    Geometry is the nine bbox/tracking channels named in ``GEOMETRY_CHANNELS``.
+    Track ranking additionally uses ego-lane position, an absolute least-squares
+    x slope over <=5 observations, positive growth and confidence; those ranking
+    statistics are kept separate from the emitted geometry token.
     """
     if not 0 <= track_percentile <= 100:
         raise ValueError("track_percentile must be in [0, 100]")
@@ -45,14 +59,13 @@ def object_tensors(
             x, y = (x1 + x2) / (2 * width), (y1 + y2) / (2 * height)
             bw, bh = (x2 - x1) / width, (y2 - y1) / height
             area = float(bw * bh)
-            dx = dy = dlog = growth = 0.0
+            dx = dy = growth = 0.0
             motion = None
             if history:
                 pt, px, py, pa = history[-1]
                 dt = max(t - pt, 1)
                 dx, dy = (x - px) / dt, (y - py) / dt
-                dlog = float(np.log(area + 1e-8) - np.log(pa + 1e-8))
-                growth = dlog / dt
+                growth = float(np.log(area + 1e-8) - np.log(pa + 1e-8)) / dt
                 recent = history[-4:] + [(t, x, y, area)]
                 frames = np.asarray([h[0] for h in recent], dtype=np.float64)
                 xs = np.asarray([h[1] for h in recent], dtype=np.float64)
@@ -63,22 +76,32 @@ def object_tensors(
                 )
                 motion_values.append(motion)
                 growth_values.append(max(growth, 0.0))
+            confidence = float(detection.score)
             values = [
                 x,
                 y2 / height,
                 bw,
                 bh,
-                area,
-                float(np.clip((detection.proximity or 0.0) / 5, -1, 1)),
-                0.0,
-                float(np.clip(dlog, -2, 2)),
-                float(np.clip(growth, -5, 5)),
                 float(np.clip(dx, -5, 5)),
                 float(np.clip(dy, -5, 5)),
-                float(detection.score),
+                float(np.clip(growth, -5, 5)),
+                confidence,
                 min(1.0, (len(history) + 1) / 5),
             ]
-            records.append((t, box, values, motion, max(growth, 0.0), bool(history)))
+            # Ranking statistics travel beside the token, not inside it.
+            records.append(
+                (
+                    t,
+                    box,
+                    values,
+                    motion,
+                    max(growth, 0.0),
+                    bool(history),
+                    confidence,
+                    x,
+                    y2 / height,
+                )
+            )
             history.append((t, x, y, area))
         if records:
             observations[track.id] = records
@@ -88,9 +111,9 @@ def object_tensors(
 
     def track_score(track_id):
         scores = []
-        for _, _, values, motion, growth, has_history in observations[track_id]:
-            confidence = float(np.clip((values[11] - 0.2) / 0.8, 0, 1))
-            numerator = 0.2 * confidence + 0.4 * ego_lane_score(values[0], values[1])
+        for *_, motion, growth, has_history, score, x, bottom in observations[track_id]:
+            confidence = float(np.clip((score - 0.2) / 0.8, 0, 1))
+            numerator = 0.2 * confidence + 0.4 * ego_lane_score(x, bottom)
             denominator = 0.6
             if has_history:
                 numerator += 0.3 * percentile_rank(
@@ -105,7 +128,7 @@ def object_tensors(
 
     selected = sorted(observations, key=lambda i: (-track_score(i), i))[:max_objects]
     boxes = torch.zeros(len(sizes), max_objects, 4)
-    geometry = torch.zeros(len(sizes), max_objects, 13)
+    geometry = torch.zeros(len(sizes), max_objects, len(GEOMETRY_CHANNELS))
     valid = torch.zeros(len(sizes), max_objects, dtype=torch.bool)
     track_ids = torch.full((max_objects,), -1, dtype=torch.long)
     for slot, track_id in enumerate(selected):
@@ -114,17 +137,5 @@ def object_tensors(
             boxes[t, slot] = torch.from_numpy(box)
             geometry[t, slot] = torch.tensor(values)
             valid[t, slot] = True
-    for t in range(len(sizes)):
-        indices = valid[t].nonzero().flatten()
-        proximity = geometry[t, indices, 5]
-        for index, value in zip(indices, proximity):
-            # Equal proximity gets equal rank; singleton is neutral.
-            less = (proximity < value).sum().item()
-            equal = (proximity == value).sum().item()
-            geometry[t, index, 6] = (
-                (less + (equal - 1) / 2) / (len(indices) - 1)
-                if len(indices) > 1
-                else 0.5
-            )
     result = (boxes, geometry, valid)
     return (*result, track_ids) if return_track_ids else result

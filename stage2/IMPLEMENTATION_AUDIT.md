@@ -1,3 +1,6 @@
+> **Update (2026-09-14):** this audit covers the coarse/fine cascade, which has
+> been deleted along with Depth Anything. It is retained as history only.
+>
 > **Joint-model update (2026-09-13):** The current single-stage joint path is
 > documented in [JOINT.md](JOINT.md) and [Stage2_code_modifications.md](Stage2_code_modifications.md).
 > The coarse/fine architecture and historical checks below describe the earlier pipeline.

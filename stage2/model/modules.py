@@ -9,19 +9,25 @@ import torch.nn.functional as F
 
 
 class Transformer(nn.Module):
-    """Pre-LN 384D Transformer encoder accepting a validity mask."""
+    """Pre-LN Transformer encoder accepting a validity mask."""
 
     def __init__(
         self,
         num_layers: int,
+        d_model: int = 256,
+        heads: int = 4,
+        ffn_dim: int = 768,
+        dropout: float = 0.1,
     ) -> None:
         super().__init__()
+        if d_model % heads:
+            raise ValueError("Transformer d_model must be divisible by the head count")
 
         layer = nn.TransformerEncoderLayer(
-            d_model=384,
-            nhead=6,
-            dim_feedforward=1536,
-            dropout=0.1,
+            d_model=d_model,
+            nhead=heads,
+            dim_feedforward=ffn_dim,
+            dropout=dropout,
             activation="gelu",
             batch_first=True,
             norm_first=True,
@@ -29,7 +35,7 @@ class Transformer(nn.Module):
         self.encoder = nn.TransformerEncoder(
             layer,
             num_layers,
-            nn.LayerNorm(384),
+            nn.LayerNorm(d_model),
             enable_nested_tensor=False,
         )
 
@@ -63,133 +69,6 @@ class Transformer(nn.Module):
                 src_key_padding_mask=~valid[active_rows],
             )
         return output.masked_fill(
-            ~valid[..., None],
-            0,
-        )
-
-
-def sinusoidal(
-    valid: torch.Tensor,
-    *,
-    coarse: bool = False,
-) -> torch.Tensor:
-    """Fixed 384D encoding of normalized local sequence position.
-
-    The position is index-based only; it never encodes FPS or physical time.
-    """
-    batch, length = valid.shape
-    position = torch.arange(
-        length,
-        device=valid.device,
-        dtype=torch.float32,
-    )
-    position = position.unsqueeze(0).expand(
-        batch,
-        -1,
-    )
-    # Coarse positions use the full tubelet grid even when some bins are empty.
-    # Fine positions instead use the number of native frames in this window.
-    denominator = (
-        max(1, length - 1)
-        if coarse
-        else (
-            valid.sum(
-                dim=1,
-                keepdim=True,
-            )
-            - 1
-        ).clamp_min(1)
-    )
-    position = position / denominator
-
-    frequencies = torch.exp(
-        torch.arange(
-            0,
-            384,
-            2,
-            device=valid.device,
-        )
-        * (-math.log(10000.0) / 384)
-    )
-    encoding = torch.zeros(
-        batch,
-        length,
-        384,
-        device=valid.device,
-    )
-    encoding[..., 0::2] = torch.sin(position[..., None] * frequencies)
-    encoding[..., 1::2] = torch.cos(position[..., None] * frequencies)
-    return encoding
-
-
-class VideoPool(nn.Module):
-    """Learned-query attention pooling over valid coarse temporal states."""
-
-    def __init__(self) -> None:
-        super().__init__()
-        self.query = nn.Parameter(torch.randn(384) / math.sqrt(384))
-
-    def forward(
-        self,
-        states: torch.Tensor,
-        valid: torch.Tensor,
-    ) -> torch.Tensor:
-        attention_logits = states @ self.query
-        attention_logits = attention_logits.masked_fill(
-            ~valid,
-            -torch.inf,
-        )
-        attention = torch.softmax(
-            attention_logits,
-            dim=-1,
-        )
-        return (attention[..., None] * states).sum(dim=1)
-
-
-class ResidualTemporalConv(nn.Module):
-    """Masked depthwise-separable temporal convolution with residual connection."""
-
-    def __init__(
-        self,
-        kernel_size: int,
-    ) -> None:
-        super().__init__()
-        self.depthwise = nn.Conv1d(
-            384,
-            384,
-            kernel_size,
-            padding=kernel_size // 2,
-            groups=384,
-        )
-        self.pointwise = nn.Conv1d(
-            384,
-            384,
-            kernel_size=1,
-        )
-        self.dropout = nn.Dropout(0.1)
-
-    def forward(
-        self,
-        states: torch.Tensor,
-        valid: torch.Tensor,
-    ) -> torch.Tensor:
-        # Re-mask before and after convolution so temporal padding cannot leak.
-        states = states.masked_fill(
-            ~valid[..., None],
-            0,
-        )
-        convolved = self.depthwise(
-            states.transpose(
-                1,
-                2,
-            )
-        )
-        convolved = self.pointwise(convolved).transpose(
-            1,
-            2,
-        )
-        convolved = self.dropout(F.gelu(convolved))
-        return (states + convolved).masked_fill(
             ~valid[..., None],
             0,
         )

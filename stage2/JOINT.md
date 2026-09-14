@@ -1,12 +1,26 @@
 # Joint Stage 2 model
 
-The joint path implements `Stage2_code_modifications.md`, with the user's
-2026-09-13 correction: **V-JEPA temporal sampling uses no FPS**. The older
-coarse/fine modules are separate from this training path.
+The joint path implements `Stage2_code_modifications.md`, with the 2026-09-13
+correction (**V-JEPA temporal sampling uses no FPS**), the 2026-09-14 removal of
+Depth Anything, and the 2026-09-14 switch to **online DINOv3 + V-JEPA training
+with LoRA**. The joint model is the only Stage 2 training path.
+
+## Training summary
+
+Both visual backbones run online with every pretrained weight frozen; only LoRA
+adapters on their last few attention blocks and the joint head train. No DINO or
+V-JEPA feature is ever cached, because a cached feature would be stale the moment
+an adapter updates. RF-DETR stays frozen and fully offline: its per-frame boxes,
+classes and scores are the only cache, and even those are re-tracked inside each
+sampled crop so a crop's first frame cannot inherit motion from before it.
 
 ## Data and model
 
-- Cache RF-DETR/depth observations once. Associate tracks over the complete video.
+- Cache RF-DETR observations once on the original frames. There is no depth model
+  anywhere in Stage 2, and RF-DETR never runs during training.
+- Tracking, ranking and geometry are rebuilt **per crop** from the cached boxes,
+  so `dx`, `dy`, log-area growth and continuity only ever see frames inside the
+  sampled window.
 - Rank observations by confidence (0.20), approximate ego-lane proximity (0.40),
   absolute lateral-motion percentile (0.30), and positive-growth percentile (0.10).
   Missing motion/history terms are excluded and remaining weights renormalized.
@@ -16,13 +30,40 @@ coarse/fine modules are separate from this training path.
 - Select the top 12 tracks by their 90th-percentile observation priority
   (`tracking.track_percentile`), breaking ties by track ID. Slots are fixed for the
   full video and its crops, with absent objects zero-filled and masked. The cache
-  stores `track_ids`. All 13 geometry channels use index-based motion, never FPS.
-- Cache DINOv3 CLS + a 4×4 scene grid, and ROIs scattered into their persistent
-  track slots. The spatial Transformer processes 29 tokens per frame.
-- Each training crop independently samples `start ∈ [0, entry]` and
-  `stop ∈ [collision+1, T]`. Both labels and all local tensors remain aligned.
-  Validation and inference use the full supplied video.
-- Run frozen V-JEPA online on clean RGB inside that crop. Each clip has 16 frames
+  stores `track_ids`. All nine geometry channels use index-based motion, never FPS.
+- The geometry token is nine bbox/tracking channels, in this order: `center_x`,
+  `bottom_y`, `width`, `height`, `dx_per_frame`, `dy_per_frame`,
+  `log_area_growth_per_frame`, `detection_confidence`, `track_continuity`
+  (`GEOMETRY_CHANNELS` in `model/joint_tracking.py`). Depth proximity, its rank,
+  raw bbox area and the raw per-observation log-area delta were removed; the
+  per-frame growth rate already carries the looming signal. Track *ranking* still
+  uses ego-lane position, absolute lateral motion, positive growth and confidence,
+  but those statistics are computed beside the token rather than inside it.
+- The object token is still DINO ROI appearance combined with the geometry
+  embedding, which now projects nine channels instead of thirteen.
+- DINOv3 runs online and produces the CLS + 4×4 scene grid and the ROIAlign
+  object features from the current adapter weights. The spatial Transformer still
+  processes 29 tokens per frame.
+- Temporal policy: **70%** of training samples use the complete original video,
+  **15%** take an ordinary event-preserving crop, and **15%** take the synthetic
+  "ENTRY happened before the video started" case. Ordinary crops vary the context
+  on each side independently so neither event sits a fixed distance from a
+  boundary. The pre-video case starts within 0.3 s *after* the real ENTRY, relabels
+  the first visible frame as ENTRY, keeps the real COLLISION at its crop-relative
+  position, and preserves `entry_side` and `evasion_space`. A mode whose
+  preconditions fail (COLLISION would leave the crop, or the crop would be shorter
+  than 16 frames) falls back to the full video instead of degrading silently.
+  Validation and inference always use the full supplied video with no augmentation.
+- Augmentation is drawn **once per clip** and applied identically to every frame,
+  so DINOv3 and V-JEPA always see the same pixels and no photometric flicker is
+  introduced. A horizontal flip mirrors the frames and the cached detector boxes
+  (`[x1,y1,x2,y2] -> [W-x2,y1,W-x1,y2]`) before tracking, which makes
+  `center_x -> 1-center_x` and `dx -> -dx` fall out automatically and keeps track
+  identities; it swaps `entry_side` and leaves ENTRY, COLLISION and
+  `evasion_space` untouched. Photometric strength (brightness, contrast, gamma,
+  saturation, JPEG, blur, noise) is sampled once, including the colour order and
+  the noise standard deviation. Every probability and range is set in YAML.
+- V-JEPA reads the same augmented frames. Each clip has 16 frames
   at stride 4 (61-frame span), clip starts are spaced by 48 frames, and a final
   end-aligned clip covers the tail. For fewer than 61 frames, use 16 rounded
   linspace positions, including repeats when necessary. There is no temporal-rate,
@@ -83,23 +124,29 @@ git -C /workspace/pretrained/dinov3-source checkout 6876159a11b4df116f30f667f8c9
 Factories load local checkpoints strictly; model execution does not download
 weights. Keep the source repository's DINOv3 license with it.
 
-The new local cache is **schema 2** under `/workspace/cache/joint_features_v2`.
-Schema-1 caches cannot provide the new scene grid and selected ROIs. Regenerate
-local features before training; existing compatible detector/depth observations
-can be reused. Start a new training run; old joint checkpoints are not migrated.
+Only the frozen RF-DETR detections are cached. They are **schema 2** (no depth
+channels) and carry that version in each `geometry_dir/metadata.pt`; a schema-1
+cache is rejected with an explicit message. There is no DINO/V-JEPA feature cache
+any more, so no visual feature can go stale against an updated adapter.
+
+LoRA settings live under `model:` (`lora_rank`, `lora_alpha`, `lora_dropout`,
+`dino_lora_blocks`, `vjepa_lora_blocks`) and the three learning rates under
+`optimization:` (`dino_lora_lr`, `vjepa_lora_lr`, `new_lr`). Inference rebuilds
+the adapters on the frozen local pretrained backbones and loads the trained
+weights onto them; `model/lora.py:merge_lora` can fold adapters into plain
+`nn.Linear` layers for deployment.
 
 From `/workspace/car-accident`, in `/venv/main`:
 
 ```bash
 export PYTHONDONTWRITEBYTECODE=1 HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1
-python -m stage2.data.cache_joint_features --config stage2/configs/joint.workspace.yaml --manifest /workspace/data/stage2/manifests/all.jsonl --device cuda
 python -m stage2.run --config stage2/configs/joint.workspace.yaml
-python -m stage2.joint_test --checkpoint runs/joint/best.pt --manifest /path/to/test.jsonl --feature-dir /workspace/cache/joint_features_v2 --output /path/to/predictions.jsonl --device cuda
+python -m stage2.joint_test --checkpoint runs/joint/best.pt --manifest /path/to/test.jsonl --output /path/to/predictions.jsonl --device cuda
 ```
 
-Inference requires local features for each test video and its original `frames_dir`.
-Predicted indices map back to the cache's original frame IDs. The cache builder
-also accepts unlabeled manifests without FPS.
+Inference requires each test video's `frames_dir` and its cached detections.
+Predicted indices map back to the original frame IDs. Unlabelled manifests
+without FPS are accepted.
 
 ## Verification
 

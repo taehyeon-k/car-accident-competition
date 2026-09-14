@@ -26,7 +26,7 @@ class TrackingTests(unittest.TestCase):
     def test_offline_initialization_excludes_local_paths(self):
         with tempfile.TemporaryDirectory() as directory:
             config = {
-                "stage": "coarse",
+                "stage": "joint",
                 "seed": 42,
                 "output_dir": directory,
                 "optimization": {"epochs": 2},
@@ -34,7 +34,6 @@ class TrackingTests(unittest.TestCase):
                 "model": {
                     "vjepa_checkpoint": "/private/weights.pt",
                     "vjepa_factory": "private.module:factory",
-                    "lora_rank": 8,
                 },
                 "data": {
                     "batch_size": 1,

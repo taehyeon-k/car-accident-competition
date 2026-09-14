@@ -44,40 +44,6 @@ def dino():
     return dinov3_vitb16(pretrained=False)
 
 
-def depth():
-    from transformers import (
-        DepthAnythingConfig,
-        DepthAnythingForDepthEstimation,
-        AutoImageProcessor,
-    )
-
-    class NativeDepth(DepthAnythingForDepthEstimation):
-        def forward(self, images):
-            device = next(self.parameters()).device
-            outputs = []
-            for image in images:
-                inputs = self.processor(images=image.cpu(), return_tensors="pt")
-                prediction = super().forward(**inputs.to(device)).predicted_depth
-                outputs.append(
-                    F.interpolate(
-                        prediction[:, None].float(),
-                        size=image.shape[-2:],
-                        mode="bicubic",
-                        align_corners=False,
-                    )[0, 0]
-                )
-            return outputs
-
-    config = DepthAnythingConfig.from_pretrained(
-        ASSETS / "depth_anything_v2_small", local_files_only=True
-    )
-    model = NativeDepth(config)
-    model.processor = AutoImageProcessor.from_pretrained(
-        ASSETS / "depth_anything_v2_small", local_files_only=True
-    )
-    return model
-
-
 def detector():
     from rfdetr.config import RFDETRSmallConfig
     from rfdetr.models.lwdetr import build_model_from_config

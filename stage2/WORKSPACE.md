@@ -1,3 +1,9 @@
+> **Update (2026-09-14):** Depth Anything and the entire coarse/fine cascade were
+> removed, object geometry is nine bbox/tracking channels, and DINOv3 + V-JEPA now
+> train online with LoRA on frozen bases. The joint path in [JOINT.md](JOINT.md)
+> is the only Stage 2 pipeline. Sections below that mention DINOv2, depth
+> orientation, coarse/fine configs, or unfreezing base blocks describe deleted code.
+>
 > **Joint-model update (2026-09-13):** The current single-stage joint path is
 > documented in [JOINT.md](JOINT.md) and [Stage2_code_modifications.md](Stage2_code_modifications.md).
 > The coarse/fine architecture and historical checks below describe the earlier pipeline.

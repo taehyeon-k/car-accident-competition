@@ -1,8 +1,7 @@
-"""DataLoader construction for live native-frame and cached-feature datasets."""
+"""DataLoader construction for the joint cached-feature dataset."""
 
 import torch
 from torch.utils.data import DataLoader
-from .dataset import NativeDataset, Stage2Dataset, collate
 from .joint import JointFeatureDataset, joint_collate
 
 
@@ -14,40 +13,12 @@ def get_data(
     *,
     config=None,
 ):
-    if config is not None and config["stage"] == "joint":
-        ds = JointFeatureDataset(
-            manifest,
-            config["data"]["feature_dir"],
-            training=shuffle,
-            seed=config["seed"],
-        )
-        return ds, DataLoader(
-            ds,
-            batch_size,
-            shuffle=shuffle,
-            num_workers=num_workers,
-            pin_memory=torch.cuda.is_available(),
-            persistent_workers=num_workers > 0,
-            collate_fn=joint_collate,
-        )
-    if (
-        config is not None
-        and config["model"].get(
-            "training_mode",
-            "lora",
-        )
-        == "lora"
-    ):
-        ds = NativeDataset(
-            manifest,
-            config["stage"],
-            config["tracking"],
-            shuffle,
-            config["seed"],
-            coarse_t_max=config["model"].get("T_max", 32),
-        )
-    else:
-        ds = Stage2Dataset(manifest)
+    ds = JointFeatureDataset(
+        manifest,
+        training=shuffle,
+        seed=config["seed"],
+        config=config,
+    )
     return ds, DataLoader(
         ds,
         batch_size,
@@ -55,5 +26,5 @@ def get_data(
         num_workers=num_workers,
         pin_memory=torch.cuda.is_available(),
         persistent_workers=num_workers > 0,
-        collate_fn=collate,
+        collate_fn=joint_collate,
     )

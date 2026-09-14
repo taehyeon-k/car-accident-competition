@@ -1,3 +1,8 @@
+> **Update (2026-09-14):** Depth Anything was removed from Stage 2 and the object
+> geometry vector is now nine bbox/tracking channels (no depth proximity, no
+> proximity rank, no raw area, no raw log-area delta). Depth-derived geometry
+> described below is obsolete; see `stage2/JOINT.md`.
+
 # Stage 2 Architecture Specification
 ## Dual-Branch Local–Global Precise Event Spotting for Car-Accident Understanding
 

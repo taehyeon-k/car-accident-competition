@@ -1,11 +1,11 @@
 # Stage 2 training and inference
 
-For the current **joint model** (cached DINOv3 + online frozen V-JEPA), use
-[JOINT.md](JOINT.md). The coarse/fine workflow below remains separately available.
-
-The code follows [Stage2_Architecture.md](Stage2_Architecture.md), with the
-Diffusion-ISP organization: YAML configuration, entry points, data, model, trainer,
-and utilities. See [IMPLEMENTATION_AUDIT.md](IMPLEMENTATION_AUDIT.md) for findings.
+The **joint model** (cached DINOv3 + online frozen V-JEPA) is the only Stage 2
+training path; see [JOINT.md](JOINT.md). The earlier coarse/fine cascade and its
+Depth Anything branch were removed on 2026-09-14.
+[Stage2_Architecture.md](Stage2_Architecture.md) and
+[IMPLEMENTATION_AUDIT.md](IMPLEMENTATION_AUDIT.md) describe that deleted pipeline
+and are kept only as history.
 
 For this instance, [WORKSPACE.md](WORKSPACE.md) connects the local pretrained
 weights and CSV/videos and documents the GPU smoke workflow. Full training and
@@ -36,39 +36,27 @@ download weights, but arbitrary user-provided factories must also be kept offlin
 
 ## Workflow
 
-From the repository root, after configuring models and checking the depth adapter's
-depth_closer_is_larger orientation:
+From the repository root:
 
 ```bash
-python -m stage2.scripts.prepare_manifest --manifest stage2/data/all.jsonl --output-dir stage2/data
-python -m stage2.data.cache_geometry --config stage2/configs/coarse.yaml --manifest stage2/data/train.jsonl --device cpu
-python -m stage2.data.cache_geometry --config stage2/configs/coarse.yaml --manifest stage2/data/val.jsonl --device cpu
-python -m stage2.data.geometry_stats --config stage2/configs/coarse.yaml --output stage2/weights/coarse_geometry_stats.pt
-python -m stage2.data.geometry_stats --config stage2/configs/fine.yaml --output stage2/weights/fine_geometry_stats.pt
-python -m stage2.run --config stage2/configs/coarse.yaml
-python -m stage2.run --config stage2/configs/fine.yaml
+python -m stage2.scripts.prepare_workspace --extract --force
+python -m stage2.data.cache_geometry --config stage2/configs/joint.workspace.yaml --manifest /workspace/data/stage2/manifests/all.jsonl --device cuda
+python -m stage2.run --config stage2/configs/joint.workspace.yaml
 ```
 
-Cache generation requires actual frozen detector/depth checkpoints even on CPU.
-Stages share per-frame caches only when frozen-model/configuration settings match.
-Tracks, ranks, temporal geometry and ROIs are rebuilt for each window. Never cache
-trainable visual features for LoRA training. The separate training_mode:
-cached_features mode uses prepared feature_path records for a head-only ablation;
-it is not the native training pipeline.
-
-Inference requires sample_id, frames_dir and optionally geometry_dir, not labels:
+`cache_geometry` runs RF-DETR on the original frames and writes schema-2
+observations; that is the only cache. DINOv3 and V-JEPA run online with LoRA, so
+their features are never cached. Inference needs `sample_id`, `frames_dir` and
+`geometry_dir`, not labels or FPS:
 
 ```bash
-python -m stage2.test --coarse-ckpt /path/coarse.pt --fine-ckpt /path/fine.pt --manifest /path/test.jsonl --output predictions.jsonl --device cpu
+python -m stage2.joint_test --checkpoint runs/joint/best.pt --manifest /path/test.jsonl --output predictions.jsonl --device cuda
 ```
-
-scripts/export_submission.py merges LoRA and removes auxiliary fine state heads.
-scripts/benchmark.py measures Stage 2 latency/memory on the operator's hardware.
 
 ## Weights & Biases
 
 W&B is already listed in `requirements.txt`. Install the project dependencies in
-your training environment, then set `logging.wandb` in the coarse/fine YAML:
+your training environment, then set `logging.wandb` in the joint YAML:
 
 ```yaml
 logging:
@@ -78,7 +66,7 @@ logging:
     enabled: true
     project: stage2-localizer
     entity: your-username-or-team
-    name: coarse-experiment-01
+    name: joint-experiment-01
     mode: online
     run_id: null
     resume: never
@@ -88,7 +76,7 @@ Authenticate on your own machine, then use the normal training command:
 
 ```bash
 wandb login
-python -m stage2.run --config stage2/configs/coarse.yaml
+python -m stage2.run --config stage2/configs/joint.workspace.yaml
 ```
 
 Never put an API key in YAML or Git; use the login prompt or the `WANDB_API_KEY`
@@ -120,8 +108,7 @@ and W&B's documented [initialization options](https://docs.wandb.ai/models/ref/p
 ## Verification without pretrained weights
 
 ```bash
-PYTHONDONTWRITEBYTECODE=1 python -m unittest stage2.tests.test_review -v
-PYTHONDONTWRITEBYTECODE=1 python -m unittest stage2.tests.test_tracking -v
+PYTHONDONTWRITEBYTECODE=1 python -m pytest stage2/tests -q
 python -m black --check stage2
 git diff --check
 ```
