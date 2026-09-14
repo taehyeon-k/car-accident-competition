@@ -75,3 +75,82 @@ def choose_crop(length, entry, collision, fps, probabilities, rng):
                 return start, stop, 0, collision - start, mode
 
     return 0, length, entry, collision, "full_video"
+
+
+# ---------------------------------------------------------------------------
+# Training memory cap
+#
+# This is deliberately NOT a fourth augmentation mode. The semantic policy above
+# decides what the model should learn from; this step only bounds how large an
+# autograd graph one sample may build, and it runs afterwards on the window that
+# policy produced. With max_frames = 512 it is comfortably above the dataset's
+# longest ENTRY->COLLISION interval (147 frames), so it never has to invent,
+# move or drop a label to satisfy the limit.
+# ---------------------------------------------------------------------------
+
+DEFAULT_MAX_TRAIN_FRAMES = 512
+
+
+def max_train_frames(config: dict | None) -> int | None:
+    """Resolve ``training_memory.max_frames``: a positive integer, or None."""
+    value = (config or {}).get("max_frames", DEFAULT_MAX_TRAIN_FRAMES)
+    if value is None:
+        return None
+    if isinstance(value, bool) or not isinstance(value, int) or value < 1:
+        raise ValueError(
+            "training_memory.max_frames must be null or a positive integer"
+        )
+    return value
+
+
+def enforce_max_train_frames(
+    start, stop, entry_index, collision_index, mode, max_frames, rng
+):
+    """Bound a semantic window to ``max_frames`` without changing its labels.
+
+    Returns ``(start, stop, entry_index, collision_index, applied)`` in the same
+    coordinates ``choose_crop`` uses. Windows already within the limit are
+    returned untouched, so short clips keep their natural length rather than
+    being padded or trimmed to a fixed size.
+    """
+    length = stop - start
+    if max_frames is None or length <= max_frames:
+        return start, stop, entry_index, collision_index, False
+
+    if mode == "pre_video_entry":
+        # The synthetic convention is "ENTRY is the first visible frame". Moving
+        # the window start would silently destroy it, so the start is pinned and
+        # only the tail is trimmed. For this mode entry_index is 0, so an
+        # over-long span and an out-of-window COLLISION are the same condition;
+        # it is reported with the message specific to the convention at risk.
+        if collision_index >= max_frames:
+            raise ValueError(
+                "max_train_frames is too short to preserve the pre-video "
+                "ENTRY -> COLLISION interval."
+            )
+        return start, start + max_frames, entry_index, collision_index, True
+
+    span = collision_index - entry_index + 1
+    if span > max_frames:
+        raise ValueError(
+            f"max_train_frames ({max_frames}) is shorter than this sample's "
+            f"ENTRY->COLLISION span ({span} frames); it cannot be capped without "
+            "corrupting the labels"
+        )
+
+    # Sample uniformly over every window that still contains both events, so no
+    # fixed offset, centring or edge alignment is learnable from position alone.
+    minimum_start = max(0, collision_index - max_frames + 1)
+    maximum_start = min(entry_index, length - max_frames)
+    if minimum_start > maximum_start:
+        raise ValueError(
+            f"No {max_frames}-frame window contains both events for this sample"
+        )
+    memory_start = int(rng.integers(minimum_start, maximum_start + 1))
+    return (
+        start + memory_start,
+        start + memory_start + max_frames,
+        entry_index - memory_start,
+        collision_index - memory_start,
+        True,
+    )

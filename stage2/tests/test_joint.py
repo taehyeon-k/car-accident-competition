@@ -28,6 +28,8 @@ from stage2.data.joint import (
 from stage2.data.joint_sampling import (
     choose_crop,
     clip_positions,
+    enforce_max_train_frames,
+    max_train_frames,
     temporal_probabilities,
 )
 from stage2.model.lora import LoRALinear, add_lora_to_last_blocks
@@ -577,6 +579,51 @@ def video(tmp_path):
     return row, manifest, ids, width
 
 
+@pytest.fixture
+def long_video(tmp_path):
+    """A clip long enough to require the memory cap, with a small-frame body."""
+    from PIL import Image
+
+    frames = tmp_path / "frames"
+    frames.mkdir()
+    geometry = tmp_path / "geometry"
+    geometry.mkdir()
+    torch.save({"schema": 2}, geometry / "metadata.pt")
+    ids = list(range(200))
+    width, height = 48, 32
+    for step, i in enumerate(ids):
+        Image.new("RGB", (width, height), (step % 200, 90, 140)).save(
+            frames / f"{i:05d}.jpg"
+        )
+        torch.save(
+            {
+                "boxes": torch.tensor(
+                    [[6.0 + step % 20, 12.0, 18.0 + step % 20, 24.0]]
+                ),
+                "scores": torch.tensor([0.9]),
+                "labels": ["car"],
+                "size": [width, height],
+                "frame_id": i,
+                "source_sha256": "x",
+            },
+            geometry / f"{i}.pt",
+        )
+    row = dict(
+        sample_id="long",
+        source_id="NEXAR:long",
+        frames_dir=str(frames),
+        geometry_dir=str(geometry),
+        native_fps=15,
+        entry_frame=ids[120],
+        collision_frame=ids[150],
+        entry_side="RIGHT",
+        evasion_space=0,
+    )
+    manifest = tmp_path / "manifest.jsonl"
+    manifest.write_text(json.dumps(row) + "\n")
+    return row, manifest, ids, width
+
+
 def _dataset(manifest, **config):
     config.setdefault("tracking", {})
     return JointFeatureDataset(manifest, training=True, seed=7, config=config)
@@ -966,6 +1013,144 @@ def test_rfdetr_is_never_constructed_during_cached_training(video, monkeypatch):
         for value in record.values()
         if isinstance(value, torch.Tensor)
     )
+
+
+MAX_FRAMES = 512
+
+
+def _cap(start, stop, entry, collision, mode="full_video", seed=0, limit=MAX_FRAMES):
+    rng = np.random.default_rng(seed)
+    return enforce_max_train_frames(start, stop, entry, collision, mode, limit, rng)
+
+
+@pytest.mark.parametrize("length", [50, 150, 300, 511, 512])
+def test_memory_cap_leaves_short_windows_untouched(length):
+    """Short clips keep their natural length; nothing is padded or trimmed."""
+    entry, collision = min(5, length - 2), min(20, length - 1)
+    result = _cap(0, length, entry, collision)
+    assert result == (0, length, entry, collision, False)
+
+
+def test_memory_cap_disabled_by_null():
+    assert max_train_frames({"max_frames": None}) is None
+    assert max_train_frames(None) == 512
+    assert _cap(0, 1200, 10, 40, limit=None) == (0, 1200, 10, 40, False)
+    for bad in (0, -1, 3.5, True, "512"):
+        with pytest.raises(ValueError, match="positive integer"):
+            max_train_frames({"max_frames": bad})
+
+
+def test_memory_cap_trims_long_clip_and_keeps_both_events():
+    start, stop, entry, collision, applied = _cap(0, 1200, 400, 480)
+    assert applied and stop - start == MAX_FRAMES
+    assert 0 <= entry <= collision < MAX_FRAMES
+    # Event identities in original coordinates are unchanged.
+    assert start + entry == 400 and start + collision == 480
+
+
+def test_memory_cap_randomises_context_across_epochs():
+    """Many feasible starts, never a fixed offset, always both events."""
+    starts, entries = set(), set()
+    for seed in range(40):
+        start, stop, entry, collision, applied = _cap(0, 1200, 400, 480, seed=seed)
+        assert applied and stop - start == MAX_FRAMES
+        assert 0 <= entry <= collision < MAX_FRAMES
+        assert start + entry == 400 and start + collision == 480
+        starts.add(start)
+        entries.add(entry)
+    assert len(starts) > 5, "memory window start must vary"
+    # Neither event is pinned to a boundary or the centre.
+    assert len(entries) > 5
+    assert min(entries) != max(entries)
+
+
+def test_memory_cap_on_ordinary_crop_preserves_event_identity():
+    # A semantic ordinary crop of 900 frames starting at original frame 100.
+    semantic_start, semantic_stop = 100, 1000
+    entry_index, collision_index = 250, 300  # crop-relative
+    start, stop, entry, collision, applied = _cap(
+        semantic_start, semantic_stop, entry_index, collision_index, "ordinary_crop"
+    )
+    assert applied and stop - start == MAX_FRAMES
+    assert semantic_start <= start and stop <= semantic_stop
+    # Original-sequence identity of both events survives both crops.
+    assert start + entry == semantic_start + entry_index
+    assert start + collision == semantic_start + collision_index
+
+
+def test_memory_cap_preserves_pre_video_entry_semantics():
+    start, stop, entry, collision, applied = _cap(300, 1500, 0, 90, "pre_video_entry")
+    assert applied and stop - start == MAX_FRAMES
+    assert entry == 0, "the synthetic first-frame ENTRY convention must survive"
+    assert start == 300, "the window start is pinned; only the tail is trimmed"
+    assert collision == 90 < MAX_FRAMES
+
+
+def test_memory_cap_refuses_to_corrupt_pre_video_entry():
+    with pytest.raises(ValueError, match="pre-video"):
+        _cap(0, 1200, 0, 600, "pre_video_entry")
+
+
+def test_memory_cap_refuses_impossible_event_span():
+    """A span wider than the cap must fail loudly, never be relabelled."""
+    with pytest.raises(ValueError, match="ENTRY->COLLISION span"):
+        _cap(0, 1200, 100, 700)
+    with pytest.raises(ValueError, match="ENTRY->COLLISION span"):
+        _cap(0, 1200, 100, 700, "ordinary_crop")
+
+
+def test_every_labelled_sample_fits_the_cap(video):
+    """Guards the claim that 512 never has to touch a label on this dataset."""
+    row, manifest, ids, _ = video
+    entry, collision = ids.index(row["entry_frame"]), ids.index(row["collision_frame"])
+    assert collision - entry + 1 <= MAX_FRAMES
+    # The real manifests are checked by scripts/check_event_spans.py.
+
+
+def test_long_training_sample_is_capped_with_crop_local_geometry(long_video):
+    row, manifest, ids, _ = long_video
+    dataset = _dataset(
+        manifest,
+        temporal_augmentation={
+            "full_video": 1.0,
+            "ordinary_crop": 0.0,
+            "pre_video_entry": 0.0,
+        },
+        training_memory={"max_frames": 64},
+        augmentation={"horizontal_flip": {"probability": 0.0}},
+    )
+    item = dataset[0]
+    assert len(item["time_valid"]) == 64
+    assert item["rgb"].shape[0] == 64
+    # Both annotated events survive at their crop-relative positions.
+    assert int(item["frame_ids"][item["entry_index"]]) == row["entry_frame"]
+    assert int(item["frame_ids"][item["collision_index"]]) == row["collision_frame"]
+    # Geometry is rebuilt inside the final window: no inherited motion history.
+    channel = {name: i for i, name in enumerate(GEOMETRY_CHANNELS)}
+    first = item["geometry"][0][item["object_valid"][0]]
+    assert first.numel(), "the capped window must still contain observations"
+    for name in ("dx_per_frame", "dy_per_frame", "log_area_growth_per_frame"):
+        assert first[:, channel[name]].abs().sum() == 0
+    assert first[:, channel["track_continuity"]].max() <= 0.2 + 1e-6
+    stats = item["temporal_stats"]
+    assert stats["original_temporal_length"] == len(ids)
+    assert stats["final_temporal_length"] == 64
+    assert stats["memory_crop_applied_fraction"] == 1.0
+
+
+def test_validation_is_never_capped(long_video):
+    row, manifest, ids, _ = long_video
+    evaluation = JointFeatureDataset(
+        manifest,
+        training=False,
+        seed=7,
+        config={"tracking": {}, "training_memory": {"max_frames": 64}},
+    )
+    item = evaluation[0]
+    assert len(item["time_valid"]) == len(ids), "validation must read the whole video"
+    assert item["rgb"].shape[0] == len(ids)
+    assert "temporal_stats" not in item
+    assert int(item["frame_ids"][item["entry_index"]]) == row["entry_frame"]
 
 
 def test_temporal_policy_is_seventy_fifteen_fifteen():

@@ -54,6 +54,37 @@ sampled crop so a crop's first frame cannot inherit motion from before it.
   preconditions fail (COLLISION would leave the crop, or the crop would be shorter
   than 16 frames) falls back to the full video instead of degrading silently.
   Validation and inference always use the full supplied video with no augmentation.
+- **Two independent temporal mechanisms** act in sequence, and must not be
+  confused with one another:
+
+  ```text
+  Semantic temporal augmentation        Training memory cap
+  ------------------------------        -------------------
+  70% full video                        max_frames = 512
+  15% ordinary crop
+  15% pre-video ENTRY                   purpose: stop long clips building
+                                        excessive DINOv3/V-JEPA LoRA
+  purpose: generalization and           autograd graphs
+  competition-specific augmentation
+  ```
+
+  The cap runs **after** the semantic policy, on whatever window it produced. It
+  is not a fourth augmentation mode and it never invents, moves or drops a label.
+  A window already at or below the limit is returned untouched, so a 50-frame
+  clip stays 50 frames. Only longer windows are trimmed, by sampling uniformly
+  over every position that still contains both events - never centred on an
+  event, never at a fixed offset - using the same seed/epoch/index RNG. For
+  `pre_video_entry` the window start is pinned instead, because its whole meaning
+  is "ENTRY is the first visible frame"; only the tail is trimmed. If a sample's
+  ENTRY->COLLISION span were ever wider than the cap, both paths raise rather
+  than relabel. 512 is comfortably above this dataset's longest annotated span
+  (**147** frames in train, 115 in val, verified by
+  `scripts/check_event_spans.py`), so the cap never has to touch a label today.
+  Set `training_memory.max_frames: null` to disable it.
+  **Validation and inference are never capped** - with no backward graph they can
+  afford the complete video, and they must see it to match submission conditions.
+  `train/{original,semantic,final}_temporal_length` and
+  `train/memory_crop_applied_fraction` report how often it fires.
 - Augmentation is drawn **once per clip** and applied identically to every frame,
   so DINOv3 and V-JEPA always see the same pixels and no photometric flicker is
   introduced. A horizontal flip mirrors the frames and the cached detector boxes

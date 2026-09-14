@@ -41,8 +41,13 @@ From the repository root:
 ```bash
 python -m stage2.scripts.prepare_workspace --extract --force
 python -m stage2.data.cache_geometry --config stage2/configs/joint.workspace.yaml --manifest /workspace/data/stage2/manifests/all.jsonl --device cuda
+python -m stage2.scripts.check_event_spans --manifest /workspace/data/stage2/manifests/train.jsonl /workspace/data/stage2/manifests/val.jsonl
 python -m stage2.run --config stage2/configs/joint.workspace.yaml
 ```
+
+`check_event_spans` confirms every labelled ENTRY->COLLISION span still fits the
+`training_memory.max_frames` cap, which is what lets the cap trim long clips
+without ever touching a label.
 
 `cache_geometry` runs RF-DETR on the original frames and writes schema-2
 observations; that is the only cache. DINOv3 and V-JEPA run online with LoRA, so

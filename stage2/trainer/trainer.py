@@ -19,6 +19,36 @@ from stage2.utils.utils import source_name, validate_config
 from stage2.utils.tracking import TrainingMetrics
 from stage2.utils.early_stopping import EarlyStopping
 
+TEMPORAL_STAT_NAMES = (
+    "original_temporal_length",
+    "semantic_temporal_length",
+    "final_temporal_length",
+    "memory_crop_applied_fraction",
+)
+
+
+class _TemporalStats:
+    """Cheap per-sample temporal counters; four scalars, never per frame."""
+
+    def __init__(self) -> None:
+        self.sums = None
+        self.count = 0
+
+    def update(self, gathered: torch.Tensor | None) -> None:
+        if gathered is None or not len(gathered):
+            return
+        totals = gathered.detach().double().sum(0)
+        self.sums = totals if self.sums is None else self.sums + totals
+        self.count += len(gathered)
+
+    def compute(self) -> dict[str, float]:
+        if not self.count:
+            return {}
+        return {
+            name: float(value / self.count)
+            for name, value in zip(TEMPORAL_STAT_NAMES, self.sums)
+        }
+
 
 class _MetricBucket:
     """Loss sums and joint metrics over one slice of the validation samples."""
@@ -63,6 +93,7 @@ class Trainer:
         self.best_validation_loss = float("inf")
         self.best_competition_score = -float("inf")
         self.joint_train_metrics = JointMetricAccumulator()
+        self.temporal_stats = _TemporalStats()
         self.last_validation_metrics = {}
         self.validation_sources: list[str] = []
         self.early_stopping = EarlyStopping(
@@ -365,6 +396,21 @@ class Trainer:
                     self.joint_train_metrics.update(
                         self.accelerator.gather_for_metrics(packet)
                     )
+                    stats = (
+                        batch.get("temporal_stats") if isinstance(batch, dict) else None
+                    )
+                    if stats:
+                        self.temporal_stats.update(
+                            self.accelerator.gather_for_metrics(
+                                torch.tensor(
+                                    [
+                                        [sample[name] for name in TEMPORAL_STAT_NAMES]
+                                        for sample in stats
+                                    ],
+                                    device=sample_losses.device,
+                                )
+                            )
+                        )
                     training_metrics.update(
                         sample_losses,
                         {k: v for k, v in components.items() if not k.startswith("_")},
@@ -421,6 +467,10 @@ class Trainer:
                             f"train/{k}": v
                             for k, v in self.joint_train_metrics.compute().items()
                         },
+                        **{
+                            f"train/{k}": v
+                            for k, v in self.temporal_stats.compute().items()
+                        },
                         "train_config/epoch": epoch + 1,
                         "train_config/lr_dino_lora": self.scheduler.get_last_lr()[0],
                         "train_config/lr_vjepa_lora": self.scheduler.get_last_lr()[1],
@@ -431,6 +481,7 @@ class Trainer:
                     step=self.step,
                 )
                 self.joint_train_metrics = JointMetricAccumulator()
+                self.temporal_stats = _TemporalStats()
                 score = self.last_validation_metrics.get(
                     "competition_score", -float("inf")
                 )

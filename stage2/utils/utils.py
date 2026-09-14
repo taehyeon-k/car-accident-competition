@@ -183,6 +183,13 @@ def validate_augmentation(config: dict) -> None:
         raise ValueError("gaussian_blur.kernel_size must be an odd positive integer")
 
 
+def validate_memory_cap(config: dict) -> None:
+    """``training_memory.max_frames`` must be null or a positive integer."""
+    from stage2.data.joint_sampling import max_train_frames
+
+    max_train_frames(config.get("training_memory"))
+
+
 def validate_temporal(config: dict) -> None:
     """The three temporal modes must be probabilities summing to one."""
     from stage2.data.joint_sampling import temporal_probabilities
@@ -240,4 +247,5 @@ def validate_config(config: dict) -> None:
     }:
         raise ValueError("checkpoint_metric must be loss or competition_score")
     validate_temporal(config)
+    validate_memory_cap(config)
     validate_augmentation(config)

@@ -31,7 +31,7 @@ model:
   lora_rank: 8
   lora_alpha: 16
   lora_dropout: 0.05
-  dino_lora_blocks: 4
+  dino_lora_blocks: 2
   vjepa_lora_blocks: 4
   dino_checkpoint: pretrained/dinov3_vitb16/dinov3_vitb16_pretrain_lvd1689m-73cec8be.pth
   dino_factory: stage2.model.local_assets:dino
@@ -48,6 +48,10 @@ tracking:
   max_match_cost: 0.65
   max_gap: 2
   track_percentile: 90
+# GPU-memory control only. Independent of the semantic policy below, applied
+# after it, and never applied to validation or inference. Null disables it.
+training_memory:
+  max_frames: 512
 temporal_augmentation:
   full_video: 0.70
   ordinary_crop: 0.15
@@ -86,7 +90,7 @@ augmentation:
       std_min: 0.005
       std_max: 0.025
 loss:
-  entry_sigma_seconds: 0.15
+  entry_sigma_seconds: 0.10
   collision_sigma_seconds: 0.10
 optimization:
   epochs: 20

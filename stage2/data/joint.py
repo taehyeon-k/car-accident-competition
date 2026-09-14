@@ -9,6 +9,16 @@ a synthetic crop cannot inherit motion history from before it.
 One augmentation decision is drawn per sample and applied to every frame, so the
 RGB stack handed to both backbones is identical and stays consistent with the
 detector boxes the geometry was computed from.
+
+Two independent temporal mechanisms act in sequence, in this order:
+
+1. **Semantic temporal augmentation** (70% full video / 15% ordinary crop /
+   15% synthetic pre-video ENTRY) decides what the sample teaches.
+2. **Training memory cap** (``training_memory.max_frames``) bounds how large an
+   autograd graph one sample may build. It is not a fourth augmentation mode and
+   never alters a label; it only trims windows longer than the limit.
+
+Neither applies to validation or inference, which always read the complete video.
 """
 
 from pathlib import Path
@@ -26,7 +36,12 @@ from stage2.data.augment import (
     sample_photometric,
 )
 from stage2.data.cache_geometry import frame_paths
-from stage2.data.joint_sampling import choose_crop, temporal_probabilities
+from stage2.data.joint_sampling import (
+    choose_crop,
+    enforce_max_train_frames,
+    max_train_frames,
+    temporal_probabilities,
+)
 from stage2.data.transforms import box_to_grid, letterbox, letterbox_metadata
 from stage2.model.joint_tracking import GEOMETRY_DIM, object_tensors
 from stage2.model.tracking import Detection, HungarianTracker
@@ -193,6 +208,8 @@ class JointFeatureDataset(Dataset):
         self.tracking = config.get("tracking", {})
         self.augmentation = augmentation_config(config.get("augmentation"))
         self.temporal = temporal_probabilities(config.get("temporal_augmentation"))
+        # Memory control only; never applied to validation or inference.
+        self.max_frames = max_train_frames(config.get("training_memory"))
         self.epoch = torch.zeros((), dtype=torch.long).share_memory_()
 
     def set_epoch(self, epoch):
@@ -236,13 +253,20 @@ class JointFeatureDataset(Dataset):
         rng = np.random.default_rng(
             np.random.SeedSequence([self.seed, int(self.epoch), index])
         )
-        start, stop, entry_index, collision_index, _ = choose_crop(
+        # 1. Semantic policy decides what the sample teaches.
+        start, stop, entry_index, collision_index, mode = choose_crop(
             len(paths), entry, collision, row.get("native_fps"), self.temporal, rng
         )
+        semantic_length = stop - start
+        # 2. Memory cap bounds the autograd graph, leaving the labels alone.
+        start, stop, entry_index, collision_index, capped = enforce_max_train_frames(
+            start, stop, entry_index, collision_index, mode, self.max_frames, rng
+        )
+        # 3. Appearance augmentation follows the final temporal selection.
         flip = sample_horizontal_flip(self.augmentation, rng)
         photometric = sample_photometric(self.augmentation, rng)
         generator = torch.Generator().manual_seed(int(rng.integers(0, 2**31 - 1)))
-        return joint_item(
+        item = joint_item(
             row,
             paths,
             frame_ids,
@@ -256,6 +280,14 @@ class JointFeatureDataset(Dataset):
             tracking=self.tracking,
             generator=generator,
         )
+        # Cheap per-sample counters; the trainer averages them per interval.
+        item["temporal_stats"] = {
+            "original_temporal_length": float(len(paths)),
+            "semantic_temporal_length": float(semantic_length),
+            "final_temporal_length": float(stop - start),
+            "memory_crop_applied_fraction": float(capped),
+        }
+        return item
 
 
 def joint_collate(items):
@@ -281,7 +313,14 @@ def joint_collate(items):
     for name in ("entry_index", "collision_index", "entry_side", "evasion"):
         if name in items[0]:
             output[name] = torch.tensor([item[name] for item in items])
-    for name in ("frame_ids", "sample_id", "source_id", "track_ids", "flipped"):
+    for name in (
+        "frame_ids",
+        "sample_id",
+        "source_id",
+        "track_ids",
+        "flipped",
+        "temporal_stats",
+    ):
         if name in items[0]:
             output[name] = [item[name] for item in items]
     return output
