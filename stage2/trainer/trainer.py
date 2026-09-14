@@ -19,9 +19,37 @@ from stage2.utils.losses import coarse_loss, fine_loss
 from stage2.utils.joint_losses import joint_loss
 from stage2.utils.metrics import batch_metrics
 from stage2.utils.checkpoint import rank_rng_states, restore_rng, save_checkpoint
-from stage2.utils.utils import validate_config
+from stage2.utils.utils import source_name, validate_config
 from stage2.utils.tracking import TrainingMetrics
 from stage2.utils.early_stopping import EarlyStopping
+
+
+class _MetricBucket:
+    """Loss sums and joint metrics over one slice of the validation samples."""
+
+    def __init__(self) -> None:
+        self.sums: dict[str, torch.Tensor] = {}
+        self.count = 0
+        self.joint = JointMetricAccumulator()
+
+    def update(self, gathered: dict, mask: torch.Tensor | None = None) -> None:
+        selected = {
+            name: values if mask is None else values[mask]
+            for name, values in gathered.items()
+        }
+        self.joint.update({k: v for k, v in selected.items() if k.startswith("_")})
+        scalars = {k: v for k, v in selected.items() if not k.startswith("_")}
+        self.count += scalars["loss"].numel()
+        for name, values in scalars.items():
+            self.sums[name] = self.sums.get(name, 0) + values.sum()
+
+    def compute(self) -> dict[str, float]:
+        if not self.count:
+            return {}
+        return {
+            **{name: value.item() / self.count for name, value in self.sums.items()},
+            **self.joint.compute(),
+        }
 
 
 class Trainer:
@@ -40,6 +68,7 @@ class Trainer:
         self.best_competition_score = -float("inf")
         self.joint_train_metrics = JointMetricAccumulator()
         self.last_validation_metrics = {}
+        self.validation_sources: list[str] = []
         self.early_stopping = EarlyStopping(
             config.get("early_stopping"),
             config.get("logging", {}).get("checkpoint_metric", "loss"),
@@ -62,6 +91,14 @@ class Trainer:
             data_config["num_workers"],
             shuffle=False,
             config=self.config,
+        )
+        # Fixed, sorted order gives stable per-source metric keys across runs.
+        self.validation_sources = sorted(
+            {
+                source_name(row["source_id"])
+                for row in self.validation_dataset.rows
+                if row.get("source_id")
+            }
         )
 
         model_config = self.config["model"]
@@ -240,13 +277,10 @@ class Trainer:
     def validate(self) -> float:
         """Return globally averaged validation loss without updating model state."""
         self.model.eval()
-        total = torch.zeros(
-            (),
-            device=self.accelerator.device,
-        )
-        count = 0
-        metrics_sum = {}
-        joint_metrics = JointMetricAccumulator()
+        overall = _MetricBucket()
+        # Per-source buckets view exactly the same gathered, duplicate-trimmed
+        # samples as the overall bucket, so the slices reconcile with the total.
+        by_source = {name: _MetricBucket() for name in self.validation_sources}
 
         with torch.no_grad():
             for batch in self.validation_loader:
@@ -255,38 +289,43 @@ class Trainer:
                         batch,
                         reduction="none",
                     )
-                gathered = self.accelerator.gather_for_metrics(
-                    {"loss": losses, **metrics}
-                )
-                joint_metrics.update(
-                    {k: v for k, v in gathered.items() if k.startswith("_")}
-                )
-                gathered = {k: v for k, v in gathered.items() if not k.startswith("_")}
-                total += gathered["loss"].sum()
-                count += gathered["loss"].numel()
-                for name, values in gathered.items():
-                    metrics_sum[name] = (
-                        metrics_sum.get(
-                            name,
-                            0,
-                        )
-                        + values.sum()
+                packet = {"loss": losses, **metrics}
+                if self.validation_sources:
+                    packet["source_index"] = torch.tensor(
+                        [
+                            self.validation_sources.index(source_name(value))
+                            for value in batch["source_id"]
+                        ],
+                        device=self.accelerator.device,
                     )
+                gathered = self.accelerator.gather_for_metrics(packet)
+                origin = gathered.pop("source_index", None)
+                overall.update(gathered)
+                if origin is not None:
+                    for position, name in enumerate(self.validation_sources):
+                        by_source[name].update(gathered, origin == position)
 
-        if count == 0:
+        if overall.count == 0:
             raise ValueError("Validation loader is empty")
-        self.last_validation_metrics = {
-            **{name: value.item() / count for name, value in metrics_sum.items()},
-            **joint_metrics.compute(),
-        }
+        self.last_validation_metrics = overall.compute()
         self.accelerator.log(
             {
-                f"val/{name}": value
-                for name, value in self.last_validation_metrics.items()
+                **{
+                    f"val/{name}": value
+                    for name, value in self.last_validation_metrics.items()
+                },
+                # The ordering loss is a batch-level regulariser, not a per-source
+                # quality signal, so it is excluded from the source breakdown.
+                **{
+                    f"val/{source}/{name}": value
+                    for source, bucket in by_source.items()
+                    for name, value in bucket.compute().items()
+                    if name != "loss_invalid_order"
+                },
             },
             step=self.step,
         )
-        global_mean = (total / count).item()
+        global_mean = self.last_validation_metrics["loss"]
         self.model.train()
         return global_mean
 

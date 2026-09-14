@@ -7,7 +7,7 @@ import subprocess
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
-from stage2.scripts.prepare_manifest import split_rows
+from stage2.scripts.prepare_manifest import split_rows, stratum_key
 
 
 def extract(row):
@@ -33,8 +33,8 @@ def extract(row):
             "1",
             "-i",
             row["video_path"],
-            "-fps_mode",
-            "passthrough",
+            "-vsync",
+            "0",
             "-start_number",
             "0",
             "-q:v",
@@ -53,12 +53,40 @@ def extract(row):
     print(f"Extracted {row['sample_id']}: {actual} frames", flush=True)
 
 
+def summarize(train, val):
+    """Print train/validation counts for each stratification factor."""
+
+    def table(title, key):
+        print(f"\n{title}")
+        print(f"  {'value':<34}{'train':>7}{'val':>6}{'val%':>8}")
+        for name in sorted({key(row) for row in train + val}):
+            counts = [
+                sum(1 for row in part if key(row) == name) for part in (train, val)
+            ]
+            share = counts[1] / sum(counts)
+            print(f"  {name:<34}{counts[0]:>7}{counts[1]:>6}{share:>8.1%}")
+        total = len(train) + len(val)
+        print(f"  {'TOTAL':<34}{len(train):>7}{len(val):>6}{len(val) / total:>8.1%}")
+
+    table("By source", lambda row: stratum_key(row)[0])
+    table("By entry_side", lambda row: row["entry_side"])
+    table("By evasion_space", lambda row: str(row["evasion_space"]))
+    table(
+        "By source x entry_side x evasion_space", lambda row: " ".join(stratum_key(row))
+    )
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--workspace", type=Path, default=Path("/workspace"))
     parser.add_argument("--extract", action="store_true")
     parser.add_argument("--workers", type=int, default=4)
     parser.add_argument("--limit", type=int)
+    parser.add_argument(
+        "--force",
+        action="store_true",
+        help="replace existing manifests when the split changes",
+    )
     args = parser.parse_args()
     if args.workers < 1 or (args.limit is not None and args.limit < 1):
         parser.error("workers and limit must be positive")
@@ -105,8 +133,10 @@ def main():
     ]:
         path = output / f"{name}.jsonl"
         content = "".join(json.dumps(row) + "\n" for row in partition)
-        if path.exists() and path.read_text() != content:
-            raise ValueError(f"Refusing to replace a different split: {path}")
+        if path.exists() and path.read_text() != content and not args.force:
+            raise ValueError(
+                f"Refusing to replace a different split: {path}; pass --force"
+            )
         path.write_text(content)
     if args.extract:
         smoke = train[:1] + val[:1]
@@ -116,6 +146,7 @@ def main():
         with ThreadPoolExecutor(max_workers=args.workers) as pool:
             list(pool.map(extract, selected))
     print(f"Manifests: {len(train)} train, {len(val)} validation; {output}")
+    summarize(train, val)
 
 
 if __name__ == "__main__":

@@ -12,6 +12,15 @@ import torch
 import yaml
 
 
+def source_name(source_id: str) -> str:
+    """Dataset name written as the ``source_id`` prefix by ``prepare_workspace``.
+
+    Identifiers without that prefix return unchanged, so per-source reporting
+    degrades to one bucket per group rather than failing.
+    """
+    return str(source_id).split(":", 1)[0]
+
+
 def load_config(path: str | Path) -> dict:
     """Resolve configured data/weight paths relative to the Stage 2 directory."""
     with open(
