@@ -1,4 +1,8 @@
-"""DataLoader construction for the joint cached-feature dataset."""
+"""DataLoader construction for the joint dataset.
+
+Each sample carries a decoded RGB stack, so the number of samples held in flight
+(``num_workers x prefetch_factor x batch_size``) sets host memory, not GPU memory.
+"""
 
 import torch
 from torch.utils.data import DataLoader
@@ -19,6 +23,13 @@ def get_data(
         seed=config["seed"],
         config=config,
     )
+    prefetch_factor = (config.get("data", {}) or {}).get("prefetch_factor", 1)
+    if num_workers and (
+        isinstance(prefetch_factor, bool)
+        or not isinstance(prefetch_factor, int)
+        or prefetch_factor < 1
+    ):
+        raise ValueError("data.prefetch_factor must be a positive integer")
     return ds, DataLoader(
         ds,
         batch_size,
@@ -27,4 +38,6 @@ def get_data(
         pin_memory=torch.cuda.is_available(),
         persistent_workers=num_workers > 0,
         collate_fn=joint_collate,
+        # Only valid with worker processes; PyTorch rejects it at num_workers=0.
+        **({"prefetch_factor": prefetch_factor} if num_workers else {}),
     )
