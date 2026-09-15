@@ -183,6 +183,22 @@ def validate_augmentation(config: dict) -> None:
         raise ValueError("gaussian_blur.kernel_size must be an odd positive integer")
 
 
+def validation_max_span_frames(config: dict) -> int | None:
+    """``validation.max_span_frames``: null disables it, else a positive integer.
+
+    Applied only to validation decoding. It is a frame count rather than seconds
+    because test FPS is unknown.
+    """
+    value = (config.get("validation") or {}).get("max_span_frames")
+    if value is None:
+        return None
+    if isinstance(value, bool) or not isinstance(value, int) or value < 1:
+        raise ValueError(
+            "validation.max_span_frames must be null or a positive integer"
+        )
+    return value
+
+
 def validate_memory_cap(config: dict) -> None:
     """``training_memory.max_frames`` must be null or a positive integer."""
     from stage2.data.joint_sampling import max_train_frames
@@ -239,7 +255,25 @@ def validate_config(config: dict) -> None:
     for name in ("dino_lora_lr", "vjepa_lora_lr", "new_lr"):
         if name not in optimization:
             raise ValueError(f"optimization.{name} is required")
-        if float(optimization[name]) < 0:
+    # YAML 1.1 only reads scientific notation as a float when it has a decimal
+    # point and a signed exponent, so "3e-4" silently stays a string and later
+    # fails deep inside the LR scheduler. Coerce every numeric field once, here.
+    for name in (
+        "dino_lora_lr",
+        "vjepa_lora_lr",
+        "new_lr",
+        "weight_decay",
+        "warmup_ratio",
+        "grad_clip_norm",
+    ):
+        if name not in optimization:
+            continue
+        try:
+            optimization[name] = float(optimization[name])
+        except (TypeError, ValueError) as error:
+            raise ValueError(f"optimization.{name} must be a number") from error
+    for name in ("dino_lora_lr", "vjepa_lora_lr", "new_lr"):
+        if optimization[name] < 0:
             raise ValueError(f"optimization.{name} must be nonnegative")
     if config["logging"].get("checkpoint_metric", "loss") not in {
         "loss",
@@ -248,4 +282,5 @@ def validate_config(config: dict) -> None:
         raise ValueError("checkpoint_metric must be loss or competition_score")
     validate_temporal(config)
     validate_memory_cap(config)
+    validation_max_span_frames(config)
     validate_augmentation(config)

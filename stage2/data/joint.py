@@ -42,7 +42,12 @@ from stage2.data.joint_sampling import (
     max_train_frames,
     temporal_probabilities,
 )
-from stage2.data.transforms import box_to_grid, letterbox, letterbox_metadata
+from stage2.data.transforms import (
+    box_to_grid,
+    letterbox_metadata,
+    letterbox_pad_normalize,
+    letterbox_resize,
+)
 from stage2.model.joint_tracking import GEOMETRY_DIM, object_tensors
 from stage2.model.tracking import Detection, HungarianTracker
 from stage2.utils.utils import read_manifest
@@ -120,19 +125,32 @@ def crop_objects(records, flip, tracking):
 
 
 def load_clip_rgb(paths, flip, photometric, generator=None):
-    """Decode, augment and letterbox one clip with a single shared configuration."""
+    """Decode, augment and letterbox one clip with a single shared configuration.
+
+    Photometric work runs at the backbone's 384px resolution rather than native
+    (up to 1920x1080), which is where most of the worker time went. It is applied
+    after the resize but before the mean-colour padding, so the padding still
+    normalizes to exactly zero. The stack is returned as float16: these are the
+    largest tensors crossing the worker boundary, and halving them is what keeps
+    the loader inside host memory. Values are ImageNet-normalized, so the range
+    is far inside float16's precision.
+    """
     from torchvision.io import ImageReadMode, read_image
     from torchvision.transforms import functional as TVF
 
     frames = []
     for path in paths:
         image = read_image(str(path), mode=ImageReadMode.RGB)
+        height, width = image.shape[-2:]
         unit = TVF.convert_image_dtype(image, torch.float32)
         if flip:
             unit = TVF.hflip(unit)
+        resized = letterbox_resize(unit, IMAGE_SIZE)
         if photometric is not None:
-            unit = photometric(unit, generator=generator)
-        frames.append(letterbox(unit, IMAGE_SIZE)[0])
+            resized = photometric(resized, generator=generator)
+        frames.append(
+            letterbox_pad_normalize(resized, IMAGE_SIZE, width, height)[0].half()
+        )
     return torch.stack(frames)
 
 

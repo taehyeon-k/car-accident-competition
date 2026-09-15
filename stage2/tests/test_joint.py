@@ -876,8 +876,12 @@ def test_dino_and_vjepa_receive_identical_augmented_frames(video):
     # There is only one image path in the batch: no branch can re-decode its own.
     assert "rgb" in batch and "frame_paths" not in batch
 
+    # The loader ships float16 and each encoder casts to its own parameter dtype,
+    # so compare in a common dtype: the requirement is identical pixels, not an
+    # identical container.
     dino_frames = torch.cat(system.local_visual.encoder.seen)
-    assert torch.allclose(dino_frames, batch["rgb"][0], atol=0)
+    assert batch["rgb"].dtype == torch.float16, "loader must ship float16"
+    assert torch.allclose(dino_frames, batch["rgb"][0].to(dino_frames.dtype), atol=0)
     clips = system.global_visual.encoder.seen
     assert all(tuple(clip.shape[1:]) == (3, 16, 384, 384) for clip in clips)
     # Every V-JEPA frame must be pixel-identical to the DINO frame at that index.
@@ -885,7 +889,10 @@ def test_dino_and_vjepa_receive_identical_augmented_frames(video):
     for clip, positions in zip(clips, clip_positions(length)):
         for slot, index in enumerate(positions):
             torch.testing.assert_close(
-                clip[0, :, slot], dino_frames[int(index)], atol=0, rtol=0
+                clip[0, :, slot].to(dino_frames.dtype),
+                dino_frames[int(index)],
+                atol=0,
+                rtol=0,
             )
 
 
@@ -1153,6 +1160,115 @@ def test_validation_is_never_capped(long_video):
     assert int(item["frame_ids"][item["entry_index"]]) == row["entry_frame"]
 
 
+def test_yaml_string_learning_rates_are_coerced():
+    """YAML reads "3e-4" as a string; it must not reach the LR scheduler."""
+    import yaml
+    from stage2.utils.utils import validate_config
+
+    parsed = yaml.safe_load("a: 3e-4\nb: 3.0e-4\n")
+    assert isinstance(parsed["a"], str) and isinstance(parsed["b"], float)
+
+    config = {
+        "stage": "joint",
+        "model": {
+            "training_mode": "online_lora",
+            "vjepa_factory": "m:f",
+            "vjepa_checkpoint": "/w.pt",
+            "dino_factory": "m:f",
+            "dino_checkpoint": "/d.pt",
+        },
+        "data": {},
+        "optimization": {
+            "dino_lora_lr": "2e-5",
+            "vjepa_lora_lr": 1.0e-5,
+            "new_lr": "3e-4",
+            "weight_decay": "5e-2",
+            "warmup_ratio": 0.08,
+            "grad_clip_norm": 1.0,
+        },
+        "logging": {},
+    }
+    validate_config(config)
+    optimization = config["optimization"]
+    for name in ("dino_lora_lr", "vjepa_lora_lr", "new_lr", "weight_decay"):
+        assert isinstance(optimization[name], float), name
+    assert optimization["new_lr"] == pytest.approx(3e-4)
+    # A genuinely non-numeric value must still be rejected.
+    config["optimization"]["new_lr"] = "fast"
+    with pytest.raises(ValueError, match="must be a number"):
+        validate_config(config)
+
+
+def _best_feasible_score(entry, collision, span):
+    best = -float("inf")
+    for c in range(len(collision)):
+        for e in range(c + 1):
+            if span is None or c - e <= span:
+                best = max(best, float(entry[e] + collision[c]))
+    return best
+
+
+def test_span_window_covering_clip_matches_unconstrained_exactly():
+    torch.manual_seed(0)
+    # Integer-valued logits force many exact ties, like bf16 quantization does.
+    entry = torch.randint(0, 4, (6, 40)).float()
+    collision = torch.randint(0, 4, (6, 40)).float()
+    reference = constrained_decode(entry, collision)
+    for span in (39, 40, 500):
+        windowed = constrained_decode(entry, collision, span)
+        assert torch.equal(windowed[0], reference[0])
+        assert torch.equal(windowed[1], reference[1])
+
+
+@pytest.mark.parametrize("span", [1, 3, 10, 25])
+def test_span_window_respects_limit_and_is_optimal(span):
+    torch.manual_seed(span)
+    entry, collision = torch.randn(5, 37), torch.randn(5, 37)
+    e, c = constrained_decode(entry, collision, span)
+    for i in range(5):
+        assert 0 <= int(c[i]) - int(e[i]) <= span
+        chosen = float(entry[i, e[i]] + collision[i, c[i]])
+        assert chosen == pytest.approx(
+            _best_feasible_score(entry[i], collision[i], span)
+        )
+
+
+def test_span_window_rejects_an_implausibly_early_entry():
+    entry = torch.full((1, 300), -5.0)
+    collision = torch.full((1, 300), -5.0)
+    entry[0, 5], entry[0, 250] = 4.0, 3.0  # strongest ENTRY is 275 frames early
+    collision[0, 280] = 4.0
+    assert [int(x) for x in constrained_decode(entry, collision)] == [5, 280]
+    assert [int(x) for x in constrained_decode(entry, collision, 200)] == [250, 280]
+
+
+def test_validation_max_span_frames_config():
+    from stage2.utils.utils import validation_max_span_frames
+
+    assert validation_max_span_frames({}) is None
+    assert validation_max_span_frames({"validation": {"max_span_frames": None}}) is None
+    assert validation_max_span_frames({"validation": {"max_span_frames": 200}}) == 200
+    for bad in (0, -3, 2.5, True, "200"):
+        with pytest.raises(ValueError, match="positive integer"):
+            validation_max_span_frames({"validation": {"max_span_frames": bad}})
+
+
+def test_only_validation_passes_the_span_window():
+    trainer = tiny_joint_trainer(epochs=1, val_every=1)
+    trainer.validation_max_span_frames = 200
+    seen = []
+    original = trainer._forward
+
+    def spy(batch, reduction="none", **kwargs):
+        seen.append(kwargs.get("max_span_frames"))
+        return original(batch, reduction)
+
+    trainer._forward = spy
+    trainer.train_loop()
+    assert 200 in seen, "validate() must pass the configured window"
+    assert None in seen, "training metrics must stay unconstrained"
+
+
 def test_temporal_policy_is_seventy_fifteen_fifteen():
     probabilities = temporal_probabilities(None)
     assert probabilities == {
@@ -1247,7 +1363,7 @@ def tiny_joint_trainer(epochs, val_every, checkpoint_metric="loss"):
     from stage2.trainer.trainer import Trainer
 
     class TinyTrainer(Trainer):
-        def _forward(self, batch, reduction="none"):
+        def _forward(self, batch, reduction="none", **_):
             losses = self.model(batch).flatten().square()
             return losses, {
                 **{

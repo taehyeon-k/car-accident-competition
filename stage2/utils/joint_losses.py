@@ -72,10 +72,34 @@ def joint_loss(
     return total, parts
 
 
-def constrained_decode(entry_logits: torch.Tensor, collision_logits: torch.Tensor):
-    """Return the maximum-score pair satisfying entry <= collision in O(T)."""
-    prefix_score, prefix_index = torch.cummax(entry_logits, dim=-1)
-    joint = prefix_score + collision_logits
+def constrained_decode(
+    entry_logits: torch.Tensor,
+    collision_logits: torch.Tensor,
+    max_span_frames: int | None = None,
+):
+    """Return the maximum-score pair satisfying entry <= collision.
+
+    With ``max_span_frames`` the pair must also satisfy
+    ``collision - entry <= max_span_frames``, which stops ENTRY landing seconds
+    before an otherwise correct COLLISION. Ties resolve exactly as in the
+    unconstrained path - the latest ENTRY among equal scores (``torch.cummax``)
+    and the earliest COLLISION (``argmax``) - so a window covering the whole clip
+    reproduces it exactly. bf16 logits produce exact ties, so this matters.
+    """
+    if max_span_frames is None:
+        prefix_score, prefix_index = torch.cummax(entry_logits, dim=-1)
+        joint = prefix_score + collision_logits
+        collision = joint.argmax(-1)
+        entry = prefix_index.gather(1, collision[:, None]).squeeze(1)
+        return entry, collision
+    length = entry_logits.shape[-1]
+    span = min(int(max_span_frames), length - 1)
+    padded = torch.nn.functional.pad(entry_logits, (span, 0), value=-float("inf"))
+    # windows[:, c, k] holds the ENTRY score for frame c - span + k.
+    windows = padded.unfold(-1, span + 1, 1)
+    back = windows.flip(-1).argmax(-1)  # frames before c; latest wins ties
+    joint = windows.max(-1).values + collision_logits
     collision = joint.argmax(-1)
-    entry = prefix_index.gather(1, collision[:, None]).squeeze(1)
+    positions = torch.arange(length, device=entry_logits.device)
+    entry = (positions[None, :] - back).gather(1, collision[:, None]).squeeze(1)
     return entry, collision

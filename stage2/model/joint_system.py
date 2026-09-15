@@ -54,6 +54,8 @@ class OnlineDinoLocal(nn.Module):
         from torchvision.ops import roi_align
 
         b, t = rgb.shape[:2]
+        # The loader ships float16; match the encoder so CPU runs work unautocast.
+        rgb = rgb.to(dtype=next(self.encoder.parameters()).dtype)
         flat = rgb.reshape(b * t, *rgb.shape[2:])
         boxes = roi_boxes.reshape(b * t, *roi_boxes.shape[2:])
         valid = object_valid.reshape(b * t, -1)
@@ -111,6 +113,7 @@ class OnlineJointGlobal(nn.Module):
             )
 
     def forward(self, rgb, time_valid):
+        rgb = rgb.to(dtype=next(self.encoder.parameters()).dtype)
         features, times = [], []
         for sample in range(len(rgb)):
             length = int(time_valid[sample].sum())

@@ -86,75 +86,67 @@ def _as_unit_float(image: torch.Tensor) -> torch.Tensor:
     return image.to(dtype=torch.float32)
 
 
-def letterbox(
+def letterbox_resize(
     image: torch.Tensor,
     size: int,
-) -> tuple[torch.Tensor, Letterbox]:
-    """Resize, mean-colour letterbox, and ImageNet-normalize one CHW RGB image.
+) -> torch.Tensor:
+    """Resize a CHW RGB image to fit inside ``size`` square, still in [0, 1].
 
-    ``torchvision.transforms.functional.resize`` is used instead of a handwritten
-    interpolation call. A custom canvas remains necessary because torchvision's
-    tensor padding accepts a scalar fill, while this architecture requires a
-    three-channel ImageNet-mean fill. It also preserves the exact pad offsets for
-    detector-box to ROIAlign-coordinate conversion.
+    Split out from :func:`letterbox` so clip augmentation can run at backbone
+    resolution instead of native resolution, and so it never touches the padding.
     """
     if image.ndim != 3 or image.shape[0] != 3:
         raise ValueError("Expected a CHW RGB image with exactly three channels")
-
     _, original_height, original_width = image.shape
     if size <= 0 or original_width <= 0 or original_height <= 0:
         raise ValueError("Image and target dimensions must be positive")
-    scale = min(
-        size / original_width,
-        size / original_height,
-    )
-    resized_width = max(
-        1,
-        round(original_width * scale),
-    )
-    resized_height = max(
-        1,
-        round(original_height * scale),
-    )
-
-    unit_float = _as_unit_float(image)
-    resized = TVF.resize(
-        unit_float,
-        size=[resized_height, resized_width],
+    scale = min(size / original_width, size / original_height)
+    return TVF.resize(
+        _as_unit_float(image),
+        size=[
+            max(1, round(original_height * scale)),
+            max(1, round(original_width * scale)),
+        ],
         interpolation=InterpolationMode.BILINEAR,
         antialias=True,
     )
 
-    # Letterbox before Normalize: after Normalize this mean-colour padding is zero.
+
+def letterbox_pad_normalize(
+    resized: torch.Tensor,
+    size: int,
+    original_width: int,
+    original_height: int,
+) -> tuple[torch.Tensor, Letterbox]:
+    """Mean-colour pad a resized image to square, then ImageNet-normalize it.
+
+    A custom canvas remains necessary because torchvision's tensor padding takes
+    a scalar fill while this architecture requires a three-channel ImageNet-mean
+    fill. Padding before Normalize is what makes the border exactly zero, so the
+    padding must never be augmented.
+    """
+    resized_height, resized_width = resized.shape[-2:]
     mean_colour = torch.tensor(
         IMAGENET_MEAN,
         dtype=resized.dtype,
         device=resized.device,
     )
-    canvas = (
-        mean_colour[:, None, None]
-        .expand(
-            3,
-            size,
-            size,
-        )
-        .clone()
-    )
+    canvas = mean_colour[:, None, None].expand(3, size, size).clone()
     pad_x = (size - resized_width) // 2
     pad_y = (size - resized_height) // 2
     canvas[:, pad_y : pad_y + resized_height, pad_x : pad_x + resized_width] = resized
+    normalized = TVF.normalize(canvas, mean=IMAGENET_MEAN, std=IMAGENET_STD)
+    return normalized, letterbox_metadata(original_width, original_height, size)
 
-    normalized = TVF.normalize(
-        canvas,
-        mean=IMAGENET_MEAN,
-        std=IMAGENET_STD,
-    )
-    transform = letterbox_metadata(
-        original_width,
-        original_height,
-        size,
-    )
-    return normalized, transform
+
+def letterbox(
+    image: torch.Tensor,
+    size: int,
+) -> tuple[torch.Tensor, Letterbox]:
+    """Resize, mean-colour letterbox, and ImageNet-normalize one CHW RGB image."""
+    _, original_height, original_width = image.shape
+    resized = letterbox_resize(image, size)
+    return letterbox_pad_normalize(resized, size, original_width, original_height)
 
 
 def box_to_grid(

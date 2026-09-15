@@ -15,7 +15,11 @@ from stage2.model.joint_system import JointSystem
 from stage2.utils.joint_metrics import JointMetricAccumulator, joint_metric_packet
 from stage2.utils.joint_losses import joint_loss
 from stage2.utils.checkpoint import rank_rng_states, restore_rng, save_checkpoint
-from stage2.utils.utils import source_name, validate_config
+from stage2.utils.utils import (
+    source_name,
+    validate_config,
+    validation_max_span_frames,
+)
 from stage2.utils.tracking import TrainingMetrics
 from stage2.utils.early_stopping import EarlyStopping
 
@@ -89,6 +93,8 @@ class Trainer:
         self.accelerator = accelerator
         self.config = config
         self.stage = config["stage"]
+        # Validation-only decode window; training metrics stay unconstrained.
+        self.validation_max_span_frames = validation_max_span_frames(config)
         self.step = 0
         self.best_validation_loss = float("inf")
         self.best_competition_score = -float("inf")
@@ -197,6 +203,7 @@ class Trainer:
         self,
         batch: dict[str, torch.Tensor],
         reduction: str = "mean",
+        max_span_frames: int | None = None,
     ):
         """Run the joint model and pair its losses with per-sample metric counts."""
         outputs = self.model(batch)
@@ -206,7 +213,10 @@ class Trainer:
             reduction=reduction,
             **self.config.get("loss", {}),
         )
-        return loss, {**components, **joint_metric_packet(outputs, batch)}
+        return loss, {
+            **components,
+            **joint_metric_packet(outputs, batch, max_span_frames),
+        }
 
     def validate(self) -> float:
         """Return globally averaged validation loss without updating model state."""
@@ -222,6 +232,7 @@ class Trainer:
                     losses, metrics = self._forward(
                         batch,
                         reduction="none",
+                        max_span_frames=self.validation_max_span_frames,
                     )
                 packet = {"loss": losses, **metrics}
                 if self.validation_sources:

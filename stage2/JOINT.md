@@ -134,7 +134,10 @@ At each validation interval log train/val ENTRY and COLLISION accuracy within
 ±0.3 seconds, both attribute macro-F1 values, the weighted competition score,
 validation losses, and `train_config/{epoch,lr_lora,lr_new_parameters}`. Decoding is
 shared with inference and maximizes the joint event logits subject to ENTRY ≤
-COLLISION. With frozen encoders there are no trainable LoRA parameters; its LR is 0.
+COLLISION. Validation decoding additionally requires `COLLISION - ENTRY <=
+validation.max_span_frames` (200 frames by default; a frame count because test FPS
+is unknown). Training metrics and `joint_test.py` inference are not constrained
+by it. With frozen encoders there are no trainable LoRA parameters; its LR is 0.
 
 `logging.checkpoint_metric` accepts `loss` (minimize) or `competition_score`
 (maximize). The workspace default remains `loss` until equivalence with the

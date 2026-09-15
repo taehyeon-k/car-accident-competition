@@ -7,9 +7,9 @@ from stage2.utils.joint_losses import constrained_decode
 
 
 @torch.no_grad()
-def joint_metric_packet(outputs, batch):
+def joint_metric_packet(outputs, batch, max_span_frames=None):
     entry, collision = constrained_decode(
-        outputs["entry_logits"], outputs["collision_logits"]
+        outputs["entry_logits"], outputs["collision_logits"], max_span_frames
     )
     seconds = batch["frame_seconds"].float()
     result = {}
