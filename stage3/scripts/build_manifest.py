@@ -4,9 +4,22 @@ import argparse
 import json
 from pathlib import Path
 
+import av
 import numpy as np
 
 from stage3.data.adapters.baton import BatonAdapter
+
+
+def video_end_time(path: str | Path) -> float:
+    """Return the end timestamp of the first video stream in seconds."""
+    with av.open(str(path)) as container:
+        stream = container.streams.video[0]
+        if stream.duration is not None:
+            start = 0 if stream.start_time is None else stream.start_time
+            return float((start + stream.duration) * stream.time_base)
+        if container.duration is not None:
+            return float(container.duration / av.time_base)
+    raise ValueError(f"Could not determine video duration: {path}")
 
 
 def main() -> None:
@@ -29,7 +42,7 @@ def main() -> None:
     output.mkdir(parents=True, exist_ok=True)
     partitions = {"train": [], "val": [], "all": []}
     for record in records:
-        duration = float(record.signals.t[-1])
+        duration = min(float(record.signals.t[-1]), video_end_time(record.video_path))
         for segment_index, start in enumerate(np.arange(0.0, duration, args.segment_seconds)):
             end = min(float(start + args.segment_seconds), duration)
             if end - start < 2.0:

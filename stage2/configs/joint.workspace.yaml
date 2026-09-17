@@ -1,6 +1,6 @@
 seed: 42
 stage: joint
-output_dir: car-accident/runs/joint_online_lora_span_lr_dr
+output_dir: car-accident/runs/joint_online_new
 resume: null
 data:
   manifest: data/stage2/manifests/train.jsonl
@@ -19,14 +19,14 @@ model:
   geometry_embedding_dim: 64
   spatial:
     layers: 1
-    heads: 4
+    heads: 8
     ffn_dim: 768
-    dropout: 0.10
+    dropout: 0.20
   temporal:
-    hybrid_blocks: 1
-    heads: 4
+    hybrid_blocks: 2
+    heads: 8
     ffn_dim: 768
-    dropout: 0.10
+    dropout: 0.20
   attribute_hidden_dim: 64
   attribute_dropout: 0.15
   vjepa_clip_batch_size: 1
@@ -34,8 +34,8 @@ model:
   lora_rank: 8
   lora_alpha: 16
   lora_dropout: 0.10
-  dino_lora_blocks: 2
-  vjepa_lora_blocks: 4
+  dino_lora_blocks: 1
+  vjepa_lora_blocks: 1
   dino_checkpoint: pretrained/dinov3_vitb16/dinov3_vitb16_pretrain_lvd1689m-73cec8be.pth
   dino_factory: stage2.model.local_assets:dino
   dino_batch_size: 8
@@ -46,19 +46,19 @@ model:
   rfdetr_factory: stage2.model.local_assets:detector
   geometry_batch_size: 4
 tracking:
-  detection_threshold: 0.2
-  max_center_distance: 0.2
+  detection_threshold: 0.3
+  max_center_distance: 0.3
   max_match_cost: 0.65
   max_gap: 2
   track_percentile: 90
 # GPU-memory control only. Independent of the semantic policy below, applied
 # after it, and never applied to validation or inference. Null disables it.
 training_memory:
-  max_frames: 1024
+  max_frames: 512
 temporal_augmentation:
   full_video: 0.70
-  ordinary_crop: 0.15
-  pre_video_entry: 0.15
+  ordinary_crop: 0.30
+  pre_video_entry: 0
 augmentation:
   horizontal_flip:
     probability: 0.50
@@ -72,7 +72,7 @@ augmentation:
       factor_min: 0.80
       factor_max: 1.20
     gamma:
-      probability: 0.25
+      probability: 0.5
       gamma_min: 0.85
       gamma_max: 1.15
     saturation:
@@ -86,7 +86,7 @@ augmentation:
       quality_min: 60
       quality_max: 95
     gaussian_blur:
-      probability: 0.10
+      probability: 0.2
       kernel_size: 5
       sigma_min: 0.10
       sigma_max: 1.20
@@ -121,7 +121,7 @@ logging:
     enabled: True
     project: Car_Accident_Competition
     entity: null
-    name: joint-online-lora-dinov3-vjepa21s-span-dr
+    name: joint-online-lora-dinov3-vjepa21s-new
     group: null
     tags: [joint, dinov3, vjepa2.1]
     mode: online
