@@ -1269,6 +1269,36 @@ def test_only_validation_passes_the_span_window():
     assert None in seen, "training metrics must stay unconstrained"
 
 
+def test_compact_observations_host_transfer_is_output_identical():
+    from stage2.data.cache_geometry import compact_observations
+
+    torch.manual_seed(0)
+    boxes = torch.rand(30, 4) * 100
+    boxes[:, 2:] += boxes[:, :2]
+    scores = torch.rand(30)
+    labels = ["car", "truck", "person"] * 10
+    from_tensors = compact_observations(
+        {"boxes": boxes, "scores": scores, "labels": labels}, 200, 200, 0.2
+    )
+    from_lists = compact_observations(
+        {"boxes": list(boxes), "scores": [float(x) for x in scores], "labels": labels},
+        200,
+        200,
+        0.2,
+    )
+    assert torch.equal(from_tensors["boxes"], from_lists["boxes"])
+    assert torch.equal(from_tensors["scores"], from_lists["scores"])
+    assert from_tensors["labels"] == from_lists["labels"]
+    assert "person" not in from_tensors["labels"]
+    empty = compact_observations(
+        {"boxes": torch.zeros(0, 4), "scores": torch.zeros(0), "labels": []},
+        10,
+        10,
+        0.2,
+    )
+    assert empty["boxes"].shape == (0, 4) and not empty["labels"]
+
+
 def test_temporal_policy_is_seventy_fifteen_fifteen():
     probabilities = temporal_probabilities(None)
     assert probabilities == {

@@ -1,0 +1,51 @@
+seed: 42
+stage: stage3
+root_dir: /workspace
+output_dir: car-accident/runs/stage3/baseline_v1_2
+resume: null
+
+data:
+  manifest: data/stage3/manifests/train.jsonl
+  val_manifest: data/stage3/manifests/val.jsonl
+  cache_dir: cache/stage3/motion
+  statistics: cache/stage3/physics_stats.pt
+  crop_frames: 96
+  event_fraction: 0.50
+  event_position_margin: 8
+  flip_probability: 0.50
+  batch_size: 8
+  num_workers: 4
+
+timing: {target_hz: 10.0, max_selection_error: 0.04, large_gap_seconds: 0.20}
+flow:
+  backend: sea_raft
+  version: "official-9137517-sea-raft-s"
+  source_path: pretrained/sea_raft/source
+  checkpoint: pretrained/sea_raft/model.safetensors
+  checkpoint_sha256: 9752a49fca0a3f33551d51fec7bc5bd87f93a155b1e9fadd803e8176f4edb423
+  factory: official_sea_raft_s
+  working_size: [192, 336]
+  batch_size: 4
+  device: cuda
+calibration: {focal_mode: prior, hfov_prior_deg: 90.0, known_focal_px: null}
+geometry: {canonical_size: [96, 168]}
+targets: {smoothing_seconds: [0.5, 1.5], savgol_polyorder: 2, require_direct_acceleration: true, stopped_speed_mps: 0.15}
+model:
+  motion_cnn: {widths: [32, 64, 96, 128], blocks_per_stage: 1, pooling: attention}
+  physics_dropout: 0.05
+  head_dropout: 0.05
+  yaw_aux: true
+  tcn: {dim: 128, kernel_size: 3, dilations: [1, 2, 4, 8, 16], dropout: 0.10, causal: false, padding_mode: replicate}
+loss:
+  weights: {accel_direct: 1.00, ordinal: 0.50, stopped: 0.50, speed: 0.20, accel_speed_consistency: 0.10, steering_angle: 0.25, yaw_aux: 0.10}
+  ordinal: {samples: 8, range: [-3.0, 3.0], temperature: 0.25}
+  steering_delta: 2.0
+decoder:
+  acceleration: {decelerating_below: -0.25, accelerating_above: 0.25, stopped_probability: 0.50, emission_scale: 0.50, potts_penalty: 1.0}
+  steering: {threshold_deg: 5.0, emission_scale_deg: 5.0, potts_penalty: 1.0}
+optimization: {epochs: 20, accumulation_steps: 1, mixed_precision: bf16, optimizer: adamw, learning_rate: 3.0e-4, weight_decay: 0.05, grad_clip_norm: 1.0, scheduler: cosine, warmup_ratio: 0.05, ema_decay: 0.999}
+early_stopping: {enabled: true, patience: 4}
+logging:
+  log_every: 20
+  val_every: 1
+  wandb: {enabled: false, project: Car_Accident_Competition, name: stage3-motion-tcn-v1.2, group: stage3, mode: offline}

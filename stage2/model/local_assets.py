@@ -106,7 +106,11 @@ def detector():
                 {
                     "boxes": p["boxes"],
                     "scores": p["scores"],
-                    "labels": [classes.get(int(i), "other") for i in p["labels"]],
+                    # One .tolist() instead of int() per element: iterating a CUDA
+                    # tensor syncs once per candidate (300 per frame). Same labels.
+                    "labels": [
+                        classes.get(int(i), "other") for i in p["labels"].tolist()
+                    ],
                 }
                 for p in predictions
             ]

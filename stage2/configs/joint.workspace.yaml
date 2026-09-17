@@ -1,6 +1,6 @@
 seed: 42
 stage: joint
-output_dir: car-accident/runs/joint_online_lora_span_lr
+output_dir: car-accident/runs/joint_online_lora_span_lr_dr
 resume: null
 data:
   manifest: data/stage2/manifests/train.jsonl
@@ -33,7 +33,7 @@ model:
   vjepa_activation_checkpointing: true
   lora_rank: 8
   lora_alpha: 16
-  lora_dropout: 0.05
+  lora_dropout: 0.10
   dino_lora_blocks: 2
   vjepa_lora_blocks: 4
   dino_checkpoint: pretrained/dinov3_vitb16/dinov3_vitb16_pretrain_lvd1689m-73cec8be.pth
@@ -54,7 +54,7 @@ tracking:
 # GPU-memory control only. Independent of the semantic policy below, applied
 # after it, and never applied to validation or inference. Null disables it.
 training_memory:
-  max_frames: 512
+  max_frames: 1024
 temporal_augmentation:
   full_video: 0.70
   ordinary_crop: 0.15
@@ -96,13 +96,13 @@ augmentation:
       std_max: 0.025
 loss:
   entry_sigma_seconds: 0.20
-  collision_sigma_seconds: 0.20
+  collision_sigma_seconds: 0.10
 optimization:
   epochs: 20
   accumulation_steps: 2
   mixed_precision: bf16
-  dino_lora_lr: 4.0e-6
-  vjepa_lora_lr: 3.0e-6
+  dino_lora_lr: 5.0e-6
+  vjepa_lora_lr: 5.0e-6
   new_lr: 3.0e-4
   weight_decay: 0.05
   warmup_ratio: 0.08
@@ -121,7 +121,7 @@ logging:
     enabled: True
     project: Car_Accident_Competition
     entity: null
-    name: joint-online-lora-dinov3-vjepa21s-span
+    name: joint-online-lora-dinov3-vjepa21s-span-dr
     group: null
     tags: [joint, dinov3, vjepa2.1]
     mode: online

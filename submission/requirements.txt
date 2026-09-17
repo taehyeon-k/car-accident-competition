@@ -1,0 +1,10 @@
+# Stage 2 detector. torch, torchvision, numpy, pandas, opencv and av are
+# preinstalled on the evaluation server and deliberately not pinned here.
+rfdetr==1.10.1
+transformers==5.16.1
+supervision==0.30.2
+pydantic==2.13.5
+pydeprecate==0.9.0
+huggingface-hub==1.31.0
+tokenizers==0.23.2
+safetensors==0.8.0
