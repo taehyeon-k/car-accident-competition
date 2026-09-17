@@ -41,7 +41,9 @@ python -m stage3.scripts.validate_cache \
 
 The schema-2 cache uses versioned, per-channel uint8 motion quantization and gzip.
 It stores synchronized raw signals, not fixed labels, so smoothing and target
-settings can change without recomputing optical flow.
+settings can change without recomputing optical flow. Dense track/rho transport
+uses batched CUDA scatter-add with `geometry.tracking_batch_size` (default 32);
+the scalar NumPy implementation remains available as the CPU fallback.
 
 ## Compute training statistics
 

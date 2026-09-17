@@ -9,7 +9,7 @@ from .foe import estimate_foe
 from .physics_features import physics_vector
 from .rho import radial_expansion, rho_from_expansion
 from .rotation import estimate_rotation
-from .tracks import advect_scalar
+from .tracks import advect_lagged_fields, advect_scalar
 
 
 def build_motion_features(
@@ -19,6 +19,8 @@ def build_motion_features(
     calibration_cfg: dict,
     output_hw: tuple[int, int] = (96, 168),
     calibration_frame: np.ndarray | None = None,
+    tracking_device: str | None = None,
+    tracking_batch_size: int = 32,
 ) -> tuple[np.ndarray, np.ndarray, dict[str, np.ndarray]]:
     """Convert forward flows into canonical 10-channel maps and 20-D physics."""
     t, _, h, w = flows.shape
@@ -52,19 +54,39 @@ def build_motion_features(
     for i, (omega, _, _) in enumerate(rotations):
         dt = 0.1 if i == 0 else max(float(actual_times[i] - actual_times[i - 1]), 1e-3)
         pitch_rates.append(float(omega[0] / dt))
+    tracked_by_lag: dict[int, tuple[np.ndarray, np.ndarray]] = {}
+    batched_tracking_start = perf_counter()
+    if tracking_device is not None:
+        import torch
+
+        requested_device = torch.device(tracking_device)
+        if requested_device.type != "cuda" or torch.cuda.is_available():
+            expansion_array = np.asarray(expansions, dtype=np.float32)
+            flow_array = np.asarray(derotated_all, dtype=np.float32)
+            for lag in (2, 4):
+                tracked_by_lag[lag] = advect_lagged_fields(
+                    expansion_array, flow_array, lag, requested_device, tracking_batch_size
+                )
+    tracks_rho_seconds += perf_counter() - batched_tracking_start
     for i in range(t):
         dt = 0.1 if i == 0 else max(float(actual_times[i] - actual_times[i - 1]), 1e-3)
         zero = np.zeros((h, w), np.float32)
         false = np.zeros((h, w), bool)
         operation_start = perf_counter()
         if i >= 2:
-            tracked2, track_valid2 = advect_scalar(expansions[i - 2], derotated_all[i - 1 : i + 1])
+            if 2 in tracked_by_lag:
+                tracked2, track_valid2 = tracked_by_lag[2][0][i], tracked_by_lag[2][1][i]
+            else:
+                tracked2, track_valid2 = advect_scalar(expansions[i - 2], derotated_all[i - 1 : i + 1])
             rho2, valid2 = rho_from_expansion(tracked2, expansions[i], actual_times[i] - actual_times[i - 2])
             valid2 &= track_valid2
         else:
             rho2, valid2 = zero, false
         if i >= 4:
-            tracked4, track_valid4 = advect_scalar(expansions[i - 4], derotated_all[i - 3 : i + 1])
+            if 4 in tracked_by_lag:
+                tracked4, track_valid4 = tracked_by_lag[4][0][i], tracked_by_lag[4][1][i]
+            else:
+                tracked4, track_valid4 = advect_scalar(expansions[i - 4], derotated_all[i - 3 : i + 1])
             rho4, valid4 = rho_from_expansion(tracked4, expansions[i], actual_times[i] - actual_times[i - 4])
             valid4 &= track_valid4
         else:

@@ -62,7 +62,9 @@ def cache_record(record: ClipRecord, cfg: dict[str, Any], output: str | Path, ma
     estimator = estimator or build_flow_estimator(cfg["flow"], device)
     flows, confidence = estimator.estimate_sequence(frames)
     motion, physics, geometry_meta = build_motion_features(
-        flows, confidence, decoded.actual_times, cfg["calibration"], tuple(cfg["geometry"]["canonical_size"]), frames[0]
+        flows, confidence, decoded.actual_times, cfg["calibration"], tuple(cfg["geometry"]["canonical_size"]), frames[0],
+        tracking_device=device or cfg["flow"].get("device"),
+        tracking_batch_size=int(cfg["geometry"].get("tracking_batch_size", 32)),
     )
     raw_signals = None
     if record.signals is not None:

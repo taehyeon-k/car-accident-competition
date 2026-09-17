@@ -47,7 +47,9 @@ class Stage3Predictor:
         # Competition contract is fixed 0.1 s and does not use PTS for dt.
         fixed_times = np.arange(len(frames), dtype=np.float64) * 0.1
         motion, physics, geometry_metadata = build_motion_features(
-            flows, confidence, fixed_times, self.cfg["calibration"], tuple(self.cfg["geometry"]["canonical_size"]), frames[0]
+            flows, confidence, fixed_times, self.cfg["calibration"], tuple(self.cfg["geometry"]["canonical_size"]), frames[0],
+            tracking_device=str(self.device),
+            tracking_batch_size=int(self.cfg["geometry"].get("tracking_batch_size", 32)),
         )
         timing["geometry"] = perf_counter() - geometry_start
         for name in ("calibration", "rotation", "foe", "tracks_rho", "feature_construction"):

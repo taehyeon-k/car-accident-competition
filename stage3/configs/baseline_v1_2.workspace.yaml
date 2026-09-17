@@ -25,10 +25,10 @@ flow:
   checkpoint_sha256: 9752a49fca0a3f33551d51fec7bc5bd87f93a155b1e9fadd803e8176f4edb423
   factory: official_sea_raft_s
   working_size: [192, 336]
-  batch_size: 4
+  batch_size: 16
   device: cuda
 calibration: {focal_mode: prior, hfov_prior_deg: 90.0, known_focal_px: null}
-geometry: {canonical_size: [96, 168]}
+geometry: {canonical_size: [96, 168], tracking_batch_size: 32}
 targets: {smoothing_seconds: [0.5, 1.5], savgol_polyorder: 2, require_direct_acceleration: true, stopped_speed_mps: 0.15}
 model:
   motion_cnn: {widths: [32, 64, 96, 128], blocks_per_stage: 1, pooling: attention}
