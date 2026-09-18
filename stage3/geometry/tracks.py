@@ -66,7 +66,7 @@ def _forward_splat_torch(
         safe_y = torch.where(keep, yi, torch.zeros_like(yi)).clamp(0, height - 1).long()
         flat_index = (safe_y * width + safe_x).flatten(1)
         kept_weight = torch.where(keep, weight, torch.zeros_like(weight)).flatten(1)
-        total.scatter_add_(1, flat_index, (values * kept_weight.view_as(values)).flatten(1))
+        total.scatter_add_(1, flat_index, (torch.where(base_valid, values, 0.) * kept_weight.view_as(values)).flatten(1))
         weight_total.scatter_add_(1, flat_index, kept_weight)
 
     output_valid = weight_total > 1e-5

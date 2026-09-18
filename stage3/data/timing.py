@@ -100,16 +100,19 @@ def decode_external_training_video(
 
 def decode_dacon_stage3_video(path: str | Path, max_frames: int | None = None) -> DecodedVideo:
     """Decode every frame 1:1; private DACON sample indices ignore PTS."""
-    frames, times = [], []
-    for frame, timestamp in _decoded_frames(path):
-        frames.append(frame)
-        times.append(timestamp)
-        if max_frames is not None and len(frames) >= max_frames:
-            break
+    import av
+
+    if max_frames is not None and max_frames < 1:
+        raise ValueError("max_frames must be positive")
+    frames = []
+    with av.open(str(path)) as container:
+        stream = container.streams.video[0]
+        for frame in container.decode(stream):
+            frames.append(frame.to_ndarray(format="rgb24"))
+            if max_frames is not None and len(frames) >= max_frames:
+                break
     if not frames:
         raise ValueError(f"No frames decoded from {path}")
     n = len(frames)
     target = np.arange(n, dtype=np.float64) * 0.1
-    return DecodedVideo(
-        frames, np.asarray(times), target, np.ones(n, bool), np.arange(n, dtype=np.int64)
-    )
+    return DecodedVideo(frames, target.copy(), target, np.ones(n, bool), np.arange(n, dtype=np.int64))

@@ -34,5 +34,16 @@ class TemporalConvNet(nn.Module):
         self.blocks = nn.Sequential(*(TCNBlock(dim, d, dropout, causal, kernel_size, padding_mode) for d in dilations))
         self.receptive_field = 1 + (kernel_size - 1) * sum(dilations)
 
-    def forward(self, value: torch.Tensor) -> torch.Tensor:
-        return self.blocks(value)
+    def forward(self, value: torch.Tensor, lengths: torch.Tensor | None = None) -> torch.Tensor:
+        if lengths is None:
+            return self.blocks(value)
+        lengths = lengths.to(device=value.device, dtype=torch.long)
+        if lengths.shape != (value.shape[0],) or torch.any(lengths < 1) or torch.any(lengths > value.shape[1]):
+            raise ValueError("lengths must contain one valid sequence length per batch item")
+        # Restore each sample's own replicated boundary before every layer.
+        index = torch.arange(value.shape[1], device=value.device)[None, :]
+        index = torch.minimum(index, lengths[:, None] - 1)
+        index = index[..., None].expand_as(value)
+        for block in self.blocks:
+            value = block(value.gather(1, index))
+        return value.gather(1, index)

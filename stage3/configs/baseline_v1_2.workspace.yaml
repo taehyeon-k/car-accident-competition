@@ -29,7 +29,7 @@ flow:
   device: cuda
 calibration: {focal_mode: prior, hfov_prior_deg: 90.0, known_focal_px: null}
 geometry: {canonical_size: [96, 168], tracking_batch_size: 32}
-targets: {smoothing_seconds: [0.5, 1.5], savgol_polyorder: 2, require_direct_acceleration: true, stopped_speed_mps: 0.15}
+targets: {smoothing_seconds: [0.5, 1.5], savgol_polyorder: 2, require_direct_acceleration: true, max_signal_gap_seconds: 0.25, stopped_speed_mps: 0.15}
 model:
   motion_cnn: {widths: [32, 64, 96, 128], blocks_per_stage: 1, pooling: attention}
   physics_dropout: 0.05
@@ -49,3 +49,6 @@ logging:
   log_every: 20
   val_every: 1
   wandb: {enabled: false, project: Car_Accident_Competition, name: stage3-motion-tcn-v1.2, group: stage3, mode: offline}
+
+inference:
+  cnn_chunk_frames: 32

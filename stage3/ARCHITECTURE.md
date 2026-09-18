@@ -8,8 +8,10 @@ Frozen SEA-RAFT-S produces forward flow and mixture-Laplace confidence at the
 configured working resolution. A horizontal-FOV prior determines focal length.
 Each flow is decomposed into robust 3-DoF rotational flow and derotated
 translation. The focus of expansion gives radial expansion. Dense forward
-tracks transport earlier expansion fields before the `k=2` and `k=4` temporal
-log ratios estimate `rho = a/v`.
+tracks use full image flow to transport earlier source-grid expansion fields.
+Finite-frame expansion is converted to an interval-midpoint estimate. The
+`k=2` and `k=4` temporal log ratios correct changing depth using a linear-speed
+(trapezoidal displacement) approximation to estimate interval-mean `rho = a/v`.
 
 Each frame becomes a `10 x 96 x 168` tensor containing flow velocity x/y, log
 magnitude, expansion, `rho(k=2)`, rho validity, flow confidence, the fixed/static
@@ -37,3 +39,16 @@ speed supervise only the 0.10-weight consistency term. Steering-wheel angle is
 the lateral target and the only input to LEFT/STRAIGHT/RIGHT decoding. Configured
 physical thresholds produce emissions followed by independent Potts Viterbi
 decoding for acceleration and steering.
+
+Validation masks missing timestamps and targets explicitly. Steering Macro-F1
+excludes ground-truth STOPPED frames; inference still emits steering labels for
+every frame. Sequence lengths are propagated through each TCN layer so batching
+with padding preserves predictions throughout each valid sequence.
+
+On CUDA, `geometry/cuda.py` batches robust rotation/FOE fitting and keeps expansion,
+transport, and rho tensors on-device across both lags. NumPy is the reference path;
+canonical resizing and feature pooling share the existing CPU implementation.
+CNN inference is chunked by frames while retaining the complete TCN sequence.
+CAN validity and gap boundaries propagate through target interpolation/smoothing.
+Validation gathers complete samples and trims distributed batch duplicates before
+all metrics and checkpoint/early-stop decisions.

@@ -1,0 +1,80 @@
+{
+  "gpu": "NVIDIA L40S",
+  "torch": "2.8.0+cu128",
+  "frames": 301,
+  "flow_seconds": 1.3451240909998887,
+  "geometry": {
+    "cpu": {
+      "median_seconds": 9.909362786995189,
+      "runs_seconds": [
+        9.909362786995189,
+        9.775150448003842,
+        10.357787134998944
+      ],
+      "sections_seconds": {
+        "calibration": 1.2780001270584762e-05,
+        "rotation": 1.3568094230795396,
+        "foe": 0.27144959900761023,
+        "tracks_rho": 7.636833040909551,
+        "feature_construction": 0.8720661620245664
+      }
+    },
+    "cpu_fit_cuda_tracks": {
+      "median_seconds": 3.2195203809969826,
+      "runs_seconds": [
+        3.2195203809969826,
+        3.257757645995298,
+        3.211964477006404
+      ],
+      "sections_seconds": {
+        "calibration": 1.6710000636521727e-05,
+        "rotation": 1.3506971800525207,
+        "foe": 0.26689924998936476,
+        "tracks_rho": 0.5036309919669293,
+        "feature_construction": 0.8680073129726225
+      }
+    },
+    "cuda": {
+      "median_seconds": 1.2732429989991942,
+      "runs_seconds": [
+        1.3533301659990684,
+        1.2340875160007272,
+        1.2732429989991942
+      ],
+      "sections_seconds": {
+        "calibration": 1.1860000086016953e-05,
+        "rotation": 0.1210966540093068,
+        "foe": 0.0603083669921034,
+        "tracks_rho": 0.10444329800520791,
+        "feature_construction": 0.8704146009986289,
+        "transfers": 0.0863577189957141
+      }
+    }
+  },
+  "geometry_difference": {
+    "motion": {
+      "max_abs": 0.017578125,
+      "mean_abs": 1.766782276035883e-08,
+      "p99_abs": 5.960464477539062e-07
+    },
+    "physics": {
+      "max_abs": 7.033348083496094e-06,
+      "mean_abs": 1.0208007239498329e-07,
+      "p99_abs": 2.384185791015625e-06
+    }
+  },
+  "geometry_speedup_vs_cpu": 7.782774218891629,
+  "geometry_speedup_vs_previous_cuda": 2.528598534237077,
+  "model": {
+    "full": {
+      "seconds": 0.07945134599867743,
+      "extra_peak_MiB": 634.875
+    },
+    "chunked": {
+      "seconds": 0.07691228199837497,
+      "extra_peak_MiB": 71.8046875
+    }
+  },
+  "model_outputs_match": true,
+  "cnn_tf32": false
+}

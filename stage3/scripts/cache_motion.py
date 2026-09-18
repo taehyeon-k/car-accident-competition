@@ -5,7 +5,8 @@ from dataclasses import replace
 from pathlib import Path
 
 from stage3.data.adapters.baton import BatonAdapter
-from stage3.data.cache import cache_record
+from stage3.data.cache import cache_record, cache_key
+from stage3.utils.checkpoint import load_artifact
 from stage3.flow import build_flow_estimator
 from stage3.utils.config import load_config, read_jsonl
 
@@ -33,8 +34,10 @@ def main() -> None:
         record = replace(available[source_id], clip_id=row["clip_id"], metadata=row.get("metadata", available[source_id].metadata))
         output = Path(row["cache_path"])
         if output.exists() and not args.force:
-            print(f"skip {output}")
-            continue
+            if load_artifact(output).get("cache_key") == cache_key(cfg):
+                print(f"skip {output}")
+                continue
+            print(f"rebuild stale cache {output}")
         report = cache_record(record, cfg, output, args.max_frames, args.device, estimator)
         print(report)
 

@@ -17,7 +17,7 @@ from .adapters.base import ClipRecord
 from .timing import decode_external_training_video
 
 
-FEATURE_CODE_VERSION = "stage3-v1.2-geometry-2-uint8-gzip"
+FEATURE_CODE_VERSION = "stage3-v1.2-geometry-3-uint8-gzip"
 
 
 def quantize_motion(motion: np.ndarray) -> tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
@@ -29,10 +29,10 @@ def quantize_motion(motion: np.ndarray) -> tuple[torch.Tensor, torch.Tensor, tor
     return torch.from_numpy(encoded), torch.from_numpy(low), torch.from_numpy(scale)
 
 
-def dequantize_motion(value: dict) -> torch.Tensor:
+def dequantize_motion(value: dict, start: int = 0, stop: int | None = None) -> torch.Tensor:
     if "motion" in value:  # schema-1 development caches
-        return value["motion"].float()
-    return value["motion_q"].float() * value["motion_scale"][None, :, None, None] + value["motion_offset"][None, :, None, None]
+        return value["motion"][start:stop].float()
+    return value["motion_q"][start:stop].float() * value["motion_scale"][None, :, None, None] + value["motion_offset"][None, :, None, None]
 
 
 def cache_key(cfg: dict[str, Any]) -> str:
@@ -40,9 +40,10 @@ def cache_key(cfg: dict[str, Any]) -> str:
         "feature_code": FEATURE_CODE_VERSION,
         "flow": {k: cfg["flow"].get(k) for k in ("backend", "version", "working_size", "checkpoint_sha256")},
         "calibration": cfg["calibration"],
+        "timing": cfg.get("timing", {}),
         "canonical_grid": cfg["geometry"]["canonical_size"],
         "foe_version": 1,
-        "rho_version": 1,
+        "rho_version": 2,
     }
     return hashlib.sha256(json.dumps(identity, sort_keys=True).encode()).hexdigest()[:20]
 
@@ -65,6 +66,7 @@ def cache_record(record: ClipRecord, cfg: dict[str, Any], output: str | Path, ma
         flows, confidence, decoded.actual_times, cfg["calibration"], tuple(cfg["geometry"]["canonical_size"]), frames[0],
         tracking_device=device or cfg["flow"].get("device"),
         tracking_batch_size=int(cfg["geometry"].get("tracking_batch_size", 32)),
+        geometry_backend=cfg["geometry"].get("backend", "auto"),
     )
     raw_signals = None
     if record.signals is not None:

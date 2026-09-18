@@ -10,7 +10,6 @@ def test_whole_and_replicate_padded_valid_region_agree():
     padded = torch.cat((short, short[:, -1:].expand(-1, 9, -1)), dim=1)
     with torch.no_grad():
         expected = model(short)
-        actual = model(padded)[:, :21]
-    # Future context differs only inside the right receptive-field margin.
-    assert torch.allclose(actual[:, :-14], expected[:, :-14], atol=1e-6)
+        actual = model(padded, torch.tensor([21]))[:, :21]
+    assert torch.allclose(actual, expected, atol=1e-6)
     assert model.receptive_field == 15

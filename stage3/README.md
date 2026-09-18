@@ -109,3 +109,45 @@ python -m stage3.scripts.predict_dacon \
 The returned columns are exactly `ID`, `sample_index`, `accel_label`, and
 `steer_label`. DACON inference decodes every frame and emits sample indices
 `0..N-1`; it does not inspect FPS or resample PTS.
+
+Motion feature revision 3 corrects depth change and source-grid tracking in rho.
+Rebuild older motion caches, recompute training statistics, and retrain before
+using the corrected features. `cache_motion` automatically rebuilds caches whose
+keys differ; training rejects stale caches or statistics. Checkpoints now carry
+the feature version and cache identity. Inference and resume reject legacy or
+incompatible checkpoints rather than silently mixing feature definitions.
+
+Steering Macro-F1 excludes frames whose ground-truth acceleration label is
+`STOPPED`. This scoring mask does not remove rows: inference always returns both
+`accel_label` and `steer_label` for every decoded frame.
+
+CUDA geometry now batches rotation and FOE fitting, reuses resident tensors for
+both tracking lags, and computes rho before downloading the results. It is
+selected automatically with `--device cuda`; `geometry.backend: numpy` retains
+the reference fitting implementation (with GPU tracking when CUDA is selected).
+Final canonical resizing and robust physics pooling remain on CPU.
+
+Training dequantizes only the selected crop. `inference.cnn_chunk_frames` controls
+CNN frame batches (default 32) without splitting temporal context. Inference
+section timers synchronize CUDA so asynchronous work is charged to its section.
+
+Targets honor CAN validity and `targets.max_signal_gap_seconds` (default 0.25 s).
+Smoothing and speed derivatives operate within contiguous valid runs. Validation
+gathers complete clips across processes and removes distributed tail duplicates
+before scoring; steering predictions are still required on STOPPED frames.
+
+To reproduce the CUDA checks in the prepared container:
+
+```bash
+python -m pytest stage3/tests -q
+python -m stage3.scripts.smoke_cuda
+python -m stage3.scripts.benchmark_cuda \
+  --video /workspace/data/stage3/BATON-Sample/route_1/qcamera.mp4 \
+  --frames 301 --repeats 3 --output /tmp/stage3-cuda-benchmark.json
+```
+
+The smoke command uses temporary caches and checkpoints, including one bf16
+training step and resume. The benchmark compares all-CPU geometry, the former
+CPU-fitting/GPU-tracking path, and batched CUDA geometry. CNN equivalence and
+memory measurements disable cuDNN TF32 to separate batching from reduced-precision
+rounding; normal inference uses the environment's cuDNN precision settings.

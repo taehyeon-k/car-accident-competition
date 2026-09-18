@@ -21,15 +21,27 @@ def build_motion_features(
     calibration_frame: np.ndarray | None = None,
     tracking_device: str | None = None,
     tracking_batch_size: int = 32,
+    geometry_backend: str = "auto",
 ) -> tuple[np.ndarray, np.ndarray, dict[str, np.ndarray]]:
     """Convert forward flows into canonical 10-channel maps and 20-D physics."""
+    if geometry_backend not in {"auto", "numpy"}:
+        raise ValueError("geometry_backend must be auto or numpy")
     t, _, h, w = flows.shape
     motion = np.zeros((t, 10, *output_hw), np.float32)
     physics = np.zeros((t, 20), np.float32)
     calibration_start = perf_counter()
     focal = estimate_focal(w, h, calibration_cfg, calibration_frame)
     calibration_seconds = perf_counter() - calibration_start
+    if tracking_device is not None:
+        import torch
+        device = torch.device(tracking_device)
+        if geometry_backend == "auto" and device.type == "cuda" and torch.cuda.is_available():
+            from .cuda import build_cuda_features
+            return build_cuda_features(flows, confidences, actual_times, focal, output_hw, device,
+                                       tracking_batch_size, calibration_seconds)
     expansions, foes = [], []
+    intervals = np.r_[0.1, np.maximum(np.diff(actual_times), 1e-3)]
+    expansion_times = actual_times - intervals / 2
     rotations, derotated_all, quality = [], [], []
     rotation_seconds = 0.0
     foe_seconds = 0.0
@@ -43,11 +55,17 @@ def build_motion_features(
         foe, foe_inlier, foe_residual = estimate_foe(derotated, confidences[i])
         foe_seconds += perf_counter() - operation_start
         eta = radial_expansion(derotated, foe, dt)
+        # Forward displacement / source radius is delta_Z / Z_end.
+        # Convert to interval-midpoint expansion before comparing speed ratios.
+        denominator = 1 + 0.5 * dt * eta
+        eta = np.divide(eta, denominator, out=np.zeros_like(eta), where=denominator > 1e-6)
         expansions.append(eta)
         foes.append(foe)
         rotations.append((omega, rot_inlier, rot_residual))
         derotated_all.append(derotated)
         quality.append((foe_inlier, foe_residual))
+    transport_flows = np.zeros_like(flows)
+    transport_flows[1:] = flows[:-1]
     tracks_rho_seconds = 0.0
     feature_seconds = 0.0
     pitch_rates = []
@@ -62,7 +80,7 @@ def build_motion_features(
         requested_device = torch.device(tracking_device)
         if requested_device.type != "cuda" or torch.cuda.is_available():
             expansion_array = np.asarray(expansions, dtype=np.float32)
-            flow_array = np.asarray(derotated_all, dtype=np.float32)
+            flow_array = transport_flows
             for lag in (2, 4):
                 tracked_by_lag[lag] = advect_lagged_fields(
                     expansion_array, flow_array, lag, requested_device, tracking_batch_size
@@ -77,8 +95,8 @@ def build_motion_features(
             if 2 in tracked_by_lag:
                 tracked2, track_valid2 = tracked_by_lag[2][0][i], tracked_by_lag[2][1][i]
             else:
-                tracked2, track_valid2 = advect_scalar(expansions[i - 2], derotated_all[i - 1 : i + 1])
-            rho2, valid2 = rho_from_expansion(tracked2, expansions[i], actual_times[i] - actual_times[i - 2])
+                tracked2, track_valid2 = advect_scalar(expansions[i - 2], transport_flows[i - 1 : i + 1])
+            rho2, valid2 = rho_from_expansion(tracked2, expansions[i], expansion_times[i] - expansion_times[i - 2])
             valid2 &= track_valid2
         else:
             rho2, valid2 = zero, false
@@ -86,8 +104,8 @@ def build_motion_features(
             if 4 in tracked_by_lag:
                 tracked4, track_valid4 = tracked_by_lag[4][0][i], tracked_by_lag[4][1][i]
             else:
-                tracked4, track_valid4 = advect_scalar(expansions[i - 4], derotated_all[i - 3 : i + 1])
-            rho4, valid4 = rho_from_expansion(tracked4, expansions[i], actual_times[i] - actual_times[i - 4])
+                tracked4, track_valid4 = advect_scalar(expansions[i - 4], transport_flows[i - 3 : i + 1])
+            rho4, valid4 = rho_from_expansion(tracked4, expansions[i], expansion_times[i] - expansion_times[i - 4])
             valid4 &= track_valid4
         else:
             rho4, valid4 = zero, false

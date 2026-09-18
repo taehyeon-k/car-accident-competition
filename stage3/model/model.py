@@ -25,8 +25,18 @@ class Stage3MotionModel(nn.Module):
         )
         self.heads = MotionHeads(temporal["dim"], 64, cfg.get("head_dropout", 0.05), cfg.get("yaw_aux", True))
 
-    def forward(self, motion: torch.Tensor, physics: torch.Tensor) -> dict[str, torch.Tensor]:
-        spatial = self.motion_cnn(motion)
+    def encode_motion(self, motion: torch.Tensor, chunk_frames: int | None = None) -> torch.Tensor:
+        if chunk_frames is None:
+            return self.motion_cnn(motion)
+        if chunk_frames < 1:
+            raise ValueError("chunk_frames must be positive")
+        device = next(self.parameters()).device
+        return torch.cat([self.motion_cnn(motion[:, start:start + chunk_frames].to(device))
+                          for start in range(0, motion.shape[1], chunk_frames)], dim=1)
+
+    def forward(self, motion: torch.Tensor, physics: torch.Tensor, lengths: torch.Tensor | None = None,
+                chunk_frames: int | None = None) -> dict[str, torch.Tensor]:
+        spatial = self.encode_motion(motion, chunk_frames)
         physical = self.physics_mlp(physics)
-        encoded = self.temporal(self.fusion(torch.cat((spatial, physical), dim=-1)))
+        encoded = self.temporal(self.fusion(torch.cat((spatial, physical), dim=-1)), lengths)
         return self.heads(encoded)

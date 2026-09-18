@@ -50,11 +50,19 @@ def load_artifact(path: str | Path, weights_only: bool = False):
 
 
 def save_checkpoint(path: str | Path, **state: Any) -> None:
-    atomic_save({"format_version": FORMAT_VERSION, **state}, path)
+    from stage3.data.cache import FEATURE_CODE_VERSION, cache_key
+
+    atomic_save({**state, "format_version": FORMAT_VERSION,
+                 "feature_version": FEATURE_CODE_VERSION,
+                 "feature_cache_key": cache_key(state["config"])}, path)
 
 
 def load_checkpoint(path: str | Path, map_location: str | torch.device = "cpu") -> dict:
     value = torch.load(path, map_location=map_location, weights_only=False)
     if value.get("format_version") != FORMAT_VERSION:
         raise ValueError(f"Unsupported Stage 3 checkpoint format: {value.get('format_version')}")
+    from stage3.data.cache import FEATURE_CODE_VERSION, cache_key
+
+    if value.get("feature_version") != FEATURE_CODE_VERSION or value.get("feature_cache_key") != cache_key(value["config"]):
+        raise ValueError("Incompatible Stage 3 feature version; rebuild caches/statistics and retrain. Legacy checkpoints cannot be resumed or used for inference.")
     return value

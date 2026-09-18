@@ -23,7 +23,7 @@ TARGET_NAMES = (
 
 
 class CachedMotionDataset(Dataset):
-    def __init__(self, manifest: str, crop_frames: int = 96, training: bool = False, seed: int = 42, flip_probability: float = 0.5, target_cfg: dict | None = None, event_fraction: float = 0.5, event_position_margin: int = 8):
+    def __init__(self, manifest: str, crop_frames: int = 96, training: bool = False, seed: int = 42, flip_probability: float = 0.5, target_cfg: dict | None = None, event_fraction: float = 0.5, event_position_margin: int = 8, expected_cache_key: str | None = None):
         self.rows = read_jsonl(manifest)
         self.crop_frames = crop_frames
         self.training = training
@@ -33,6 +33,7 @@ class CachedMotionDataset(Dataset):
         self.event_fraction = float(event_fraction)
         self.event_position_margin = int(event_position_margin)
         self.epoch = 0
+        self.expected_cache_key = expected_cache_key
 
     def set_epoch(self, epoch: int) -> None:
         self.epoch = epoch
@@ -45,14 +46,15 @@ class CachedMotionDataset(Dataset):
         cache = load_artifact(row["cache_path"])
         if cache.get("schema") not in {1, 2} or cache.get("signals") is None:
             raise ValueError(f"Invalid training cache: {row['cache_path']}")
+        if self.expected_cache_key is not None and cache.get("cache_key") != self.expected_cache_key:
+            raise ValueError(f"Stale motion cache; rebuild features and statistics: {row['cache_path']}")
         raw = cache["signals"]
         signals = Signals(**{
             key: None if value is None else value.numpy()
             for key, value in raw.items()
         })
         generated = make_targets(signals, cache["actual_times"].numpy(), self.target_cfg)
-        motion_all = dequantize_motion(cache)
-        length = len(motion_all)
+        length = len(cache["time_valid"])
         rng = np.random.default_rng(np.random.SeedSequence([self.seed, self.epoch, index]))
         if self.training and length > self.crop_frames:
             event = np.flatnonzero(
@@ -72,7 +74,7 @@ class CachedMotionDataset(Dataset):
         else:
             start, stop = 0, length
         targets = {name: torch.from_numpy(generated[name][start:stop]) for name in TARGET_NAMES}
-        motion, physics = motion_all[start:stop], cache["physics"][start:stop]
+        motion, physics = dequantize_motion(cache, start, stop), cache["physics"][start:stop]
         if self.training and rng.random() < self.flip_probability:
             motion, physics, targets = horizontal_flip(motion, physics, targets)
         return {
@@ -83,7 +85,8 @@ class CachedMotionDataset(Dataset):
 
 def motion_collate(items: list[dict]) -> dict:
     max_time = max(len(item["time_valid"]) for item in items)
-    output: dict = {"clip_id": [item["clip_id"] for item in items]}
+    output: dict = {"clip_id": [item["clip_id"] for item in items],
+                    "lengths": torch.tensor([len(item["time_valid"]) for item in items])}
     for name, first in items[0].items():
         if name == "clip_id":
             continue

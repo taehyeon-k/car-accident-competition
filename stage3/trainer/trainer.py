@@ -10,12 +10,13 @@ from torch.optim import AdamW
 from torch.optim.lr_scheduler import LambdaLR
 from torch.utils.data import DataLoader
 
+from stage3.data.cache import cache_key
 from stage3.data.dataset import CachedMotionDataset, motion_collate
 from stage3.model import Stage3MotionModel
 from stage3.trainer.decoder import decode_predictions
 from stage3.trainer.ema import EMA
 from stage3.trainer.losses import stage3_loss
-from stage3.trainer.metrics import classification_metrics
+from stage3.trainer.metrics import classification_metrics, boundary_f1
 from stage3.utils.checkpoint import load_checkpoint, save_checkpoint
 
 
@@ -29,16 +30,18 @@ class Trainer:
         self.train_set = CachedMotionDataset(
             data["manifest"], data["crop_frames"], True, self.cfg["seed"],
             data.get("flip_probability", 0.5), self.cfg["targets"],
-            data.get("event_fraction", 0.5), data.get("event_position_margin", 8),
+            data.get("event_fraction", 0.5), data.get("event_position_margin", 8), cache_key(self.cfg),
         )
         self.val_set = CachedMotionDataset(
             data["val_manifest"], data["crop_frames"], False, self.cfg["seed"],
-            0, self.cfg["targets"], 0, data.get("event_position_margin", 8),
+            0, self.cfg["targets"], 0, data.get("event_position_margin", 8), cache_key(self.cfg),
         )
         loader_args = dict(batch_size=data["batch_size"], num_workers=data["num_workers"], collate_fn=motion_collate, pin_memory=True)
         self.train_loader = DataLoader(self.train_set, shuffle=True, **loader_args)
         self.val_loader = DataLoader(self.val_set, shuffle=False, **loader_args)
         stats = torch.load(data["statistics"], map_location="cpu", weights_only=True)
+        if stats.get("cache_key") != cache_key(self.cfg):
+            raise ValueError("Stale physics statistics; rebuild motion caches and recompute statistics")
         self.physics_center = stats["center"].float()
         self.physics_scale = stats["scale"].float().clamp_min(1e-6)
         self.model = Stage3MotionModel(self.cfg["model"])
@@ -69,6 +72,10 @@ class Trainer:
         if not path:
             return
         state = load_checkpoint(path, "cpu")
+        if state["feature_cache_key"] != cache_key(self.cfg):
+            raise ValueError("Resume configuration has different motion features from the checkpoint")
+        self.physics_center = state["physics_center"].float()
+        self.physics_scale = state["physics_scale"].float().clamp_min(1e-6)
         self.accelerator.unwrap_model(self.model).load_state_dict(state["model"])
         self.ema.model.load_state_dict(state["ema_model"])
         self.optimizer.load_state_dict(state["optimizer"])
@@ -100,7 +107,7 @@ class Trainer:
             for batch in self.train_loader:
                 batch = self._normalize(batch)
                 with self.accelerator.accumulate(self.model):
-                    output = self.model(batch["motion"], batch["physics"])
+                    output = self.model(batch["motion"], batch["physics"], batch["lengths"])
                     loss, parts = stage3_loss(output, batch, self.cfg["loss"])
                     self.accelerator.backward(loss)
                     if self.accelerator.sync_gradients:
@@ -135,58 +142,82 @@ class Trainer:
     def validate(self) -> dict[str, float]:
         model = self.ema.model.to(self.accelerator.device).eval()
         predicted_accel, true_accel, predicted_steer, true_steer = [], [], [], []
-        continuous_accel, stop_probability, target_direct, target_stopped, target_speed = [], [], [], [], []
+        acceleration_masks, steering_masks = [], []
+        target_speed = []
         boundary = {"0.5": [], "1.0": []}
         mae = {"acceleration": [], "speed": [], "steering_angle": [], "yaw": []}
+        grid_scores = []
+        grid = self.cfg.get("validation", {}).get("acceleration_threshold_grid", [-0.30, -0.25, -0.20])
+        grid_predictions = {(d, a): [] for d in grid for a in [-v for v in reversed(grid)]}
         for batch in self.val_loader:
             batch = self._normalize(batch)
-            output = model(batch["motion"], batch["physics"])
-            for i, valid in enumerate(batch["time_valid"]):
-                n = int(valid.sum())
-                sample_output = {key: value[i, :n].cpu() for key, value in output.items()}
+            if isinstance(model, Stage3MotionModel):
+                output = model(batch["motion"], batch["physics"], batch["lengths"],
+                               chunk_frames=int(self.cfg.get("inference", {}).get("cnn_chunk_frames", 32)))
+            else:
+                output = model(batch["motion"], batch["physics"], batch["lengths"])
+            samples = []
+            for i, length in enumerate(batch["lengths"]):
+                n = int(length)
+                samples.append({
+                    "targets": {key: value[i, :n].detach().cpu().numpy() for key, value in batch.items()
+                                if isinstance(value, torch.Tensor) and key not in {"motion", "physics", "lengths"}},
+                    "output": {key: value[i, :n].float().cpu() for key, value in output.items()},
+                })
+            if getattr(self.accelerator, "num_processes", 1) > 1:
+                samples = self.accelerator.gather_for_metrics(samples, use_gather_object=True)
+            for sample in samples:
+                def values(name):
+                    return sample["targets"][name]
+                sample_output = sample["output"]
                 pa, ps = decode_predictions(sample_output, self.cfg["decoder"])
-                stopped = batch["stopped"][i, :n].cpu().numpy() > 0.5
-                direct = 0.5 * (batch["a_long_s1"][i, :n] + batch["a_long_s2"][i, :n]).cpu().numpy()
+                time = values("time_valid").astype(bool)
+                stopped = values("stopped") > 0.5
+                direct = 0.5 * (values("a_long_s1") + values("a_long_s2"))
+                angle, speed = values("steering_angle"), values("speed")
+                speed_valid = time & values("valid_speed").astype(bool) & np.isfinite(speed)
+                direct_valid = time & values("valid_accel").astype(bool) & np.isfinite(direct)
+                accel_valid = speed_valid & (stopped | direct_valid)
+                steer_valid = speed_valid & ~stopped & values("valid_steer").astype(bool) & np.isfinite(angle)
                 acfg = self.cfg["decoder"]["acceleration"]
                 ta = np.where(stopped, "STOPPED", np.where(direct > acfg["accelerating_above"], "ACCELERATING", np.where(direct < acfg["decelerating_below"], "DECELERATING", "CONSTANT")))
-                angle = batch["steering_angle"][i, :n].cpu().numpy()
                 threshold = self.cfg["decoder"]["steering"]["threshold_deg"]
                 ts = np.where(angle > threshold, "LEFT", np.where(angle < -threshold, "RIGHT", "STRAIGHT"))
-                predicted_accel.extend(pa); true_accel.extend(ta); predicted_steer.extend(ps); true_steer.extend(ts)
+                predicted_accel.extend(pa); true_accel.extend(ta)
+                predicted_steer.extend(ps); true_steer.extend(ts)
+                acceleration_masks.extend(accel_valid); steering_masks.extend(steer_valid)
+                target_speed.extend(speed)
                 predicted_continuous = sample_output["acceleration"].mean(-1).numpy()
-                continuous_accel.extend(predicted_continuous)
-                stop_probability.extend(torch.sigmoid(sample_output["stop_logit"]).numpy())
-                target_direct.extend(direct); target_stopped.extend(stopped)
-                speed_values = batch["speed"][i, :n].cpu().numpy()
-                target_speed.extend(speed_values)
-                mae["acceleration"].extend(np.abs(predicted_continuous - direct))
-                mae["speed"].extend(np.abs(sample_output["speed"].numpy() - batch["speed"][i, :n].cpu().numpy()))
-                mae["steering_angle"].extend(np.abs(sample_output["steering_angle"].numpy() - angle))
+                mae["acceleration"].extend(np.abs(predicted_continuous[direct_valid] - direct[direct_valid]))
+                mae["speed"].extend(np.abs(sample_output["speed"].numpy()[speed_valid] - speed[speed_valid]))
+                mae["steering_angle"].extend(np.abs(sample_output["steering_angle"].numpy()[steer_valid] - angle[steer_valid]))
                 if "yaw_rate_aux" in sample_output:
-                    yaw_target = batch["yaw_rate_aux"][i, :n].cpu().numpy()
-                    yaw_valid = batch["valid_yaw"][i, :n].cpu().numpy().astype(bool)
+                    yaw_target = values("yaw_rate_aux")
+                    yaw_valid = time & values("valid_yaw").astype(bool) & np.isfinite(yaw_target)
                     mae["yaw"].extend(np.abs(sample_output["yaw_rate_aux"].numpy()[yaw_valid] - yaw_target[yaw_valid]))
-                from stage3.trainer.metrics import boundary_f1
-                for seconds in (0.5, 1.0):
-                    boundary[f"{seconds:.1f}"].append(boundary_f1(pa, ta, round(seconds * 10)))
-        metrics = classification_metrics(np.asarray(predicted_accel), np.asarray(true_accel), np.asarray(predicted_steer), np.asarray(true_steer))
-        metrics.update({f"{key}_mae": float(np.nanmean(value)) for key, value in mae.items() if value})
+                # Score contiguous valid runs separately: never create a boundary
+                # across a missing frame or between clips.
+                edges = np.diff(np.r_[False, accel_valid, False].astype(int))
+                for start, stop in zip(np.flatnonzero(edges == 1), np.flatnonzero(edges == -1)):
+                    for seconds in (0.5, 1.0):
+                        boundary[f"{seconds:.1f}"].append(boundary_f1(pa[start:stop], ta[start:stop], round(seconds * 10)))
+                for (decelerating, accelerating), predictions in grid_predictions.items():
+                    decoder = {**self.cfg["decoder"], "acceleration": {**acfg, "decelerating_below": decelerating, "accelerating_above": accelerating}}
+                    predictions.extend(decode_predictions(sample_output, decoder)[0])
+        metrics = classification_metrics(np.asarray(predicted_accel), np.asarray(true_accel), np.asarray(predicted_steer), np.asarray(true_steer), np.asarray(acceleration_masks), np.asarray(steering_masks))
+        metrics.update({f"{key}_mae": float(np.mean(value)) if value else 0.0 for key, value in mae.items()})
         metrics["direct_acceleration_mae"] = metrics["acceleration_mae"]
         for seconds, values in boundary.items():
-            metrics[f"boundary_f1_{seconds}s"] = float(np.mean([value[0] for value in values]))
-            metrics[f"boundary_delay_{seconds}s"] = float(np.mean([value[1] for value in values]))
-        continuous_accel, stop_probability = np.asarray(continuous_accel), np.asarray(stop_probability)
-        target_direct, target_stopped, target_speed = map(np.asarray, (target_direct, target_stopped, target_speed))
-        grid = self.cfg.get("validation", {}).get("acceleration_threshold_grid", [-0.30, -0.25, -0.20])
-        grid_scores = []
-        for decelerating in grid:
-            for accelerating in [-value for value in reversed(grid)]:
-                prediction = np.where(stop_probability >= 0.5, "STOPPED", np.where(continuous_accel > accelerating, "ACCELERATING", np.where(continuous_accel < decelerating, "DECELERATING", "CONSTANT")))
-                grid_scores.append(f1_score(true_accel, prediction, labels=["ACCELERATING", "DECELERATING", "CONSTANT", "STOPPED"], average="macro", zero_division=0))
-        metrics["acceleration_macro_f1_threshold_grid_mean"] = float(np.mean(grid_scores))
-        predicted_accel_array, true_accel_array = np.asarray(predicted_accel), np.asarray(true_accel)
+            metrics[f"boundary_f1_{seconds}s"] = float(np.mean([value[0] for value in values])) if values else 0.0
+            metrics[f"boundary_delay_{seconds}s"] = float(np.mean([value[1] for value in values])) if values else 0.0
+        selected = np.asarray(acceleration_masks, bool)
+        true_accel_array = np.asarray(true_accel)
+        for predictions in grid_predictions.values() if selected.any() else ():
+            grid_scores.append(f1_score(true_accel_array[selected], np.asarray(predictions)[selected], labels=["ACCELERATING", "DECELERATING", "CONSTANT", "STOPPED"], average="macro", zero_division=0))
+        metrics["acceleration_macro_f1_threshold_grid_mean"] = float(np.mean(grid_scores)) if grid_scores else 0.0
+        predicted_accel_array, target_speed = np.asarray(predicted_accel), np.asarray(target_speed)
         for name, low, high in (("stopped", 0, 0.15), ("low", 0.15, 2.0), ("medium", 2.0, 8.0), ("high", 8.0, np.inf)):
-            selected = (target_speed >= low) & (target_speed < high)
-            if selected.any():
-                metrics[f"acceleration_macro_f1_speed_{name}"] = float(f1_score(true_accel_array[selected], predicted_accel_array[selected], labels=["ACCELERATING", "DECELERATING", "CONSTANT", "STOPPED"], average="macro", zero_division=0))
+            speed_selected = selected & (target_speed >= low) & (target_speed < high)
+            if speed_selected.any():
+                metrics[f"acceleration_macro_f1_speed_{name}"] = float(f1_score(true_accel_array[speed_selected], predicted_accel_array[speed_selected], labels=["ACCELERATING", "DECELERATING", "CONSTANT", "STOPPED"], average="macro", zero_division=0))
         return metrics

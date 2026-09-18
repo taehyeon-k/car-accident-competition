@@ -41,9 +41,11 @@ def test_rotation_is_invariant_to_joint_focal_and_image_scaling():
 
 
 def test_rho_recovers_acceleration_over_speed():
-    rho = 0.2
-    previous = np.full((8, 8), 0.4)
-    current = previous * np.exp(rho * 0.4)
-    estimate, valid = rho_from_expansion(previous, current, 0.4)
+    dt, v0, acceleration, z0 = 0.4, 10.0, 2.0, 30.0
+    v1 = v0 + acceleration * dt
+    z1 = z0 - 0.5 * (v0 + v1) * dt
+    previous = np.full((8, 8), v0 / z0)
+    current = np.full((8, 8), v1 / z1)
+    estimate, valid = rho_from_expansion(previous, current, dt)
     assert valid.all()
-    assert np.allclose(estimate, rho, atol=1e-6)
+    assert np.allclose(estimate, np.log(v1 / v0) / dt, atol=1e-6)

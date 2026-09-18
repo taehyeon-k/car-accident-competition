@@ -26,3 +26,4 @@ def test_dacon_output_has_one_row_per_decoded_frame(tmp_path):
     assert list(output.columns) == OUTPUT_COLUMNS
     assert len(output) == 7
     assert output["sample_index"].tolist() == list(range(7))
+    assert output["steer_label"].isin(["LEFT", "STRAIGHT", "RIGHT"]).all()

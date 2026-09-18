@@ -34,40 +34,48 @@ class Stage3Predictor:
 
     @torch.inference_mode()
     def predict_video(self, path: str | Path, max_frames: int | None = None) -> tuple[np.ndarray, np.ndarray, dict[str, float]]:
+        def timestamp():
+            if self.device.type == "cuda":
+                torch.cuda.synchronize(self.device)
+            return perf_counter()
+
         timing: dict[str, float] = {}
-        started = perf_counter()
+        started = timestamp()
         decoded = decode_dacon_stage3_video(path, max_frames=max_frames)
-        timing["decode"] = perf_counter() - started
+        timing["decode"] = timestamp() - started
         height, width = self.cfg["flow"]["working_size"]
         frames = resize_frames(decoded.frames, (height, width))
-        flow_start = perf_counter()
+        flow_start = timestamp()
         flows, confidence = self.flow.estimate_sequence(frames)
-        timing["sea_raft"] = perf_counter() - flow_start
-        geometry_start = perf_counter()
+        timing["sea_raft"] = timestamp() - flow_start
+        geometry_start = timestamp()
         # Competition contract is fixed 0.1 s and does not use PTS for dt.
         fixed_times = np.arange(len(frames), dtype=np.float64) * 0.1
         motion, physics, geometry_metadata = build_motion_features(
             flows, confidence, fixed_times, self.cfg["calibration"], tuple(self.cfg["geometry"]["canonical_size"]), frames[0],
             tracking_device=str(self.device),
             tracking_batch_size=int(self.cfg["geometry"].get("tracking_batch_size", 32)),
+            geometry_backend=self.cfg["geometry"].get("backend", "auto"),
         )
-        timing["geometry"] = perf_counter() - geometry_start
+        timing["geometry"] = timestamp() - geometry_start
         for name in ("calibration", "rotation", "foe", "tracks_rho", "feature_construction"):
             timing[name] = float(geometry_metadata[f"timing_{name}"][0])
-        model_start = perf_counter()
-        motion_tensor = torch.from_numpy(motion)[None].to(self.device)
+        if "timing_transfers" in geometry_metadata:
+            timing["geometry_transfers"] = float(geometry_metadata["timing_transfers"][0])
+        model_start = timestamp()
+        motion_tensor = torch.from_numpy(motion)[None]
         physics_tensor = (torch.from_numpy(physics).to(self.device) - self.physics_center) / self.physics_scale
-        spatial = self.model.motion_cnn(motion_tensor)
-        timing["cnn"] = perf_counter() - model_start
-        tcn_start = perf_counter()
+        spatial = self.model.encode_motion(motion_tensor, int(self.cfg.get("inference", {}).get("cnn_chunk_frames", 32)))
+        timing["cnn"] = timestamp() - model_start
+        tcn_start = timestamp()
         physical = self.model.physics_mlp(physics_tensor[None])
         encoded = self.model.temporal(self.model.fusion(torch.cat((spatial, physical), dim=-1)))
         outputs = self.model.heads(encoded)
-        timing["tcn"] = perf_counter() - tcn_start
-        decode_start = perf_counter()
+        timing["tcn"] = timestamp() - tcn_start
+        decode_start = timestamp()
         accel, steer = decode_predictions(outputs, self.cfg["decoder"])
-        timing["decoder"] = perf_counter() - decode_start
-        timing["total"] = perf_counter() - started
+        timing["decoder"] = timestamp() - decode_start
+        timing["total"] = timestamp() - started
         if len(accel) != len(decoded.frames):
             raise RuntimeError("Stage 3 inference violated one-row-per-decoded-frame contract")
         return accel, steer, timing

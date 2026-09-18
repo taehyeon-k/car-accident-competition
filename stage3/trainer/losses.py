@@ -7,7 +7,7 @@ import torch.nn.functional as F
 def masked_mean(values: torch.Tensor, mask: torch.Tensor) -> torch.Tensor:
     mask = mask.bool() & torch.isfinite(values)
     if not mask.any():
-        return values.new_zeros(())
+        return values.masked_select(mask).sum()
     return values.masked_select(mask).mean()
 
 
@@ -50,12 +50,12 @@ def stage3_loss(outputs: dict[str, torch.Tensor], batch: dict[str, torch.Tensor]
     )
     stopped = masked_mean(
         F.binary_cross_entropy_with_logits(outputs["stop_logit"].float(), batch["stopped"].float(), reduction="none"),
-        time & torch.isfinite(batch["stopped"]),
+        speed_mask & torch.isfinite(batch["stopped"]),
     )
     speed = masked_huber(outputs["speed"], batch["speed"], speed_mask)
     steering = masked_huber(outputs["steering_angle"], batch["steering_angle"], steer_mask, cfg.get("steering_delta", 2.0))
     yaw = outputs["speed"].new_zeros(())
-    if "yaw_rate_aux" in outputs and yaw_mask.any():
+    if "yaw_rate_aux" in outputs:
         yaw = masked_huber(outputs["yaw_rate_aux"], batch["yaw_rate_aux"], yaw_mask)
     parts = {
         "accel_direct": direct, "ordinal": ordinal, "stopped": stopped,
