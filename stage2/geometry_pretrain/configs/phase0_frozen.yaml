@@ -1,0 +1,3 @@
+# Phase 0: frozen original DINOv3 ViT-S, train geometry heads only (baseline probe).
+base: geometry_dino_vits.yaml
+output_dir: /workspace/outputs/geometry_pretrain/runs/phase0_frozen

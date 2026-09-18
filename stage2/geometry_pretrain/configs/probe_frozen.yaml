@@ -1,0 +1,4 @@
+# Same-protocol probe: fresh heads on a FROZEN backbone (original or adapted);
+# identical to Phase 0 except the checkpoint. Set model.checkpoint + output_dir.
+base: geometry_dino_vits.yaml
+output_dir: /workspace/outputs/geometry_pretrain/runs/probe_adapted

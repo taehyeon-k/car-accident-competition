@@ -1,0 +1,21 @@
+{
+  "selection_train_clips": 201,
+  "selection_val_clips": 50,
+  "final_train_clips": 251,
+  "selected_epoch": 5,
+  "held_out_selection_metrics": {
+    "epoch": 5,
+    "loss": 2.291010233072134,
+    "acc_entry_0.3s": 0.44,
+    "acc_collision_0.3s": 0.68,
+    "f1_entry_side_macro": 0.8199279711884754,
+    "f1_evasion_space_macro": 0.68,
+    "competition_score": 0.6169891956782713,
+    "acc_entry_native": 0.4,
+    "acc_collision_native": 0.7,
+    "competition_score_native": 0.6099891956782713
+  },
+  "seconds": 101.58659530099249,
+  "peak_gpu_MiB": 411.4609375,
+  "note": "FPS is never a model input; source FPS is used only for training loss widths and validation scoring."
+}

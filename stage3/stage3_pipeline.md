@@ -1054,11 +1054,15 @@ boundary F1 ±1.0 s
 boundary delay
 metrics by speed bin
 
-Primary model-selection metric:
+Primary model-selection metric (updated from the supplied competition evaluation):
 
-validation acceleration Macro-F1 threshold-grid mean
+validation competition_score = 0.7 * acceleration Macro-F1 + 0.3 * steering Macro-F1
 
-because acceleration is the critical task.
+Exclude ground-truth STOPPED frames from steering Macro-F1, while still producing
+steering labels for every frame. Log both train/competition_score and
+val/competition_score at each validation interval; use val/competition_score for
+best-checkpoint selection and early stopping. Retain acceleration Macro-F1
+threshold-grid mean as a diagnostic only.
 
 Use route/driver/vehicle-disjoint validation where metadata permits.
 

@@ -1,0 +1,20 @@
+{
+  "device": "NVIDIA L40S",
+  "tests": {
+    "stage2": {
+      "rows": 1,
+      "seconds": 3.2528979429916944,
+      "peak_allocated_MiB": 586.15283203125,
+      "sample": [
+        {
+          "ID": "TEST_S2_001",
+          "collision_frame": 95,
+          "entry_frame": 90,
+          "evasion_space": 1,
+          "entry_side": "LEFT"
+        }
+      ]
+    }
+  },
+  "network_blocked": true
+}

@@ -1,0 +1,9 @@
+# Reduced-budget ablations (4k steps) vs a matching 4k-step full reference.
+base: phase1_partial.yaml
+optim:
+  steps: 4000
+  warmup: 300
+eval_every: 2000
+data:
+  workers: 4
+  pair_workers: 2

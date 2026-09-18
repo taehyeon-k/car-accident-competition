@@ -1,0 +1,25 @@
+# Road/lane teacher: DINOv3 ViT-B/16 (official local checkpoint), last 4 blocks
+# trainable, trained ONLY on BDD100K human drivable/lane/curb labels. Used to
+# pseudo-label drivable/lane/curb on accident + BATON footage (never on BDD).
+base: geometry_dino_vits.yaml
+output_dir: /workspace/outputs/geometry_pretrain/road_teacher
+tasks: [road]
+model:
+  arch: vitb16
+  checkpoint: /workspace/pretrained/dinov3_vitb16/dinov3_vitb16_pretrain_lvd1689m-73cec8be.pth
+  trainable_blocks: 4
+  head_dim: 160
+loss_weights: {road: 1.0, lane_boundary: 1.0, road_edge: 0.5}
+data:
+  static_weights: {bdd100k: 1.0}
+  pair_weights: {}
+  pair_batch_size: 0
+  workers: 4
+  val_sources: [bdd100k]
+  val_pair_sources: []
+optim:
+  steps: 7000
+  lr_heads: 5.0e-4
+  lr_backbone: 2.0e-5
+  warmup: 300
+eval_every: 1000

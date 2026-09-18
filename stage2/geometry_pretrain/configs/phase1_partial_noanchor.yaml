@@ -1,0 +1,6 @@
+# Ablation: Phase 1 without the representation-preservation anchor.
+base: phase1_partial.yaml
+output_dir: /workspace/outputs/geometry_pretrain/runs/phase1_partial_noanchor
+anchor:
+  feature: 0.0
+  gram: 0.0

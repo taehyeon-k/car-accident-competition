@@ -1,0 +1,37 @@
+{
+  "model/stage1/best.pt": {
+    "source": "global_g1_threshold_0_50.zip:model/stage1/best.pt",
+    "sha256": "5c1b5214972e85b6afa2afe1fb59103d3355f76ff42942ffdf886584c06bb669",
+    "bytes": 127805747
+  },
+  "model/stage1/runtime.py": {
+    "source": "global_g1_threshold_0_50.zip:inference.py",
+    "sha256": "af122549b5cd004d4533676fb43fcb509cedc94bdfa3c69b5172bb77125c668b",
+    "bytes": 30292
+  },
+  "../submission_tools/learned_stage2/backbone.pth": {
+    "source": "outputs/geometry_pretrain/runs/phase1_partial_noanchor/backbone_best.pth",
+    "sha256": "cc6b4cdc41f6bdb2c2ff6529d53ea55fdc37f078edf6f27378edfde123ea5b61",
+    "bytes": 86518299
+  },
+  "../submission_tools/learned_stage2/probe.pt": {
+    "source": "submission_tools/train_stage2_probe.py; seed=0, epochs=40, original train split",
+    "sha256": "c4d68bbf90608cd07c92c0fcad54fb9f3925d58226052d8fed016d7841b0c5a6",
+    "bytes": 3265533
+  },
+  "model/stage3/pretrained/sea_raft/model.safetensors": {
+    "source": "pretrained/sea_raft/model.safetensors",
+    "sha256": "9752a49fca0a3f33551d51fec7bc5bd87f93a155b1e9fadd803e8176f4edb423",
+    "bytes": 35595384
+  },
+  "model/stage2/backbone.pth": {
+    "source": "tuned no-anchor backbone",
+    "sha256": "cc6b4cdc41f6bdb2c2ff6529d53ea55fdc37f078edf6f27378edfde123ea5b61",
+    "bytes": 86518299
+  },
+  "model/stage2/probe.pt": {
+    "source": "train_fps_stage2.py all251 refit",
+    "sha256": "ba481e52b76061457760b49d3d4c5da2e899424693e517c8f145420441696f00",
+    "bytes": 3266493
+  }
+}

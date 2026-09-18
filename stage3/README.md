@@ -151,3 +151,22 @@ training step and resume. The benchmark compares all-CPU geometry, the former
 CPU-fitting/GPU-tracking path, and batched CUDA geometry. CNN equivalence and
 memory measurements disable cuDNN TF32 to separate batching from reduced-precision
 rounding; normal inference uses the environment's cuDNN precision settings.
+
+Stage 3 competition scoring follows the uploaded evaluation table:
+`competition_score = 0.7 * acceleration_macro_f1 + 0.3 * steering_macro_f1`.
+Scores are on a 0–1 scale, and steering excludes ground-truth STOPPED frames.
+`train/competition_score` and `val/competition_score` are committed to W&B
+at each validation epoch (`logging.val_every`, default 1), including the final
+epoch. Their component Macro-F1 scores are logged alongside them.
+
+The training score aggregates confusion counts from the existing training pass,
+including its sampled/augmented crops and evolving model weights; it adds no extra
+full-dataset pass. Validation uses full clips and the EMA model. These are local
+BATON validation estimates of the Stage 3 metric, not a combined all-stage score.
+
+`best.pt` and early stopping now use `val/competition_score`. Checkpoints store
+`best_metric_name: competition_score`. When resuming an older checkpoint selected
+by acceleration threshold-grid F1, weights/optimizer/epoch progress are restored,
+but best-score and early-stopping history reset to avoid comparing different
+metrics. Existing motion caches and statistics do not need rebuilding for this
+scoring change. A currently running process must be restarted/resumed to load it.

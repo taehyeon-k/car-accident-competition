@@ -1,0 +1,5 @@
+# Static geometry only (no temporal correspondence).
+base: ablation_base.yaml
+output_dir: /workspace/outputs/geometry_pretrain/runs/abl_no_flow
+tasks: [road, depth, objects, contact, camera]
+data: {pair_batch_size: 0}

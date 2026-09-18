@@ -1,0 +1,16 @@
+# Phase 1: last 4/12 blocks trainable (LP-FT: heads start from Phase 0),
+# small backbone LR, representation anchor to the frozen original DINOv3.
+base: geometry_dino_vits.yaml
+output_dir: /workspace/outputs/geometry_pretrain/runs/phase1_partial_anchor
+init_from: /workspace/outputs/geometry_pretrain/runs/phase0_frozen/best.pt
+model:
+  trainable_blocks: 4
+anchor:
+  feature: 1.0
+  gram: 1.0
+weighting: uncertainty
+optim:
+  steps: 10000
+  lr_heads: 1.0e-4
+  lr_backbone: 5.0e-6
+  warmup: 500

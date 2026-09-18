@@ -52,3 +52,10 @@ CNN inference is chunked by frames while retaining the complete TCN sequence.
 CAN validity and gap boundaries propagate through target interpolation/smoothing.
 Validation gathers complete samples and trims distributed batch duplicates before
 all metrics and checkpoint/early-stop decisions.
+
+The official Stage 3 score is 0.7 times acceleration Macro-F1 plus 0.3 times
+steering Macro-F1, with STOPPED frames excluded from steering. Both train and
+validation scores are logged at validation intervals. The training score pools
+frame confusion counts from the training crops, without another model pass.
+Validation competition score selects the best checkpoint and drives early stopping;
+acceleration threshold-grid F1 remains a diagnostic metric.

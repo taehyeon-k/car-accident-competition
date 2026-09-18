@@ -1,0 +1,39 @@
+{
+  "sampling_lengths": [
+    1,
+    2,
+    17,
+    128,
+    500,
+    10000
+  ],
+  "affine_frame_index_invariance": true,
+  "fps_metadata_independence": true,
+  "single_frame": true,
+  "network_blocked": true,
+  "seconds": 4.781554670989863,
+  "peak_gpu_MiB": 599.09912109375,
+  "predictions": [
+    {
+      "ID": "original",
+      "collision_frame": 95,
+      "entry_frame": 90,
+      "evasion_space": 1,
+      "entry_side": "LEFT"
+    },
+    {
+      "ID": "reindexed",
+      "collision_frame": 765,
+      "entry_frame": 730,
+      "evasion_space": 1,
+      "entry_side": "LEFT"
+    },
+    {
+      "ID": "single",
+      "collision_frame": 42,
+      "entry_frame": 42,
+      "evasion_space": 1,
+      "entry_side": "LEFT"
+    }
+  ]
+}

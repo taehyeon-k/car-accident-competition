@@ -1,0 +1,3 @@
+base: ablation_base.yaml
+output_dir: /workspace/outputs/geometry_pretrain/runs/abl_no_road
+tasks: [depth, objects, contact, camera, flow]

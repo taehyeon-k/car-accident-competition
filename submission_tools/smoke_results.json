@@ -1,0 +1,51 @@
+{
+  "device": "NVIDIA L40S",
+  "tests": {
+    "stage1": {
+      "rows": 1,
+      "seconds": 11.55662447900977,
+      "peak_allocated_MiB": 516.69287109375,
+      "sample": [
+        {
+          "ID": "TEST_STAGE1",
+          "answer": "ORIGINAL"
+        }
+      ]
+    },
+    "stage2": {
+      "rows": 1,
+      "seconds": 2.66279072999896,
+      "peak_allocated_MiB": 583.48095703125,
+      "sample": [
+        {
+          "ID": "TEST_S2_001",
+          "collision_frame": 98,
+          "entry_frame": 86,
+          "evasion_space": 1,
+          "entry_side": "LEFT"
+        }
+      ]
+    },
+    "streamed_resize_exact": true,
+    "stage3": {
+      "rows": 32,
+      "seconds": 2.5725823800021317,
+      "peak_allocated_MiB": 594.59228515625,
+      "sample": [
+        {
+          "ID": "TEST_STAGE3",
+          "sample_index": 0,
+          "accel_label": "STOPPED",
+          "steer_label": "STRAIGHT"
+        },
+        {
+          "ID": "TEST_STAGE3",
+          "sample_index": 1,
+          "accel_label": "STOPPED",
+          "steer_label": "STRAIGHT"
+        }
+      ]
+    }
+  },
+  "network_blocked": true
+}

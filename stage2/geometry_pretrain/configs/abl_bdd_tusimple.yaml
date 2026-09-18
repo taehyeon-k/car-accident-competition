@@ -1,0 +1,4 @@
+# BDD100K + TuSimple (no local accident / BATON footage).
+base: ablation_base.yaml
+output_dir: /workspace/outputs/geometry_pretrain/runs/abl_bdd_tusimple
+data: {static_weights: {bdd100k: 0.8, tusimple: 0.2, accident: 0.0, baton: 0.0}, pair_weights: {tusimple: 1.0, accident: 0.0, baton: 0.0}}
