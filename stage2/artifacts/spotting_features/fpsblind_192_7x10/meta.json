@@ -1,0 +1,12 @@
+{
+  "mode": "fps_blind",
+  "base_count": 192,
+  "grid": [
+    7,
+    10
+  ],
+  "dim": 384,
+  "checkpoint": "/workspace/outputs/geometry_pretrain/runs/phase1_partial_noanchor/backbone_best.pth",
+  "fps_accessed": false,
+  "peak_vram_mb": 715.22265625
+}

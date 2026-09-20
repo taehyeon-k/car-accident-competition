@@ -1,0 +1,24 @@
+{
+  "id": "BASELINE-submitted-fps_stage2",
+  "seed": 0,
+  "epochs": 40,
+  "selection_train_clips": 201,
+  "selection_val_clips": 50,
+  "best_epoch": 10,
+  "held_out_selection_metrics": {
+    "epoch": 10,
+    "loss": 1.603331439770185,
+    "acc_entry_0.3s": 0.44,
+    "acc_collision_0.3s": 0.68,
+    "f1_entry_side_macro": 0.8599439775910365,
+    "f1_evasion_space_macro": 0.5495495495495495,
+    "competition_score": 0.6034240290710879,
+    "acc_entry_native": 0.46,
+    "acc_collision_native": 0.7,
+    "competition_score_native": 0.6174240290710878
+  },
+  "seconds": 64.3388539319858,
+  "peak_gpu_MiB": 411.6015625,
+  "parameter_count": 813542,
+  "note": "Selection phase only. FPS is not a model input, but the cache stride and the Gaussian loss widths are FPS-derived, as submitted."
+}

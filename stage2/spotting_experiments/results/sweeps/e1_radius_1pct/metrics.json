@@ -1,0 +1,35 @@
+{
+  "fpsblind": {
+    "entry_mae_frames": 12.58,
+    "collision_mae_frames": 10.42,
+    "entry_normalized_mae": 0.06704172184313414,
+    "collision_normalized_mae": 0.02572276194907354,
+    "entry_normalized_median": 0.03281921206583273,
+    "collision_normalized_median": 0.008045386068533441,
+    "entry_p_within_0p5pct": 0.12,
+    "collision_p_within_0p5pct": 0.3,
+    "entry_p_within_1pct": 0.28,
+    "collision_p_within_1pct": 0.52,
+    "entry_p_within_2pct": 0.38,
+    "collision_p_within_2pct": 0.64,
+    "entry_p_within_5pct": 0.64,
+    "collision_p_within_5pct": 0.8,
+    "f1_entry_side_macro": 0.8798076923076923,
+    "f1_evasion_space_macro": 0.7390606182256123,
+    "fpsblind_selection_score": 0.5228302465799958
+  },
+  "official_offline": {
+    "acc_entry_0.3s": 0.36,
+    "acc_collision_0.3s": 0.68,
+    "f1_entry_side_macro": 0.8798076923076923,
+    "f1_evasion_space_macro": 0.7390606182256123,
+    "competition_score": 0.6068302465799957
+  },
+  "runtime": {
+    "wall_seconds": 260.38171786395833,
+    "temporal_head_seconds_validation": 0.008905015187337995,
+    "temporal_head_ms_per_video": 0.1781003037467599,
+    "peak_vram_mb": 569.52197265625,
+    "parameter_count": 1184680
+  }
+}

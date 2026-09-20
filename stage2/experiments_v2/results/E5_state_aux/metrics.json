@@ -1,0 +1,70 @@
+{
+  "fpsblind": {
+    "entry_abs_frames_mean": 25.8,
+    "entry_abs_frames_median": 6.5,
+    "entry_abs_frames_p25": 2.0,
+    "entry_abs_frames_p50": 6.5,
+    "entry_abs_frames_p75": 15.75,
+    "entry_abs_frames_p90": 59.600000000000065,
+    "collision_abs_frames_mean": 14.3,
+    "collision_abs_frames_median": 2.0,
+    "collision_abs_frames_p25": 1.0,
+    "collision_abs_frames_p50": 2.0,
+    "collision_abs_frames_p75": 7.5,
+    "collision_abs_frames_p90": 18.200000000000003,
+    "entry_normalized_mean": 0.07175705420086624,
+    "entry_normalized_median": 0.04081632653061224,
+    "entry_normalized_p25": 0.013422818791946308,
+    "entry_normalized_p50": 0.04081632653061224,
+    "entry_normalized_p75": 0.100020545130804,
+    "entry_normalized_p90": 0.1766511192412394,
+    "collision_normalized_mean": 0.03370519709641585,
+    "collision_normalized_median": 0.013422818791946308,
+    "collision_normalized_p25": 0.0010366671280963135,
+    "collision_normalized_p50": 0.013422818791946308,
+    "collision_normalized_p75": 0.029950846015691465,
+    "collision_normalized_p90": 0.09622260032979386,
+    "entry_p_within_0p5pct": 0.12,
+    "collision_p_within_0p5pct": 0.38,
+    "entry_p_within_1pct": 0.22,
+    "collision_p_within_1pct": 0.46,
+    "entry_p_within_2pct": 0.3,
+    "collision_p_within_2pct": 0.58,
+    "entry_p_within_5pct": 0.56,
+    "collision_p_within_5pct": 0.8,
+    "f1_entry_side_macro": 0.7777777777777778,
+    "f1_evasion_space_macro": 0.5784825371336813,
+    "fpsblind_selection_score": 0.4414390472367189
+  },
+  "official_offline": {
+    "acc_entry_0.3s": 0.4,
+    "acc_collision_0.3s": 0.7,
+    "f1_entry_side_macro": 0.7777777777777778,
+    "f1_evasion_space_macro": 0.5784825371336813,
+    "competition_score": 0.5884390472367188
+  },
+  "runtime": {
+    "wall_seconds": 117.21924545802176,
+    "head_seconds_validation": 0.010431298986077309,
+    "head_ms_per_video": 0.20862597972154617,
+    "peak_vram_mb": 573.17626953125,
+    "parameter_count": 1409132
+  },
+  "by_source": {
+    "AIHUB": {
+      "n": 18,
+      "entry_normalized_mae": 0.0604026845637584,
+      "collision_normalized_mae": 0.04660700969425802
+    },
+    "CCD": {
+      "n": 16,
+      "entry_normalized_mae": 0.09948979591836733,
+      "collision_normalized_mae": 0.022959183673469385
+    },
+    "NEXAR": {
+      "n": 16,
+      "entry_normalized_mae": 0.05679797832511149,
+      "collision_normalized_mae": 0.029936671346789866
+    }
+  }
+}

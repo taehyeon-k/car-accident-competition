@@ -27,4 +27,8 @@ tensorboard/
 weights/
 datasets/
 geometry_cache/
+# Stage 2 DINO feature tensors are reproducible local caches (~2.5 GB).
+/stage2/artifacts/spotting_features/**/*.npz
+# Partial CV runs were superseded by the requested fixed train/validation split.
+/stage2/spotting_experiments/results/*/cv/
 # No broad !stage2/** exception: that re-includes checkpoints and bytecode.

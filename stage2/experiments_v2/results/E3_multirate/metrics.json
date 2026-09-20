@@ -1,0 +1,70 @@
+{
+  "fpsblind": {
+    "entry_abs_frames_mean": 24.22,
+    "entry_abs_frames_median": 6.5,
+    "entry_abs_frames_p25": 3.0,
+    "entry_abs_frames_p50": 6.5,
+    "entry_abs_frames_p75": 14.5,
+    "entry_abs_frames_p90": 68.4,
+    "collision_abs_frames_mean": 22.64,
+    "collision_abs_frames_median": 2.5,
+    "collision_abs_frames_p25": 1.0,
+    "collision_abs_frames_p50": 2.5,
+    "collision_abs_frames_p75": 12.75,
+    "collision_abs_frames_p90": 37.10000000000003,
+    "entry_normalized_mean": 0.08640048896248652,
+    "entry_normalized_median": 0.04008435287619876,
+    "entry_normalized_p25": 0.01399598092605237,
+    "entry_normalized_p50": 0.04008435287619876,
+    "entry_normalized_p75": 0.10169839747979728,
+    "entry_normalized_p90": 0.2673226639848803,
+    "collision_normalized_mean": 0.06048801512588211,
+    "collision_normalized_median": 0.018523549186729597,
+    "collision_normalized_p25": 0.004159742428748812,
+    "collision_normalized_p50": 0.018523549186729597,
+    "collision_normalized_p75": 0.044943535726945864,
+    "collision_normalized_p90": 0.13302287357896192,
+    "entry_p_within_0p5pct": 0.08,
+    "collision_p_within_0p5pct": 0.28,
+    "entry_p_within_1pct": 0.22,
+    "collision_p_within_1pct": 0.38,
+    "entry_p_within_2pct": 0.3,
+    "collision_p_within_2pct": 0.5,
+    "entry_p_within_5pct": 0.64,
+    "collision_p_within_5pct": 0.78,
+    "f1_entry_side_macro": 0.8999599839935974,
+    "f1_evasion_space_macro": 0.6124031007751938,
+    "fpsblind_selection_score": 0.43685446271531864
+  },
+  "official_offline": {
+    "acc_entry_0.3s": 0.38,
+    "acc_collision_0.3s": 0.64,
+    "f1_entry_side_macro": 0.8999599839935974,
+    "f1_evasion_space_macro": 0.6124031007751938,
+    "competition_score": 0.5838544627153187
+  },
+  "runtime": {
+    "wall_seconds": 125.62957643088885,
+    "head_seconds_validation": 0.013505328679457307,
+    "head_ms_per_video": 0.27010657358914614,
+    "peak_vram_mb": 573.1025390625,
+    "parameter_count": 1407974
+  },
+  "by_source": {
+    "AIHUB": {
+      "n": 18,
+      "entry_normalized_mae": 0.10551826994780016,
+      "collision_normalized_mae": 0.08724832214765099
+    },
+    "CCD": {
+      "n": 16,
+      "entry_normalized_mae": 0.10714285714285714,
+      "collision_normalized_mae": 0.04591836734693878
+    },
+    "NEXAR": {
+      "n": 16,
+      "entry_normalized_mae": 0.04415061717363804,
+      "collision_normalized_mae": 0.044952317505335404
+    }
+  }
+}

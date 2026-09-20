@@ -1,0 +1,67 @@
+{
+  "checkpoint": "/workspace/car-accident/stage2/experiments_v2/results/E3_multirate/checkpoint.pt",
+  "config_id": "E3-multi-rate-diff",
+  "per_scheme": {
+    "dense_192": {
+      "acc_entry_0.3s": 0.3,
+      "acc_collision_0.3s": 0.66,
+      "f1_entry_side_macro": 0.8999599839935974,
+      "f1_evasion_space_macro": 0.5757575757575757,
+      "competition_score": 0.5573576339626759
+    },
+    "every_2nd_96": {
+      "acc_entry_0.3s": 0.42,
+      "acc_collision_0.3s": 0.58,
+      "f1_entry_side_macro": 0.8999599839935974,
+      "f1_evasion_space_macro": 0.6161616161616161,
+      "competition_score": 0.577418240023282
+    },
+    "standard_128": {
+      "acc_entry_0.3s": 0.38,
+      "acc_collision_0.3s": 0.64,
+      "f1_entry_side_macro": 0.8999599839935974,
+      "f1_evasion_space_macro": 0.6124031007751938,
+      "competition_score": 0.5838544627153187
+    },
+    "drop_20pct": {
+      "acc_entry_0.3s": 0.34,
+      "acc_collision_0.3s": 0.6,
+      "f1_entry_side_macro": 0.8599439775910365,
+      "f1_evasion_space_macro": 0.6124031007751938,
+      "competition_score": 0.5498520617549345
+    },
+    "drop_40pct": {
+      "acc_entry_0.3s": 0.28,
+      "acc_collision_0.3s": 0.52,
+      "f1_entry_side_macro": 0.8397435897435898,
+      "f1_evasion_space_macro": 0.5535714285714286,
+      "competition_score": 0.48899725274725275
+    },
+    "irregular_warp": {
+      "acc_entry_0.3s": 0.32,
+      "acc_collision_0.3s": 0.56,
+      "f1_entry_side_macro": 0.8599439775910365,
+      "f1_evasion_space_macro": 0.5894909688013137,
+      "competition_score": 0.5254152419588526
+    }
+  },
+  "instability": {
+    "entry": {
+      "mean_normalized_std": 0.052479340662022735,
+      "median_normalized_std": 0.02206570923853684,
+      "mean_normalized_range": 0.13889792228607445,
+      "p90_normalized_range": 0.389300876977297
+    },
+    "collision": {
+      "mean_normalized_std": 0.03714608630661754,
+      "median_normalized_std": 0.007554628604984886,
+      "mean_normalized_range": 0.09428833039088458,
+      "p90_normalized_range": 0.39082698139496763
+    }
+  },
+  "score_spread": {
+    "min": 0.48899725274725275,
+    "max": 0.5838544627153187,
+    "range": 0.09485720996806596
+  }
+}
