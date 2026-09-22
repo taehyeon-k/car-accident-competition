@@ -69,6 +69,14 @@ def _speed_acceleration(speed: np.ndarray, times: np.ndarray, seconds: float, po
     return result.astype(np.float32), quality & np.isfinite(result)
 
 
+def _derivative(values: np.ndarray, times: np.ndarray, max_gap: float = 0.25) -> np.ndarray:
+    result = np.full(len(values), np.nan, dtype=np.float32)
+    for start, stop in _valid_runs(values, times, max_gap):
+        if stop - start >= 3:
+            result[start + 1:stop - 1] = np.gradient(values[start:stop], times[start:stop])[1:-1]
+    return result
+
+
 def make_targets(signals: Signals, frame_times: np.ndarray, cfg: dict[str, Any]) -> dict[str, np.ndarray]:
     """Create direct-acceleration primaries and separate speed derivatives."""
     frame_times = np.asarray(frame_times, dtype=np.float64)
@@ -89,7 +97,15 @@ def make_targets(signals: Signals, frame_times: np.ndarray, cfg: dict[str, Any])
     if signals.a_long is None and cfg.get("require_direct_acceleration", True):
         raise ValueError("Direct longitudinal acceleration is required for training")
     stopped_threshold = float(cfg.get("stopped_speed_mps", 0.15))
+    # Training-only auxiliary derivatives (Stage 3 v2): jerk from the 0.5 s
+    # smoothed direct acceleration, steering rate from 0.5 s smoothed angle.
+    jerk = _derivative(a_direct[0], frame_times, max_gap)
+    steer_rate = _derivative(_smooth(steering, frame_times, float(scales[0]), polyorder, max_gap), frame_times, max_gap)
     return {
+        "jerk": jerk,
+        "steer_rate": steer_rate,
+        "valid_jerk": np.isfinite(jerk),
+        "valid_steer_rate": np.isfinite(steer_rate) & (speed > stopped_threshold),
         "a_long_s1": a_direct[0],
         "a_long_s2": a_direct[1],
         "a_dvdt_s1": derived[0][0],

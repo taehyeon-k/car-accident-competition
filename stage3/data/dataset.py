@@ -19,12 +19,16 @@ TARGET_NAMES = (
     "a_long_s1", "a_long_s2", "a_dvdt_s1", "a_dvdt_s2", "speed",
     "steering_angle", "yaw_rate_aux", "stopped", "valid_accel",
     "valid_accel_speed", "valid_speed", "valid_steer", "valid_yaw",
+    "jerk", "steer_rate", "valid_jerk", "valid_steer_rate",
 )
 
 
 class CachedMotionDataset(Dataset):
-    def __init__(self, manifest: str, crop_frames: int = 96, training: bool = False, seed: int = 42, flip_probability: float = 0.5, target_cfg: dict | None = None, event_fraction: float = 0.5, event_position_margin: int = 8, expected_cache_key: str | None = None):
+    def __init__(self, manifest: str, crop_frames: int = 96, training: bool = False, seed: int = 42, flip_probability: float = 0.5, target_cfg: dict | None = None, event_fraction: float = 0.5, event_position_margin: int = 8, expected_cache_key: str | None = None,
+                 visual_cache_dir: str | None = None):
         self.rows = read_jsonl(manifest)
+        # Optional frozen-DINO token cache (Stage 3 v2); None keeps v1 behaviour.
+        self.visual_cache_dir = Path(visual_cache_dir) if visual_cache_dir else None
         self.crop_frames = crop_frames
         self.training = training
         self.seed = seed
@@ -75,10 +79,15 @@ class CachedMotionDataset(Dataset):
             start, stop = 0, length
         targets = {name: torch.from_numpy(generated[name][start:stop]) for name in TARGET_NAMES}
         motion, physics = dequantize_motion(cache, start, stop), cache["physics"][start:stop]
-        if self.training and rng.random() < self.flip_probability:
+        flipped = self.training and rng.random() < self.flip_probability
+        if flipped:
             motion, physics, targets = horizontal_flip(motion, physics, targets)
+        extra = {}
+        if self.visual_cache_dir is not None:
+            with np.load(self.visual_cache_dir / f"{row['clip_id']}.npz") as visual:
+                extra["visual"] = torch.from_numpy(visual["tokens_flip" if flipped else "tokens"][start:stop].astype(np.float32))
         return {
-            "motion": motion.float(), "physics": physics.float(), **targets,
+            "motion": motion.float(), "physics": physics.float(), **targets, **extra,
             "time_valid": cache["time_valid"][start:stop].bool(), "clip_id": cache["clip_id"],
         }
 
@@ -93,7 +102,7 @@ def motion_collate(items: list[dict]) -> dict:
         padded = first.new_zeros((len(items), max_time, *first.shape[1:]))
         for i, item in enumerate(items):
             padded[i, : len(item[name])] = item[name]
-            if name in {"motion", "physics"} and len(item[name]) < max_time:
+            if name in {"motion", "physics", "visual"} and len(item[name]) < max_time:
                 padded[i, len(item[name]) :] = item[name][-1]
         output[name] = padded
     return output

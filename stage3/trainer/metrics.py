@@ -69,8 +69,13 @@ class TrainingCompetitionMetrics:
             return float(f1.mean())
 
         accel, steer = macro_f1(self.acceleration), macro_f1(self.steering)
-        return {"acceleration_macro_f1": accel, "steering_macro_f1": steer,
-                "competition_score": competition_score(accel, steer)}
+        result = {"acceleration_macro_f1": accel, "steering_macro_f1": steer,
+                  "competition_score": competition_score(accel, steer)}
+        for labels, matrix, prefix in ((ACCEL_LABELS, self.acceleration, "acceleration"), (STEER_LABELS, self.steering, "steering")):
+            denominator = matrix.sum(0) + matrix.sum(1)
+            f1 = np.divide(2.0 * matrix.diagonal(), denominator, out=np.zeros(len(matrix)), where=denominator > 0)
+            result.update({f"{prefix}_f1_{label.lower()}": float(value) for label, value in zip(labels, f1)})
+        return result
 
 
 def boundary_times(labels: np.ndarray) -> np.ndarray:
@@ -119,6 +124,8 @@ def classification_metrics(pred_accel: np.ndarray, true_accel: np.ndarray, pred_
     result["competition_score"] = competition_score(result["acceleration_macro_f1"], result["steering_macro_f1"])
     per_class = f1_score(true_accel, pred_accel, labels=ACCEL_LABELS, average=None, zero_division=0) if len(true_accel) else np.zeros(len(ACCEL_LABELS))
     result.update({f"acceleration_f1_{label.lower()}": float(value) for label, value in zip(ACCEL_LABELS, per_class)})
+    steer_class = f1_score(true_steer, pred_steer, labels=STEER_LABELS, average=None, zero_division=0) if len(true_steer) else np.zeros(len(STEER_LABELS))
+    result.update({f"steering_f1_{label.lower()}": float(value) for label, value in zip(STEER_LABELS, steer_class)})
     matrix = confusion_matrix(true_accel, pred_accel, labels=ACCEL_LABELS) if len(true_accel) else np.zeros((4, 4))
     result["stopped_as_constant"] = float(matrix[3, 2] / max(matrix[3].sum(), 1))
     result["constant_as_stopped"] = float(matrix[2, 3] / max(matrix[2].sum(), 1))
