@@ -1,0 +1,38 @@
+{
+  "official_offline": {
+    "acc_entry_0.3s": 0.6285714285714286,
+    "acc_collision_0.3s": 0.8285714285714286,
+    "f1_entry_side_macro": 0.9142857142857143,
+    "f1_evasion_space_macro": 0.698535745047373,
+    "competition_score": 0.751923218899963
+  },
+  "fpsblind": {
+    "entry_mae_frames": 17.271428571428572,
+    "collision_mae_frames": 14.1,
+    "entry_normalized_mae": 0.042116934080272395,
+    "collision_normalized_mae": 0.022873241304696482,
+    "entry_normalized_median": 0.020483686895810954,
+    "collision_normalized_median": 0.01281503864766034,
+    "entry_p_within_0p5pct": 0.17142857142857143,
+    "collision_p_within_0p5pct": 0.2857142857142857,
+    "entry_p_within_1pct": 0.24285714285714285,
+    "collision_p_within_1pct": 0.44285714285714284,
+    "entry_p_within_2pct": 0.44285714285714284,
+    "collision_p_within_2pct": 0.6285714285714286,
+    "entry_p_within_5pct": 0.7857142857142857,
+    "collision_p_within_5pct": 0.9142857142857143,
+    "f1_entry_side_macro": 0.9142857142857143,
+    "f1_evasion_space_macro": 0.698535745047373,
+    "fpsblind_selection_score": 0.48192321889996304
+  },
+  "members": [
+    "P2/seed0",
+    "P2/seed1",
+    "P2/seed2",
+    "P2/seed3"
+  ],
+  "runtime": {
+    "temporal_head_ms_per_video": 9.54625771514007,
+    "parameter_count": 1095768
+  }
+}

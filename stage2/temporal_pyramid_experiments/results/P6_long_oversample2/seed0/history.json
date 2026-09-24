@@ -1,0 +1,134 @@
+[
+  {
+    "epoch": 1,
+    "train_loss": 3.783195498345912,
+    "train_fpsblind_score": 0.3145296953941007,
+    "val_fpsblind_score": 0.23744128444080492,
+    "val_entry_1pct": 0.15714285714285714,
+    "val_collision_1pct": 0.17142857142857143,
+    "val_side_f1": 0.37904579237592906,
+    "val_evasion_f1": 0.4372294372294372,
+    "consistency": 0
+  },
+  {
+    "epoch": 2,
+    "train_loss": 3.096495088489576,
+    "train_fpsblind_score": 0.4450058693613258,
+    "val_fpsblind_score": 0.35260439560439555,
+    "val_entry_1pct": 0.18571428571428572,
+    "val_collision_1pct": 0.34285714285714286,
+    "val_side_f1": 0.6697435897435897,
+    "val_evasion_f1": 0.4476190476190476,
+    "consistency": 0
+  },
+  {
+    "epoch": 3,
+    "train_loss": 2.6045093769314644,
+    "train_fpsblind_score": 0.5413548224534355,
+    "val_fpsblind_score": 0.388270620965622,
+    "val_entry_1pct": 0.2,
+    "val_collision_1pct": 0.35714285714285715,
+    "val_side_f1": 0.7321428571428572,
+    "val_evasion_f1": 0.5563279492946227,
+    "consistency": 0
+  },
+  {
+    "epoch": 4,
+    "train_loss": 2.3365477378340973,
+    "train_fpsblind_score": 0.5966320058959951,
+    "val_fpsblind_score": 0.4017595288519676,
+    "val_entry_1pct": 0.21428571428571427,
+    "val_collision_1pct": 0.34285714285714286,
+    "val_side_f1": 0.8425679820077694,
+    "val_evasion_f1": 0.5358288770053475,
+    "consistency": 0
+  },
+  {
+    "epoch": 5,
+    "train_loss": 2.2198309802460945,
+    "train_fpsblind_score": 0.645356620473253,
+    "val_fpsblind_score": 0.46188778414521564,
+    "val_entry_1pct": 0.2714285714285714,
+    "val_collision_1pct": 0.42857142857142855,
+    "val_side_f1": 0.8425679820077694,
+    "val_evasion_f1": 0.6033505789603351,
+    "consistency": 0
+  },
+  {
+    "epoch": 6,
+    "train_loss": 2.089736393128318,
+    "train_fpsblind_score": 0.6719925522889375,
+    "val_fpsblind_score": 0.4165313852813852,
+    "val_entry_1pct": 0.18571428571428572,
+    "val_collision_1pct": 0.38571428571428573,
+    "val_side_f1": 0.8412698412698412,
+    "val_evasion_f1": 0.6022727272727273,
+    "consistency": 0
+  },
+  {
+    "epoch": 7,
+    "train_loss": 1.9705247166513027,
+    "train_fpsblind_score": 0.7051426187567743,
+    "val_fpsblind_score": 0.42582314744079447,
+    "val_entry_1pct": 0.24285714285714285,
+    "val_collision_1pct": 0.35714285714285715,
+    "val_side_f1": 0.8284313725490196,
+    "val_evasion_f1": 0.6103896103896104,
+    "consistency": 0
+  },
+  {
+    "epoch": 8,
+    "train_loss": 1.9203343747676105,
+    "train_fpsblind_score": 0.7094281026884712,
+    "val_fpsblind_score": 0.42355480710349047,
+    "val_entry_1pct": 0.2714285714285714,
+    "val_collision_1pct": 0.3142857142857143,
+    "val_side_f1": 0.8714023270055113,
+    "val_evasion_f1": 0.5856297203510921,
+    "consistency": 0
+  },
+  {
+    "epoch": 9,
+    "train_loss": 1.8744282558046539,
+    "train_fpsblind_score": 0.7146130560850568,
+    "val_fpsblind_score": 0.38884615384615384,
+    "val_entry_1pct": 0.15714285714285714,
+    "val_collision_1pct": 0.34285714285714286,
+    "val_side_f1": 0.8133333333333334,
+    "val_evasion_f1": 0.6123076923076923,
+    "consistency": 0
+  },
+  {
+    "epoch": 10,
+    "train_loss": 1.8297080404457005,
+    "train_fpsblind_score": 0.7692842955773793,
+    "val_fpsblind_score": 0.4255934065934066,
+    "val_entry_1pct": 0.2571428571428571,
+    "val_collision_1pct": 0.32857142857142857,
+    "val_side_f1": 0.8420512820512821,
+    "val_evasion_f1": 0.6285714285714286,
+    "consistency": 0
+  },
+  {
+    "epoch": 11,
+    "train_loss": 1.8053979352972973,
+    "train_fpsblind_score": 0.7798026929869059,
+    "val_fpsblind_score": 0.45541594448571193,
+    "val_entry_1pct": 0.3142857142857143,
+    "val_collision_1pct": 0.37142857142857144,
+    "val_side_f1": 0.828009828009828,
+    "val_evasion_f1": 0.6080964685615848,
+    "consistency": 0
+  },
+  {
+    "epoch": 12,
+    "train_loss": 1.7725982953762185,
+    "train_fpsblind_score": 0.785483870967742,
+    "val_fpsblind_score": 0.3695837043139846,
+    "val_entry_1pct": 0.11428571428571428,
+    "val_collision_1pct": 0.3,
+    "val_side_f1": 0.8714023270055113,
+    "val_evasion_f1": 0.6258223684210527,
+    "consistency": 0
+  }
+]

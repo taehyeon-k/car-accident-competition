@@ -1,1 +1,1 @@
-{"sample_count":128,"batch_size":16,"workers":2,"backbone_variant":"phase1_partial_noanchor","sampling_version":"normalized-clip-v1"}
+{"model":"P2 temporal pyramid, 4-seed probability ensemble, full 349-clip refit","members":["members/p2_seed0.pt","members/p2_seed1.pt","members/p2_seed2.pt","members/p2_seed3.pt"],"backbone_variant":"phase1_partial_noanchor","grid":[7,10],"batch_size":16,"workers":2,"sampling":"adaptive: N<=128 all, <=256:128, <=512:192, <=768:256, else 320 from 192/383 normalized grids"}

@@ -1,0 +1,156 @@
+[
+  {
+    "epoch": 1,
+    "train_loss": 3.6885016884122575,
+    "train_fpsblind_score": 0.2996484868328427,
+    "val_fpsblind_score": 0.24521559923906147,
+    "val_entry_1pct": 0.12857142857142856,
+    "val_collision_1pct": 0.2,
+    "val_side_f1": 0.48213908264637495,
+    "val_evasion_f1": 0.38596491228070173,
+    "consistency": 0
+  },
+  {
+    "epoch": 2,
+    "train_loss": 3.077673726422446,
+    "train_fpsblind_score": 0.4389023832642346,
+    "val_fpsblind_score": 0.3530525155798754,
+    "val_entry_1pct": 0.22857142857142856,
+    "val_collision_1pct": 0.2857142857142857,
+    "val_side_f1": 0.6683893195521102,
+    "val_evasion_f1": 0.4852941176470588,
+    "consistency": 0
+  },
+  {
+    "epoch": 3,
+    "train_loss": 2.675793889590672,
+    "train_fpsblind_score": 0.43569291483872696,
+    "val_fpsblind_score": 0.3122312606588885,
+    "val_entry_1pct": 0.21428571428571427,
+    "val_collision_1pct": 0.3142857142857143,
+    "val_side_f1": 0.43089430894308944,
+    "val_evasion_f1": 0.41731409544950054,
+    "consistency": 0
+  },
+  {
+    "epoch": 4,
+    "train_loss": 2.394325658253261,
+    "train_fpsblind_score": 0.5919630201529271,
+    "val_fpsblind_score": 0.4433091715907762,
+    "val_entry_1pct": 0.2857142857142857,
+    "val_collision_1pct": 0.34285714285714286,
+    "val_side_f1": 0.8714023270055113,
+    "val_evasion_f1": 0.6173254835996635,
+    "consistency": 0
+  },
+  {
+    "epoch": 5,
+    "train_loss": 2.1954469391277858,
+    "train_fpsblind_score": 0.5510196279216655,
+    "val_fpsblind_score": 0.3551517199017199,
+    "val_entry_1pct": 0.2571428571428571,
+    "val_collision_1pct": 0.2714285714285714,
+    "val_side_f1": 0.7993447993447993,
+    "val_evasion_f1": 0.335,
+    "consistency": 0
+  },
+  {
+    "epoch": 6,
+    "train_loss": 2.0471499732562473,
+    "train_fpsblind_score": 0.6381340061429217,
+    "val_fpsblind_score": 0.4053983274348494,
+    "val_entry_1pct": 0.2714285714285714,
+    "val_collision_1pct": 0.3,
+    "val_side_f1": 0.8388784264490479,
+    "val_evasion_f1": 0.5304437564499485,
+    "consistency": 0
+  },
+  {
+    "epoch": 7,
+    "train_loss": 1.9796853406088692,
+    "train_fpsblind_score": 0.715515189536539,
+    "val_fpsblind_score": 0.4747871894002542,
+    "val_entry_1pct": 0.2857142857142857,
+    "val_collision_1pct": 0.4,
+    "val_side_f1": 0.8711919852790839,
+    "val_evasion_f1": 0.6940559440559441,
+    "consistency": 0
+  },
+  {
+    "epoch": 8,
+    "train_loss": 1.8857637865202768,
+    "train_fpsblind_score": 0.7374576522875395,
+    "val_fpsblind_score": 0.41817879779186257,
+    "val_entry_1pct": 0.22857142857142856,
+    "val_collision_1pct": 0.3142857142857143,
+    "val_side_f1": 0.8711919852790839,
+    "val_evasion_f1": 0.6499999999999999,
+    "consistency": 0
+  },
+  {
+    "epoch": 9,
+    "train_loss": 1.8192397202764239,
+    "train_fpsblind_score": 0.7263752852940567,
+    "val_fpsblind_score": 0.4293630083181783,
+    "val_entry_1pct": 0.2857142857142857,
+    "val_collision_1pct": 0.32857142857142857,
+    "val_side_f1": 0.8711919852790839,
+    "val_evasion_f1": 0.5578947368421052,
+    "consistency": 0
+  },
+  {
+    "epoch": 10,
+    "train_loss": 1.7681612815175738,
+    "train_fpsblind_score": 0.7562349964423696,
+    "val_fpsblind_score": 0.38402232031264294,
+    "val_entry_1pct": 0.2,
+    "val_collision_1pct": 0.3,
+    "val_side_f1": 0.8566748566748568,
+    "val_evasion_f1": 0.5368072787427627,
+    "consistency": 0
+  },
+  {
+    "epoch": 11,
+    "train_loss": 1.7163746765681676,
+    "train_fpsblind_score": 0.7964198642102815,
+    "val_fpsblind_score": 0.4176886189258312,
+    "val_entry_1pct": 0.2571428571428571,
+    "val_collision_1pct": 0.34285714285714286,
+    "val_side_f1": 0.8284313725490196,
+    "val_evasion_f1": 0.5561594202898551,
+    "consistency": 0
+  },
+  {
+    "epoch": 12,
+    "train_loss": 1.682229793071747,
+    "train_fpsblind_score": 0.7492594208382277,
+    "val_fpsblind_score": 0.4541715827231494,
+    "val_entry_1pct": 0.2714285714285714,
+    "val_collision_1pct": 0.38571428571428573,
+    "val_side_f1": 0.8285714285714286,
+    "val_evasion_f1": 0.665905789582901,
+    "consistency": 0
+  },
+  {
+    "epoch": 13,
+    "train_loss": 1.6615063258579799,
+    "train_fpsblind_score": 0.7949707960123996,
+    "val_fpsblind_score": 0.4387460633365409,
+    "val_entry_1pct": 0.24285714285714285,
+    "val_collision_1pct": 0.4,
+    "val_side_f1": 0.8714023270055113,
+    "val_evasion_f1": 0.5535714285714286,
+    "consistency": 0
+  },
+  {
+    "epoch": 14,
+    "train_loss": 1.6236077649252756,
+    "train_fpsblind_score": 0.7599771214448634,
+    "val_fpsblind_score": 0.42357647420147415,
+    "val_entry_1pct": 0.22857142857142856,
+    "val_collision_1pct": 0.38571428571428573,
+    "val_side_f1": 0.828009828009828,
+    "val_evasion_f1": 0.5625,
+    "consistency": 0
+  }
+]

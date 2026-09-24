@@ -1,0 +1,17 @@
+{
+  "sample_id": "nexar_00000",
+  "num_frames": 1158,
+  "batch_size": 12,
+  "runs": {
+    "128": {
+      "unique_encoded_frames": 128,
+      "end_to_end_seconds": 1.1202959027141333,
+      "peak_allocated_vram_mb": 405.365234375
+    },
+    "320": {
+      "unique_encoded_frames": 320,
+      "end_to_end_seconds": 1.995091985911131,
+      "peak_allocated_vram_mb": 405.365234375
+    }
+  }
+}

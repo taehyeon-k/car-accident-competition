@@ -134,6 +134,11 @@ def build_flow_estimator(cfg: dict, device: str | None = None) -> FlowEstimator:
         return SeaRaftS(
             cfg["source_path"], cfg["checkpoint"], device or cfg.get("device", "cuda"), cfg.get("batch_size", 4)
         )
+    if backend == "waft":
+        from .waft import Waft
+
+        return Waft(cfg["source_path"], cfg["checkpoint"], cfg["waft_config"], device or cfg.get("device", "cuda"),
+                    cfg.get("batch_size", 16), cfg.get("iters"))
     raise ValueError(f"Unknown flow backend {backend!r}")
 
 

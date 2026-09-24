@@ -11,7 +11,9 @@ def main():
     args = parser.parse_args()
     root = args.submission.resolve()
     required = ['inference.py', 'requirements.txt', 'model/stage1/best.pt',
-                'model/stage2/runtime.py', 'model/stage2/backbone.pth', 'model/stage2/probe.pt',
+                'model/stage2/runtime.py', 'model/stage2/backbone.pth', 'model/stage2/pyramid_models.py',
+                'model/stage2/spotter_models.py',
+                *[f'model/stage2/members/p2_seed{i}.pt' for i in range(4)],
                 'model/stage2/config.json', 'model/stage2/sampling.py',
                 'model/stage3/best.pt', 'model/stage3/pretrained/sea_raft/model.safetensors']
     missing = [p for p in required if not (root/p).is_file()]

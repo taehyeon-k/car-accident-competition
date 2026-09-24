@@ -1,0 +1,57 @@
+{
+  "fpsblind": {
+    "entry_mae_frames": 20.928571428571427,
+    "collision_mae_frames": 10.82857142857143,
+    "entry_normalized_mae": 0.0582760383690039,
+    "collision_normalized_mae": 0.027093182177493416,
+    "entry_normalized_median": 0.029551851050010826,
+    "collision_normalized_median": 0.017747899495393765,
+    "entry_p_within_0p5pct": 0.17142857142857143,
+    "collision_p_within_0p5pct": 0.22857142857142856,
+    "entry_p_within_1pct": 0.24285714285714285,
+    "collision_p_within_1pct": 0.34285714285714286,
+    "entry_p_within_2pct": 0.3142857142857143,
+    "collision_p_within_2pct": 0.5285714285714286,
+    "entry_p_within_5pct": 0.7428571428571429,
+    "collision_p_within_5pct": 0.8714285714285714,
+    "f1_entry_side_macro": 0.9142156862745098,
+    "f1_evasion_space_macro": 0.7083333333333333,
+    "fpsblind_selection_score": 0.44838235294117645
+  },
+  "official_offline": {
+    "acc_entry_0.3s": 0.5714285714285714,
+    "acc_collision_0.3s": 0.7428571428571429,
+    "f1_entry_side_macro": 0.9142156862745098,
+    "f1_evasion_space_macro": 0.7083333333333333,
+    "competition_score": 0.7033823529411763
+  },
+  "train_fpsblind": {
+    "entry_mae_frames": 3.043010752688172,
+    "collision_mae_frames": 2.060931899641577,
+    "entry_normalized_mae": 0.014657846444635221,
+    "collision_normalized_mae": 0.010050277856806022,
+    "entry_normalized_median": 0.006711409395973154,
+    "collision_normalized_median": 0.006711409395973154,
+    "entry_p_within_0p5pct": 0.3870967741935484,
+    "collision_p_within_0p5pct": 0.4444444444444444,
+    "entry_p_within_1pct": 0.6164874551971327,
+    "collision_p_within_1pct": 0.6523297491039427,
+    "entry_p_within_2pct": 0.7455197132616488,
+    "collision_p_within_2pct": 0.7956989247311828,
+    "entry_p_within_5pct": 0.9605734767025089,
+    "collision_p_within_5pct": 0.978494623655914,
+    "f1_entry_side_macro": 0.9964039440613521,
+    "f1_evasion_space_macro": 0.9449899443984384,
+    "fpsblind_selection_score": 0.7352951047743449
+  },
+  "runtime": {
+    "wall_seconds": 112.7013358399272,
+    "temporal_head_ms_per_video": 0.6006975658237934,
+    "peak_vram_mb": 490.7314453125,
+    "parameter_count": 273942,
+    "eval_encoded_frames": "adaptive rule"
+  },
+  "best_epoch": 8,
+  "last_epoch": 15,
+  "best_to_final_epoch_gap": 7
+}

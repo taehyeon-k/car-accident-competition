@@ -38,8 +38,8 @@ def validate_config(cfg: dict[str, Any]) -> None:
         raise ValueError("stage must be 'stage3'")
     if cfg["calibration"]["focal_mode"] not in {"prior", "geocalib", "known"}:
         raise ValueError("calibration.focal_mode must be prior, geocalib, or known")
-    if cfg["flow"]["backend"] not in {"sea_raft", "opencv"}:
-        raise ValueError("flow.backend must be sea_raft or opencv")
+    if cfg["flow"]["backend"] not in {"sea_raft", "opencv", "waft"}:
+        raise ValueError("flow.backend must be sea_raft, opencv or waft")
     if cfg["flow"]["backend"] == "sea_raft" and not cfg["flow"].get("factory"):
         raise ValueError("SEA-RAFT requires flow.factory and a local implementation")
     if len(cfg["model"]["motion_cnn"]["widths"]) != 4:

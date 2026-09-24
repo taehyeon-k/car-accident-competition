@@ -1,0 +1,29 @@
+{
+  "count": 192,
+  "fpsblind": {
+    "entry_mae_frames": 22.15714285714286,
+    "collision_mae_frames": 17.614285714285714,
+    "entry_normalized_mae": 0.06716229030602995,
+    "collision_normalized_mae": 0.032158308508182305,
+    "entry_normalized_median": 0.031179138321995464,
+    "collision_normalized_median": 0.013812495444427624,
+    "entry_p_within_0p5pct": 0.1,
+    "collision_p_within_0p5pct": 0.2857142857142857,
+    "entry_p_within_1pct": 0.14285714285714285,
+    "collision_p_within_1pct": 0.44285714285714284,
+    "entry_p_within_2pct": 0.3142857142857143,
+    "collision_p_within_2pct": 0.5428571428571428,
+    "entry_p_within_5pct": 0.6285714285714286,
+    "collision_p_within_5pct": 0.8571428571428571,
+    "f1_entry_side_macro": 0.8566748566748568,
+    "f1_evasion_space_macro": 0.576138147566719,
+    "fpsblind_selection_score": 0.4199219506362363
+  },
+  "official_diagnostic": {
+    "acc_entry_0.3s": 0.5714285714285714,
+    "acc_collision_0.3s": 0.7428571428571429,
+    "f1_entry_side_macro": 0.8566748566748568,
+    "f1_evasion_space_macro": 0.576138147566719,
+    "competition_score": 0.6749219506362363
+  }
+}

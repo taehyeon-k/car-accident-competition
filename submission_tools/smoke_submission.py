@@ -79,15 +79,16 @@ def main():
                 assert df.sample_index.tolist() == list(range(32))
                 assert set(df.accel_label) <= {'STOPPED','CONSTANT','ACCELERATING','DECELERATING'}
                 assert set(df.steer_label) <= {'LEFT','STRAIGHT','RIGHT'}
-                # Resizing during decode must be pixel-identical to the old two-pass preparation.
+                # Bundled decode + resize must be pixel-identical to a plain PyAV decode + INTER_AREA resize.
                 import av
                 from stage3.data.timing import decode_dacon_stage3_video
+                from stage3.flow.sea_raft import resize_frames
                 with av.open(str(video)) as container:
                     reference = [cv2.resize(f.to_ndarray(format='rgb24'), (336,192), interpolation=cv2.INTER_AREA)
                                  for f in container.decode(video=0)]
-                actual = decode_dacon_stage3_video(video, resize_hw=(192,336)).frames
-                assert all(np.array_equal(a,b) for a,b in zip(actual,reference))
-                result['tests']['streamed_resize_exact'] = True
+                actual = resize_frames(decode_dacon_stage3_video(video).frames, (192, 336))
+                assert len(actual) == len(reference) and all(np.array_equal(np.asarray(a), b) for a, b in zip(actual, reference))
+                result['tests']['decode_resize_exact'] = True
                 # Ensure it really imported bundled code, not the workspace checkout.
                 import stage3
                 assert str(package) in stage3.__file__

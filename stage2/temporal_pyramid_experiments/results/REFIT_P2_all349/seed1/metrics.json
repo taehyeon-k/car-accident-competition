@@ -1,0 +1,24 @@
+{
+  "in_sample_fpsblind": {
+    "entry_mae_frames": 2.63323782234957,
+    "collision_mae_frames": 2.2693409742120343,
+    "entry_normalized_mae": 0.012686624078999563,
+    "collision_normalized_mae": 0.010495546566163532,
+    "entry_normalized_median": 0.007407407407407408,
+    "collision_normalized_median": 0.006711409395973154,
+    "entry_p_within_0p5pct": 0.3438395415472779,
+    "collision_p_within_0p5pct": 0.3954154727793696,
+    "entry_p_within_1pct": 0.5673352435530086,
+    "collision_p_within_1pct": 0.5988538681948424,
+    "entry_p_within_2pct": 0.7449856733524355,
+    "collision_p_within_2pct": 0.7765042979942693,
+    "entry_p_within_5pct": 0.9684813753581661,
+    "collision_p_within_5pct": 0.9856733524355301,
+    "f1_entry_side_macro": 0.9913810844851288,
+    "f1_evasion_space_macro": 0.879576076240552,
+    "fpsblind_selection_score": 0.6888097632206
+  },
+  "epochs_trained": 8,
+  "wall_seconds": 43.6536151887849,
+  "note": "in-sample fit only; no held-out validation exists for a full refit"
+}

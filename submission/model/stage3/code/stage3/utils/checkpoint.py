@@ -46,7 +46,8 @@ def load_artifact(path: str | Path, weights_only: bool = False):
     if compressed:
         with gzip.open(path, "rb") as stream:
             return torch.load(stream, map_location="cpu", weights_only=weights_only)
-    return torch.load(path, map_location="cpu", weights_only=weights_only)
+    # Uncompressed artifacts are memory-mapped so crops read only the frames they use.
+    return torch.load(path, map_location="cpu", weights_only=weights_only, mmap=True)
 
 
 def save_checkpoint(path: str | Path, **state: Any) -> None:

@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "mmau": {
+    "ego_involved_types": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 61, 62],
+    "road_vehicle_types": [7, 8, 9, 10, 11, 12],
+    "structured_intrusion_types": [7, 10],
+    "ambiguous_overtaking_types": [9, 12],
+    "minimum_pre_event_frames": 5,
+    "minimum_entry_to_collision_frames": 3,
+    "intrusion_patterns": [
+      "a vehicle crosses the road",
+      "a vehicle .*crossing paths",
+      "a vehicle turns (left|right) across path",
+      "a vehicle changes lanes with the same direction to ego-car$",
+      "a vehicle turns on a road with the same direction to ego-car",
+      "a vehicle runs red light",
+      "a truck .*crossing paths",
+      "a truck turns (left|right) across path"
+    ],
+    "ego_lane_keep_patterns": [
+      "ego-car .*goes straight",
+      "give way to normal driving vehicles",
+      "give way to the straightly moving vehicles"
+    ],
+    "negative_patterns": {
+      "ego_changed_lane": ["ego-car changes lanes", "ego-car overtakes"],
+      "ego_turning": ["ego-car turns left", "ego-car turns right", "ego-car turns around", "ego-car turns on a road", "ego-car accelerat.*turn"],
+      "rear_end": ["lead vehicle stops", "lead vehicle decelerates", "front vehicle decelerates or stops"],
+      "ego_loss_of_control": ["ego-car controls loss", "ego-car is out of control", "ego-car drives away from"],
+      "ego_fault_speed_or_attention": ["ego-car drives too fast", "ego-car driver is in distracted driving"]
+    }
+  },
+  "causalcrash": {
+    "ego_intents": ["keeping_lane", "maintaining_speed"],
+    "ego_positive_roles": ["victim"],
+    "road_vehicle_types": ["vehicle", "heavy_vehicle"],
+    "intrusion_intents": ["changing_left", "changing_right", "changing_lane_right", "crossing", "joining_highway", "turning", "turning_left", "turning_right", "swerving"],
+    "collision_labels": ["collision", "t_bone_collision"],
+    "collision_hazards": ["collision", "t_bone_collision", "side_swipe", "sideswipe"],
+    "intrusion_hazards": ["unsafe_lane_change", "cut_in", "unsafe_intersection_entry", "t_bone_collision", "side_swipe", "sideswipe", "wrong_way", "wrong_way_driving"],
+    "invalid_camera_patterns": ["cctv", "surveillance", "third-person", "external camera", "fixed camera", "interior cabin", "inward-facing"],
+    "minimum_pre_collision_seconds": 0.5
+  }
+}

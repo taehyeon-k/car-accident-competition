@@ -18,7 +18,7 @@ from stage3.utils.checkpoint import load_checkpoint
 class Stage3Predictor:
     def __init__(self, checkpoint: str | Path, device: str | None = None):
         self.device = torch.device(device or ("cuda" if torch.cuda.is_available() else "cpu"))
-        state = load_checkpoint(checkpoint, "cpu")
+        state = load_checkpoint(checkpoint, self.device)
         self.cfg = state["config"]
         packaged = Path(checkpoint).resolve().parent / "pretrained" / "sea_raft"
         if packaged.is_dir():
@@ -41,11 +41,10 @@ class Stage3Predictor:
 
         timing: dict[str, float] = {}
         started = timestamp()
-        height, width = self.cfg["flow"]["working_size"]
-        decoded = decode_dacon_stage3_video(path, max_frames=max_frames, resize_hw=(height, width))
+        decoded = decode_dacon_stage3_video(path, max_frames=max_frames)
         timing["decode"] = timestamp() - started
         height, width = self.cfg["flow"]["working_size"]
-        frames = decoded.frames
+        frames = resize_frames(decoded.frames, (height, width))
         flow_start = timestamp()
         flows, confidence = self.flow.estimate_sequence(frames)
         timing["sea_raft"] = timestamp() - flow_start

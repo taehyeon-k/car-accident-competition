@@ -1,0 +1,48 @@
+{
+  "counts": [
+    96,
+    128,
+    192
+  ],
+  "per_count": {
+    "96": {
+      "acc_entry_0.3s": 0.5428571428571428,
+      "acc_collision_0.3s": 0.6571428571428571,
+      "f1_entry_side_macro": 0.8388784264490479,
+      "f1_evasion_space_macro": 0.571078431372549,
+      "competition_score": 0.6314935286732395
+    },
+    "128": {
+      "acc_entry_0.3s": 0.5714285714285714,
+      "acc_collision_0.3s": 0.7428571428571429,
+      "f1_entry_side_macro": 0.8402158124092136,
+      "f1_evasion_space_macro": 0.5849519525659375,
+      "competition_score": 0.6737751647462726
+    },
+    "192": {
+      "acc_entry_0.3s": 0.6285714285714286,
+      "acc_collision_0.3s": 0.7285714285714285,
+      "f1_entry_side_macro": 0.8402158124092136,
+      "f1_evasion_space_macro": 0.5714285714285714,
+      "competition_score": 0.6867466575756677
+    }
+  },
+  "score_range": 0.05525312890242817,
+  "trajectories": {
+    "entry": {
+      "mean_normalized_std": 0.018235126780867708,
+      "median_original_frame_range": 1.0,
+      "mean_original_frame_range": 24.1
+    },
+    "collision": {
+      "mean_normalized_std": 0.018454324848516074,
+      "median_original_frame_range": 1.0,
+      "mean_original_frame_range": 17.37142857142857
+    }
+  },
+  "head_ms_per_video": {
+    "96": 2.032177775566067,
+    "128": 0.7161763097558703,
+    "192": 0.6327995365219456
+  }
+}

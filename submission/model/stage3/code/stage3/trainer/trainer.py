@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 import math
 from pathlib import Path
 
@@ -35,10 +36,12 @@ class Trainer:
             data["manifest"], data["crop_frames"], True, self.cfg["seed"],
             data.get("flip_probability", 0.5), self.cfg["targets"],
             data.get("event_fraction", 0.5), data.get("event_position_margin", 8), cache_key(self.cfg),
+            data.get("visual_cache_dir"),
         )
         self.val_set = CachedMotionDataset(
             data["val_manifest"], data["crop_frames"], False, self.cfg["seed"],
             0, self.cfg["targets"], 0, data.get("event_position_margin", 8), cache_key(self.cfg),
+            data.get("visual_cache_dir"),
         )
         loader_args = dict(batch_size=data["batch_size"], num_workers=data["num_workers"], collate_fn=motion_collate, pin_memory=True)
         self.train_loader = DataLoader(self.train_set, shuffle=True, **loader_args)
@@ -65,6 +68,10 @@ class Trainer:
         )
         self.ema.model.to(self.accelerator.device)
         self.start_epoch, self.global_step, self.best, self.bad_validations = 0, 0, -float("inf"), 0
+
+    @staticmethod
+    def _extra(batch: dict) -> dict:
+        return {"visual": batch["visual"]} if "visual" in batch else {}
 
     def _normalize(self, batch: dict) -> dict:
         center = self.physics_center.to(batch["physics"].device)
@@ -124,7 +131,7 @@ class Trainer:
             for batch in self.train_loader:
                 batch = self._normalize(batch)
                 with self.accelerator.accumulate(self.model):
-                    output = self.model(batch["motion"], batch["physics"], batch["lengths"])
+                    output = self.model(batch["motion"], batch["physics"], batch["lengths"], **self._extra(batch))
                     loss, parts = stage3_loss(output, batch, self.cfg["loss"])
                     self.accelerator.backward(loss)
                     if self.accelerator.sync_gradients:
@@ -150,6 +157,11 @@ class Trainer:
             # Explicit W&B steps otherwise keep the row pending until the next
             # log call, delaying epoch metrics by an entire epoch.
             self.accelerator.log(log, step=self.global_step, log_kwargs={"wandb": {"commit": True}})
+            if getattr(self.accelerator, "is_main_process", True) and self.cfg.get("output_dir"):
+                Path(self.cfg["output_dir"]).mkdir(parents=True, exist_ok=True)
+                with open(Path(self.cfg["output_dir"]) / "history.jsonl", "a", encoding="utf-8") as stream:
+                    stream.write(json.dumps({**log, "global_step": self.global_step,
+                                             "peak_vram_mb": torch.cuda.max_memory_allocated() / 2**20 if torch.cuda.is_available() else 0.0}) + "\n")
             if evaluate:
                 score = metrics[self.BEST_METRIC]
                 if score > self.best:
@@ -172,15 +184,23 @@ class Trainer:
         boundary = {"0.5": [], "1.0": []}
         mae = {"acceleration": [], "speed": [], "steering_angle": [], "yaw": []}
         grid_scores = []
+        loss_totals: dict[str, float] = {}
+        loss_count = 0
         grid = self.cfg.get("validation", {}).get("acceleration_threshold_grid", [-0.30, -0.25, -0.20])
         grid_predictions = {(d, a): [] for d in grid for a in [-v for v in reversed(grid)]}
         for batch in self.val_loader:
             batch = self._normalize(batch)
             if isinstance(model, Stage3MotionModel):
                 output = model(batch["motion"], batch["physics"], batch["lengths"],
-                               chunk_frames=int(self.cfg.get("inference", {}).get("cnn_chunk_frames", 32)))
+                               chunk_frames=int(self.cfg.get("inference", {}).get("cnn_chunk_frames", 32)), **self._extra(batch))
             else:
-                output = model(batch["motion"], batch["physics"], batch["lengths"])
+                output = model(batch["motion"], batch["physics"], batch["lengths"], **self._extra(batch))
+            if "loss" in self.cfg and "valid_accel_speed" in batch:
+                val_loss, val_parts = stage3_loss(output, batch, self.cfg["loss"])
+                size = batch["motion"].shape[0]
+                loss_count += size
+                for name, value in {"loss": val_loss, **val_parts}.items():
+                    loss_totals[name] = loss_totals.get(name, 0.0) + float(value) * size
             samples = []
             for i, length in enumerate(batch["lengths"]):
                 n = int(length)
@@ -224,9 +244,11 @@ class Trainer:
                 for (decelerating, accelerating), predictions in grid_predictions.items():
                     decoder = {**self.cfg["decoder"], "acceleration": {**acfg, "decelerating_below": decelerating, "accelerating_above": accelerating}}
                     predictions.extend(decode_predictions(sample_output, decoder)[0])
+        self.last_validation_predictions = (predicted_accel, true_accel, predicted_steer, true_steer, acceleration_masks, steering_masks)
         metrics = classification_metrics(np.asarray(predicted_accel), np.asarray(true_accel), np.asarray(predicted_steer), np.asarray(true_steer), np.asarray(acceleration_masks), np.asarray(steering_masks))
         metrics.update({f"{key}_mae": float(np.mean(value)) if value else 0.0 for key, value in mae.items()})
         metrics["direct_acceleration_mae"] = metrics["acceleration_mae"]
+        metrics.update({f"loss_{name}" if name != "loss" else "loss": value / max(loss_count, 1) for name, value in loss_totals.items()})
         for seconds, values in boundary.items():
             metrics[f"boundary_f1_{seconds}s"] = float(np.mean([value[0] for value in values])) if values else 0.0
             metrics[f"boundary_delay_{seconds}s"] = float(np.mean([value[1] for value in values])) if values else 0.0

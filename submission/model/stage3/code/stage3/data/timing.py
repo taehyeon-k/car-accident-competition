@@ -98,7 +98,7 @@ def decode_external_training_video(
     )
 
 
-def decode_dacon_stage3_video(path: str | Path, max_frames: int | None = None, resize_hw: tuple[int, int] | None = None) -> DecodedVideo:
+def decode_dacon_stage3_video(path: str | Path, max_frames: int | None = None) -> DecodedVideo:
     """Decode every frame 1:1; private DACON sample indices ignore PTS."""
     import av
 
@@ -108,11 +108,7 @@ def decode_dacon_stage3_video(path: str | Path, max_frames: int | None = None, r
     with av.open(str(path)) as container:
         stream = container.streams.video[0]
         for frame in container.decode(stream):
-            rgb = frame.to_ndarray(format="rgb24")
-            if resize_hw is not None:
-                import cv2
-                rgb = cv2.resize(rgb, (resize_hw[1], resize_hw[0]), interpolation=cv2.INTER_AREA)
-            frames.append(rgb)
+            frames.append(frame.to_ndarray(format="rgb24"))
             if max_frames is not None and len(frames) >= max_frames:
                 break
     if not frames:

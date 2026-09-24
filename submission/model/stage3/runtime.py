@@ -19,6 +19,13 @@ def predict(data_dir, model_dir):
         raise FileNotFoundError(f'Copy your completed Stage 3 best.pt to {checkpoint}')
     # Loading optimizer tensors onto CUDA wastes memory; packaged predictor loads on CPU.
     predictor = Stage3Predictor(checkpoint)
+    # Optional decoder threshold overrides (post-processing only; model weights unchanged).
+    overrides = Path(model_dir) / 'decoder_overrides.json'
+    if overrides.is_file():
+        import json
+        for section, values in json.loads(overrides.read_text()).items():
+            predictor.cfg['decoder'][section] = {**predictor.cfg['decoder'][section], **values}
+    print(f'[stage3] decoder: {predictor.cfg["decoder"]}', flush=True)
     root = Path(data_dir).resolve()
     root = root / 'stage3' if (root / 'stage3').is_dir() else root
     tables = []

@@ -12,7 +12,7 @@ def horizontal_flip(motion: torch.Tensor, physics: torch.Tensor, targets: dict[s
     result_physics[..., 1:3] *= -1  # mirror axial-vector omega_y/z
     result_targets = None if targets is None else {key: value.clone() for key, value in targets.items()}
     if result_targets is not None:
-        for key in ("steering_angle", "yaw_rate_aux"):
+        for key in ("steering_angle", "yaw_rate_aux", "steer_rate"):
             if key in result_targets:
                 result_targets[key] *= -1
     return result_motion, result_physics, result_targets
