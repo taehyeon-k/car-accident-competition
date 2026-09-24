@@ -54,19 +54,33 @@ def main() -> None:
     parser.add_argument("--set", action="append", default=[], help="dotted.key=yaml_value")
     parser.add_argument("--root", default=str(REPO / "runs/stage3_v2"))
     parser.add_argument("--eval-only", action="store_true")
+    parser.add_argument("--resume", action="store_true",
+                        help="continue an interrupted run from its last.pt using its saved config.yaml")
     args = parser.parse_args()
 
-    raw = yaml.safe_load(Path(args.base).read_text())
-    for item in args.set:
-        key, _, value = item.partition("=")
-        set_path(raw, key, yaml.safe_load(value))
     out = Path(args.root) / args.name
-    raw["output_dir"] = str(out)
-    raw.setdefault("logging", {}).setdefault("wandb", {})["enabled"] = False
-    out.mkdir(parents=True, exist_ok=True)
-    if (out / "best.pt").exists() and not args.eval_only:
-        raise SystemExit(f"{out} already has best.pt; refusing to overwrite")
-    (out / "config.yaml").write_text(yaml.safe_dump(raw, sort_keys=False))
+    resume_from = None
+    if args.resume:
+        if args.set:
+            raise SystemExit("--resume reuses the run's saved config.yaml; --set is not allowed")
+        resume_from = out / "last.pt"
+        epoch = int(torch.load(resume_from, map_location="cpu", weights_only=False)["epoch"]) + 1
+        # Drop history rows written after the checkpoint (killed between logging and saving).
+        rows = [x for x in (out / "history.jsonl").read_text().splitlines() if x.strip()]
+        kept = [x for x in rows if json.loads(x)["epoch"] <= epoch]
+        (out / "history.jsonl").write_text("".join(x + "\n" for x in kept))
+        args.set = json.loads((out / "environment.json").read_text())["overrides"]
+    else:
+        raw = yaml.safe_load(Path(args.base).read_text())
+        for item in args.set:
+            key, _, value = item.partition("=")
+            set_path(raw, key, yaml.safe_load(value))
+        raw["output_dir"] = str(out)
+        raw.setdefault("logging", {}).setdefault("wandb", {})["enabled"] = False
+        out.mkdir(parents=True, exist_ok=True)
+        if (out / "best.pt").exists() and not args.eval_only:
+            raise SystemExit(f"{out} already has best.pt; refusing to overwrite")
+        (out / "config.yaml").write_text(yaml.safe_dump(raw, sort_keys=False))
     cfg = load_config(out / "config.yaml")
     seed_everything(cfg["seed"])
     (out / "environment.json").write_text(json.dumps({
@@ -86,7 +100,7 @@ def main() -> None:
     torch.cuda.reset_peak_memory_stats()
     start = time.time()
     if not args.eval_only:
-        trainer.train_loop(None)
+        trainer.train_loop(str(resume_from) if resume_from else None)
     train_seconds = time.time() - start
     train_peak = torch.cuda.max_memory_allocated() / 2**20
 

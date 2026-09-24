@@ -1,4 +1,4 @@
-# Handoff — 2026-09-22, server paused mid-experiment
+# Handoff — Stage 3 v2 (first written 2026-09-22; updated 2026-09-24 after all runs finished)
 
 Read `stage3/experiments/STAGE3_V2_REPORT.md` first (results and conclusions). This file is only
 "how to pick the work back up".
@@ -24,72 +24,51 @@ rclone copy /workspace/SETUP_REPORT.md r2:car-accident-dataset/stage3/runs/stage
 ```
 (The large caches are all regenerable — see §3 — so they are not worth uploading.)
 
-## 1. State of the runs
+## 1. State of the runs (updated 2026-09-24 ~02:00)
 
-Finished, with `metrics.json` (val competition score):
+**All planned runs are finished.** Results and conclusions are in `STAGE3_V2_REPORT.md`. Final model:
+`runs/stage3_v2/V3_tcnssm_100ep/best.pt` (hybrid temporal block, 100 epochs, best epoch 91), val **0.7954**.
 
 | run | epochs | val |
 |---|---|---|
 | `stage3_v1_baseline` | 20 | 0.7025 |
 | `A1_refinement` | 20 | 0.6873 |
-| `B1_multiscale` | 20 | 0.7087 |
-| `C2_ms_cross_attention` | 20 | 0.7104 |
-| `C1_ms_gated` | 20 | 0.7124 |
-| `E1_dual_tcn` | 20 | 0.7430 |
-| `E2_bissm` | 20 | 0.7468 |
-| `E3_tcn_ssm` | 20 | **0.7613** (best) |
-| `V1_baseline_40ep` | 40 | 0.7413 |
-| `H1_waft_a2_40ep` | 40 | 0.7403 |
+| `B1_multiscale` / `C2_ms_cross_attention` / `C1_ms_gated` | 20 | 0.7087 / 0.7104 / 0.7124 |
+| `E1_dual_tcn` / `E2_bissm` / `E3_tcn_ssm` | 20 | 0.7430 / 0.7468 / 0.7613 |
+| `K1_dualtcn_ms_gated` / `K2_tcnssm_ms_gated` | 20 | 0.7422 / 0.7525 |
+| `G3_tcnssm_class_ordinal` / `F3_tcnssm_aux` | 20 | 0.7626 / 0.7533 |
+| `D1_tcnssm_dino_pooled` / `D2_tcnssm_ms_cross_dino_tokens` | 20 | 0.7632 / 0.7678 |
+| `V1_baseline_40ep` / `H1_waft_a2_40ep` | 40 | 0.7413 / 0.7403 |
+| `V1_baseline_80ep` | 80 | 0.7660 |
+| `V2_final_tcnssm_80ep` | 71 (early stop) | 0.7850 |
+| **`V3_tcnssm_100ep`** | 100 | **0.7954** |
 
-Interrupted (killed at the user's request; `best.pt` + `last.pt` + `history.jsonl` present, no `metrics.json`):
-
-| run | stopped at | best val so far |
-|---|---|---|
-| `V1_baseline_80ep` | epoch 71/80 | 0.7640 |
-| `K1_dualtcn_ms_gated` | epoch 19/20 | 0.7404 |
-| `K2_tcnssm_ms_gated` | epoch 11/20 | 0.7177 |
-
-Resume one (the trainer restores model/EMA/optimizer/scheduler/epoch and refuses mismatched features):
-
-```bash
-cd /workspace/car-accident && source /venv/main/bin/activate
-python -m stage3.run --config runs/stage3_v2/V1_baseline_80ep/config.yaml \
-                     --resume runs/stage3_v2/V1_baseline_80ep/last.pt
-```
-`stage3/experiments/run.py` has no `--resume`; after a resumed run finishes, produce the metrics/confusion/
-predictions bundle with:
-```bash
-python -m stage3.experiments.run --name V1_baseline_80ep --eval-only \
-  --set data.manifest=/workspace/data/stage3/manifests_raw/train.jsonl \
-  --set data.val_manifest=/workspace/data/stage3/manifests_raw/val.jsonl --set data.num_workers=4
-```
-(`--eval-only` skips training and evaluates the existing `best.pt`. Adding a real `--resume` to the harness is a
-5-line change and is the cleaner fix.)
+Every run has `config.yaml`, `history.jsonl`, `best.pt`, `last.pt`, `metrics.json`, `predictions.npz`.
+`V1_baseline_80ep`, `K1`, `K2` and `D2` were interrupted and resumed. `D2`'s metrics bundle was regenerated with
+`--eval-only` after its first final evaluation was stopped (pinned-memory stall, see §2).
 
 ## 2. Queue / harness
 
-* `stage3/experiments/exp.sh NAME --set k=v ...` — one run with the standard manifests (env `WORKERS`, default 4).
-* `stage3/experiments/queue.sh` — keeps `MAX` (default 2; 3 fits on this 32 GB GPU) runs alive, popping lines from
-  `runs/stage3_v2/queue.txt`. **The queue is currently stopped and `queue.txt` is empty.**
-* `stage3/experiments/summarize.py` — rebuilds `stage3/experiments/results/{summary.csv,summary.json,summary.md}`
-  and per-run `curves.png` / `confusion.png`. Re-run it after any new result.
-* `stage3/experiments/flow_diagnostics.py` — SEA-RAFT vs WAFT low-level statistics
-  (`results/flow_diagnostics_val.json`, already generated).
+* `stage3/experiments/exp.sh NAME --set k=v ...` runs one experiment with the standard manifests. Use **`WORKERS=12`**:
+  the default 4 leaves the data loader CPU-bound (~5x slower for DINOv3-token runs).
+* `stage3/experiments/resume.sh NAME` continues an interrupted run from `runs/stage3_v2/NAME/last.pt` via
+  `run.py --resume`. It uses the run's saved `config.yaml`; edit `data.num_workers` there first if needed.
+* `stage3/experiments/queue.sh` keeps `MAX` runs alive, popping lines from `runs/stage3_v2/queue.txt`.
+  **Use `MAX=2`, not 3.** Three runs OOM the 32 GB GPU (each reserves ~12 GB). Two runs with heavy full-clip
+  evaluation can also push the container's 170.8 GB memory cgroup to its limit, because pinned host memory
+  (`pin_memory=True`) grows to ~65 GB per process and is never released. The symptom is 100% kernel CPU, 0% GPU,
+  and no progress, with no error message. Check `awk '/^shmem /' /sys/fs/cgroup/memory.stat`.
+  The queue is currently stopped and `queue.txt` is empty.
+* `early_stopping` (patience 4) is on in the base config. It cut `V2` at epoch 71. Pass
+  `--set early_stopping.enabled=false` for long final runs.
+* `stage3/experiments/summarize.py` rebuilds `stage3/experiments/results/` (tables + per-run plots).
+* `stage3/experiments/flow_diagnostics.py` computes SEA-RAFT vs WAFT low-level statistics (already generated).
 
-To restart the planned work, write these lines into `runs/stage3_v2/queue.txt` and launch `queue.sh`
-(all on top of the selected hybrid temporal block):
-
-```
-V2_final_tcnssm_80ep --set model.temporal.type=tcn_ssm --set optimization.epochs=80
-K2_tcnssm_ms_gated_rerun --set model.temporal.type=tcn_ssm --set model.motion_encoder.type=multiscale --set model.fusion.type=gated
-G3_tcnssm_class_ordinal --set model.temporal.type=tcn_ssm --set model.auxiliary.ordinal_accel=true --set model.auxiliary.ordinal_steer=true --set model.auxiliary.class_loss=ordinal --set loss.class_loss=ordinal --set loss.weights.accel_class=0.3 --set loss.weights.steer_class=0.3
-F3_tcnssm_aux --set model.temporal.type=tcn_ssm --set model.auxiliary.jerk=true --set model.auxiliary.steer_rate=true --set loss.weights.jerk=0.05 --set loss.weights.steer_rate=0.02
-D1_tcnssm_dino_pooled --set model.temporal.type=tcn_ssm --set model.visual.enabled=true --set model.visual.mode=pooled --set data.visual_cache_dir=/workspace/cache/stage3/visual_dinov3s_4x7
-D2_tcnssm_ms_cross_dino_tokens --set model.temporal.type=tcn_ssm --set model.motion_encoder.type=multiscale --set model.fusion.type=cross_attention --set model.visual.enabled=true --set model.visual.mode=tokens --set data.visual_cache_dir=/workspace/cache/stage3/visual_dinov3s_4x7
-```
-Priority order if time is short: **`V2_final_tcnssm_80ep` first** — it is the actual deliverable and the only run
-that separates the architecture gain from the schedule gain. Then `K2`, then the class heads (they target the
-ACCEL/DECEL->CONSTANT boundary that dominates the remaining error), then DINOv3.
+Next work, in priority order (details in the report, §8):
+1. Route-group-disjoint re-validation of `V3_tcnssm_100ep` vs `V1_baseline_80ep`.
+2. Multi-seed runs of the final config: `--set seed=<n> --set model.temporal.type=tcn_ssm --set optimization.epochs=100 --set early_stopping.enabled=false`.
+3. Fix the hybrid's speed-MAE regression (3.46 vs 1.32 for v1 at 80 epochs).
+4. Decision-threshold sweep / hybrid emission for the ACCEL/DECEL -> CONSTANT boundary.
 
 ## 3. Assets on disk (and how to rebuild them)
 
@@ -126,5 +105,6 @@ Use a fresh `--output` directory so the committed results are not overwritten.
    Absolute numbers may be optimistic; a route-group-disjoint re-check is pending.
 2. **Single seed** for everything. Margins under ~0.01 (B1/C1/C2, WAFT vs SEA-RAFT) are not resolved.
 3. **`test_distributed_validation`** fails on this 1-GPU box (both ranks agree; launcher exit code only).
-4. **Nothing committed**: all Stage 3 v2 code is uncommitted working-tree changes plus untracked new files.
-   `git status` in `/workspace/car-accident` shows them; `git diff` + `git status --porcelain` capture everything.
+4. **Committed locally only**: branch `stage3-v2-experiments` (`62d3a86` and the commit after it), not pushed to the git
+   remote. A git bundle of the branch plus all of `runs/stage3_v2` is backed up to
+   `r2:car-accident-dataset/stage3/runs/stage3_v2_2026-09-24/` (see §0). `runs/` is untracked in git.
