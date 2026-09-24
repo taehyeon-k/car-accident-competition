@@ -12,16 +12,18 @@ Read `stage3/experiments/STAGE3_V2_REPORT.md` first (results and conclusions). T
 * **recycle/destroy**: everything below is **lost**, including all checkpoints, the 98 GB uncompressed
   cache mirror, the 26 GB DINO cache and the 21 GB WAFT cache.
 
-Nothing has been pushed to R2 or committed to git remote. Before any recycle/destroy, back up at minimum:
+**Backed up 2026-09-24** to `r2:car-accident-dataset/stage3/runs/stage3_v2_2026-09-24/`:
+`runs/` (all 19 runs: checkpoints, metrics, configs, history, logs; 193 files, 904 MiB, verified with
+`rclone check`), `stage3_v2_branch.bundle` (git commits on `stage3-v2-experiments` since `c437a5b`),
+`SETUP_REPORT.md` and `stage3_v2_code.patch`. Restore:
 
 ```bash
-# ~500 MB total: code diff + every run's config/history/metrics/checkpoints
-cd /workspace/car-accident && git diff > /workspace/stage3_v2_code.patch
-rclone copy /workspace/car-accident/runs/stage3_v2 r2:car-accident-dataset/stage3/runs/stage3_v2_2026-09-22 \
-  --exclude 'logs/**'
-rclone copy /workspace/stage3_v2_code.patch r2:car-accident-dataset/stage3/runs/stage3_v2_2026-09-22/
-rclone copy /workspace/SETUP_REPORT.md r2:car-accident-dataset/stage3/runs/stage3_v2_2026-09-22/
+rclone copy r2:car-accident-dataset/stage3/runs/stage3_v2_2026-09-24/runs /workspace/car-accident/runs/stage3_v2 --s3-no-check-bucket
+cd /workspace/car-accident && rclone copyto r2:car-accident-dataset/stage3/runs/stage3_v2_2026-09-24/stage3_v2_branch.bundle /tmp/s3v2.bundle --s3-no-check-bucket \
+  && git fetch /tmp/s3v2.bundle stage3-v2-experiments:stage3-v2-experiments
 ```
+Single-file uploads need `--s3-no-check-bucket` (the key cannot CreateBucket). Work from other sessions
+(`submission/`, `stage2/`, `reports/`) is **not** in this backup or in these commits.
 (The large caches are all regenerable — see §3 — so they are not worth uploading.)
 
 ## 1. State of the runs (updated 2026-09-24 ~02:00)
