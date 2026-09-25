@@ -1,0 +1,168 @@
+{
+ "model": "Stage 2 long-context v2: 4-run LCPyramid ensemble (C0 x4, EMA x4, motion-input x3, phase-loss x4) + camera-shift motion fusion + native snap",
+ "members": [
+  {
+   "file": "members/C0_avg_seed0.pt",
+   "run": "C0_avg",
+   "seed": "seed0",
+   "pool": "avg",
+   "phase": 0,
+   "coarse": "none",
+   "motion": false,
+   "phase_refine": 0
+  },
+  {
+   "file": "members/C0_avg_seed1.pt",
+   "run": "C0_avg",
+   "seed": "seed1",
+   "pool": "avg",
+   "phase": 0,
+   "coarse": "none",
+   "motion": false,
+   "phase_refine": 0
+  },
+  {
+   "file": "members/C0_avg_seed2.pt",
+   "run": "C0_avg",
+   "seed": "seed2",
+   "pool": "avg",
+   "phase": 0,
+   "coarse": "none",
+   "motion": false,
+   "phase_refine": 0
+  },
+  {
+   "file": "members/C0_avg_seed3.pt",
+   "run": "C0_avg",
+   "seed": "seed3",
+   "pool": "avg",
+   "phase": 0,
+   "coarse": "none",
+   "motion": false,
+   "phase_refine": 0
+  },
+  {
+   "file": "members/X_ema_seed0.pt",
+   "run": "X_ema",
+   "seed": "seed0",
+   "pool": "avg",
+   "phase": 0,
+   "coarse": "none",
+   "motion": false,
+   "phase_refine": 0
+  },
+  {
+   "file": "members/X_ema_seed1.pt",
+   "run": "X_ema",
+   "seed": "seed1",
+   "pool": "avg",
+   "phase": 0,
+   "coarse": "none",
+   "motion": false,
+   "phase_refine": 0
+  },
+  {
+   "file": "members/X_ema_seed2.pt",
+   "run": "X_ema",
+   "seed": "seed2",
+   "pool": "avg",
+   "phase": 0,
+   "coarse": "none",
+   "motion": false,
+   "phase_refine": 0
+  },
+  {
+   "file": "members/X_ema_seed3.pt",
+   "run": "X_ema",
+   "seed": "seed3",
+   "pool": "avg",
+   "phase": 0,
+   "coarse": "none",
+   "motion": false,
+   "phase_refine": 0
+  },
+  {
+   "file": "members/M_motion_seed0.pt",
+   "run": "M_motion",
+   "seed": "seed0",
+   "pool": "avg",
+   "phase": 0,
+   "coarse": "none",
+   "motion": true,
+   "phase_refine": 0
+  },
+  {
+   "file": "members/M_motion_seed1.pt",
+   "run": "M_motion",
+   "seed": "seed1",
+   "pool": "avg",
+   "phase": 0,
+   "coarse": "none",
+   "motion": true,
+   "phase_refine": 0
+  },
+  {
+   "file": "members/M_motion_seed2.pt",
+   "run": "M_motion",
+   "seed": "seed2",
+   "pool": "avg",
+   "phase": 0,
+   "coarse": "none",
+   "motion": true,
+   "phase_refine": 0
+  },
+  {
+   "file": "members/PH_phase_seed0.pt",
+   "run": "PH_phase",
+   "seed": "seed0",
+   "pool": "avg",
+   "phase": 3,
+   "coarse": "none",
+   "motion": false,
+   "phase_refine": 0
+  },
+  {
+   "file": "members/PH_phase_seed1.pt",
+   "run": "PH_phase",
+   "seed": "seed1",
+   "pool": "avg",
+   "phase": 3,
+   "coarse": "none",
+   "motion": false,
+   "phase_refine": 0
+  },
+  {
+   "file": "members/PH_phase_seed2.pt",
+   "run": "PH_phase",
+   "seed": "seed2",
+   "pool": "avg",
+   "phase": 3,
+   "coarse": "none",
+   "motion": false,
+   "phase_refine": 0
+  },
+  {
+   "file": "members/PH_phase_seed3.pt",
+   "run": "PH_phase",
+   "seed": "seed3",
+   "pool": "avg",
+   "phase": 3,
+   "coarse": "none",
+   "motion": false,
+   "phase_refine": 0
+  }
+ ],
+ "backbone_variant": "phase1_partial_noanchor",
+ "grid": [
+  7,
+  10
+ ],
+ "batch_size": 16,
+ "workers": 2,
+ "fusion": {
+  "beta": 1.0,
+  "zmax": 6.0,
+  "snap": true
+ },
+ "sampling": "adaptive: N<=128 all, <=256:128, <=512:192, <=768:256, else 320 from 192/383 normalized grids"
+}
