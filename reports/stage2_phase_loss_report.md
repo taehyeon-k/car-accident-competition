@@ -77,10 +77,13 @@ event late in the window, which fits the POST-block failure.
 
 1. **Target/weight changes alone (NT vs C0)** give a small, lower-variance gain: CV all +0.008, NEXAR +0.015, fixed all +0.012.
 2. **Phase terms as a training signal (PH/direct vs NT/direct)**: CV all **+0.014** (0.709, the best single-model CV aggregate so far),
-   fixed all +0.014, NEXAR ±0 (CV 0.557 vs 0.566). The phase loss regularises the shared representation; it does not help long clips by itself.
+   fixed all +0.014, NEXAR ±0 (CV 0.557 vs 0.566). This is about one standard deviation (NT CV-seed std 0.014; PH fixed std 0.016), so it is
+   *plausible*, not confirmed, that the phase terms regularise the shared representation. They do not help long clips by themselves.
+   (PH/direct 0.709 is the best CV aggregate among the phase-ablation arms; M_motion, 0.718, remains the best single model overall.)
 3. **Structured decoding (PH/struct vs PH/direct)**: best fixed-split numbers (0.741 all, 0.518 NEXAR) but **clearly worse on the 80-clip
    CV** (NEXAR 0.460 vs 0.557; collision catastrophic 0.17 → 0.27). The 15-clip gain does not generalise.
-4. **MS-TCN refinement**: worse than PH on every decoder.
+4. **MS-TCN refinement**: worse than PH on the aggregate score and with direct/transition decoding. With the structured decoders it is
+   marginally better on CV NEXAR (0.469 vs 0.460 phase+tr; 0.482 vs 0.462 +direct) but still far below direct decoding.
 
 ## Best use found: phase-loss model as an ensemble member with motion fusion
 
@@ -91,16 +94,20 @@ split) + native-frame snap; direct heads; ensemble-averaged probabilities includ
 |---|---|---|---|---|---|
 | current P2 4-seed ensemble, plain decode | — | — | 0.500 | 0.757 | 0.492 |
 | C0 + X_ema + M_motion | 0.643 | 0.759 | 0.557 | 0.743 | 0.528 |
+| C0 + X_ema + M_motion + NT (same-size control, no phase terms) | 0.641 | 0.751 | 0.589 | 0.753 | 0.562 |
 | **C0 + X_ema + M_motion + PH** | **0.670** | **0.769** | **0.619** | **0.767** | **0.594** |
 
-Adding the phase-loss member raises NEXAR ENTRY (CV 0.50 → 0.54; fixed 5/15 → 8/15) on both protocols. Caveat: PH was added after its
-single-model results were seen, so the CV number carries some selection optimism; the fixed-split check was run with every setting frozen.
+Against the same-size control (NT as 4th member, identical seeds), PH adds +0.029 CV NEXAR / +0.018 CV all and +0.030 fixed NEXAR /
++0.014 fixed all, so the gain is not just ensemble size. In CV the ENTRY gain (0.50 → 0.54) also comes with NT (a size effect); PH's CV edge
+is COLLISION (0.725 vs 0.662) and side F1 (0.887 vs 0.824). On the fixed split PH lifts NEXAR ENTRY 5/15 → 8/15 where NT does not.
+Caveat: PH was added after its single-model results were seen; the fixed-split checks ran with every setting frozen.
 
 ## Conclusions
 
-* **Confirmed:** the phase loss is a useful auxiliary (best single-model CV aggregate, and it helps as an ensemble member). The
-  structured whole-clip phase decoder is **harmful on long clips** because contiguous phase-labelling errors dominate a summed score;
-  it adds more catastrophic wrong-event picks (20) than it fixes (10). MS-TCN refinement does not help.
+* **Confirmed:** the structured whole-clip phase decoder is **harmful on long clips** because contiguous phase-labelling errors dominate a summed score;
+  it adds more catastrophic wrong-event picks (20) than it fixes (10). MS-TCN refinement does not help. As an ensemble member the
+  phase-loss model beats a same-size no-phase control on both protocols.
+* **Plausible:** the phase terms regularise single models (+0.014 CV/fixed aggregate, ≈ 1 std).
 * **Not supported:** that phase supervision by itself suppresses distant false peaks.
 * **Next, if pursuing phase decoding:** normalise the phase term per region length (mean instead of sum), or use it only to re-rank
   the top-K direct/transition pairs (K ≈ 8) rather than searching all pairs; choose its weight by other-fold CV.
