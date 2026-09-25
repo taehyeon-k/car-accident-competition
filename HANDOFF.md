@@ -79,9 +79,11 @@ Stage 3 facts that matter (see `/workspace/data/dacon_baseline` analysis, R2 `da
 cd /workspace
 git clone https://github.com/taehyeon-k/car-accident-competition.git car-accident
 cd car-accident && git checkout handoff-2026-09-24
-# If the branch is missing on GitHub:
+# The R2 bundle is always the newest state. If the branch is missing on GitHub, or GitHub's HANDOFF.md is older than
+# 'updated 2026-09-25' (or `git log -1` is not the latest handoff commit), update from the bundle:
 #   rclone copy r2:car-accident-dataset/handoff/2026-09-24/handoff-2026-09-24.bundle /workspace/
-#   git fetch /workspace/handoff-2026-09-24.bundle handoff-2026-09-24:handoff-2026-09-24 && git checkout handoff-2026-09-24
+#   git fetch /workspace/handoff-2026-09-24.bundle +handoff-2026-09-24:handoff-2026-09-24 && git checkout handoff-2026-09-24
+# (a checked-out branch can't be fetched into: use `git checkout --detach` first, or `git pull /workspace/handoff-2026-09-24.bundle handoff-2026-09-24`)
 ```
 
 ### 2.2 Python (reuse the image's `/venv/main`; do not replace torch)
