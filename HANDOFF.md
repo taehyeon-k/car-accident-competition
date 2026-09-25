@@ -44,8 +44,8 @@ Obsolete (do not download): `stage2/cache/{geometry,joint_features_v1,v2}`, `sta
 | Stage | Model | Offline validation | Leaderboard |
 |---|---|---|---|
 | 1 | original `global_g1_threshold_0_50` model (unchanged; `submission/model/stage1/`) | — | **0.953** (v1) |
-| 2 | **P2 temporal pyramid, 4-seed probability ensemble**, refit on all 349 clips (`REFIT_P2_all349`) | 0.757 (train-split version, 70 val clips, batch 1) | v1 E3 head: **0.441** |
-| 3 | **V3_tcnssm_100ep** (SEA-RAFT → geometry/physics → MotionCNN → TCN+SSM, 100 ep, best ep 91) + steering threshold 1.5° | 0.7954 (BATON val) | v1 (V2 ep43, 5°): **0.654** |
+| 2 | **P2 temporal pyramid, 4-seed probability ensemble**, refit on all 349 clips (`REFIT_P2_all349`) | 0.757 (train-split version, 70 val clips, batch 1) | v3: **0.4618** (v1 E3 head: 0.441) |
+| 3 | **V3_tcnssm_100ep** (SEA-RAFT → geometry/physics → MotionCNN → TCN+SSM, 100 ep, best ep 91) + steering threshold **5°** | 0.7954 (BATON val) | v3 (5°): **0.7274**; v4 (1.5°): 0.6900; v1 (V2 ep43, 5°): 0.654 |
 
 Stage 2 facts that matter:
 * Offline val overestimates the leaderboard. MM-AU clips (short, ~100 frames) are easy; long clips (>1000 frames, NEXAR)
@@ -174,9 +174,12 @@ Stage 2 runtime was verified bit-exact against the training evaluation (frame se
 |---|---|---|---|
 | v1 `submit_v1_E3_V2ep43.zip` | E3 ASFormer (279 clips) | V2 ep43, steer 5° | S1 0.953 / S2 0.441 / S3 0.654 |
 | v2 `submit_v2_P2ens-trainsplit_V3.zip` | P2 ensemble (279 clips) | V3, 5° | not submitted when written |
-| v3 `submit_v3_P2ens-full349_V3.zip` | P2 ensemble refit (349) | V3, 5° | not submitted when written |
-| v4 `submit_v4_P2ens-full349_V3_steer1p5.zip` | P2 ensemble refit (349) | V3, **1.5°** | not submitted when written |
+| v3 `submit_v3_P2ens-full349_V3.zip` | P2 ensemble refit (349) | V3, 5° | **S1 0.953197975 / S2 0.461806490 / S3 0.7273634082** (best) |
+| v4 `submit_v4_P2ens-full349_V3_steer1p5.zip` | P2 ensemble refit (349) | V3, **1.5°** | S3 0.6899652932 (only change vs v3; worse by 0.037) |
 
+Leaderboard results for v3/v4 recorded 2026-09-25. Steering 1.5° (fit on the 50 OPEN labels) *lost* 0.037 on the
+leaderboard vs 5°, so the OPEN-sample threshold fit does not transfer; keep 5° unless new evidence.
+Stage 2 leaderboard vs per-source validation: `reports/stage2_leaderboard_vs_nexar.md`.
 Ask the user for any newer leaderboard results before deciding next steps.
 
 ## 5. Recommended next steps
