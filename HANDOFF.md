@@ -220,7 +220,7 @@ Ask the user for any newer leaderboard results before deciding next steps.
    clips or grouped CV; then a coarse-to-fine (candidate window → dense re-scoring) design for event selection.
 4. Verify the Stage 2 frame-number convention against DACON's `stage2` OPEN sample (`labels.csv` there has `t_collision` only).
 
-## 6. 2026-09-25 session summary (Stage 2 only; Stage 3 untouched)
+## 6. 2026-09-25 session summary (Stage 2 experiments; no Stage 3 retraining, but the new zips change Stage 3 accel thresholds — see §4)
 
 * Leaderboard of v3/v4 recorded (§4). Hypothesis "the Stage 2 test set looks like NEXAR (long clips)": `reports/stage2_leaderboard_vs_nexar.md`.
 * **Long-context v2** (`reports/stage2_long_context_v2_report.md`): NEXAR misses are mostly 0.3–1 s near-misses already present with
