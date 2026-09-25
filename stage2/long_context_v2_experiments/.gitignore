@@ -1,0 +1,10 @@
+cache_dense/
+logs/
+results/**/checkpoint.pt
+results/**/*.pt
+results/**/predictions*.json
+results/**/recall_candidates.json
+results/**/context_length_predictions.json
+results/*/inner/
+results/*/cv_inner/
+__pycache__/
