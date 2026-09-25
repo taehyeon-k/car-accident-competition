@@ -1,0 +1,9 @@
+{
+ "name": "first_three_prior_seed2",
+ "checkpoints": [
+  "stage2/nexar65_experiments/results/LN_soft/seed2/checkpoint.pt",
+  "stage2/nexar65_experiments/results/LN_exact/seed2/checkpoint.pt",
+  "stage2/nexar65_experiments/results/TCN_frame6/seed2/checkpoint.pt"
+ ],
+ "post_prior": true
+}

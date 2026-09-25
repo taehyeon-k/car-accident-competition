@@ -1,0 +1,4 @@
+# Uses DACON's preinstalled torch 2.8.0+cu128, torchvision 0.23.0+cu128,
+# numpy, pandas, scipy, OpenCV, PyAV, Pillow, safetensors, huggingface-hub,
+# einops, PyYAML and tqdm. DINOv3 and SEA-RAFT source are bundled locally.
+# No additional installation or inference-time downloads required.

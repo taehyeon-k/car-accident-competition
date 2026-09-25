@@ -1,4 +1,9 @@
-# Handoff — 2026-09-24 (server destroyed after this)
+# Handoff — updated 2026-09-25 (originally 2026-09-24; server destroyed after each)
+
+**Start command for a new session (unchanged):** "Clone https://github.com/taehyeon-k/car-accident-competition.git into
+/workspace/car-accident, check out branch handoff-2026-09-24, and read HANDOFF.md fully. Follow its section 2 to restore the
+Stage 2 and Stage 3 training environment from GitHub and R2 (r2:car-accident-dataset). Don't delete anything from R2."
+The branch name stays `handoff-2026-09-24`; it now also contains the 2026-09-25 session (see §6 for what that session added).
 
 Start here on a fresh Vast.ai server. This file says what exists, where it is stored,
 how to restore a training-ready environment, and what to do next. Older, narrower notes:
@@ -34,7 +39,11 @@ how to restore a training-ready environment, and what to do next. Older, narrowe
 | `stage3/runs/stage3_v2_2026-09-24/runs/` | all Stage 3 v2 runs incl. **V3_tcnssm_100ep** (best) | `car-accident/runs/stage3_v2/` |
 | `submissions/2026-09-24/submit_v{1..4}_*.zip` | built DACON submissions (§4) | `/workspace/outputs/` |
 | `dacon/Baseline.zip`, `dacon/analysis/` | DACON official baseline/sample data + Stage 3 OPEN analysis | `/workspace/data/dacon_baseline/` |
-| `handoff/2026-09-24/` | git bundle, SETUP_REPORT, prompts, patch, previous agent memory notes | — |
+| `stage2/runs/2026-09-25/long_context_v2_experiments/{results,folds}` | 2026-09-25 LC-v2 + phase-loss checkpoints (all runs, fixed split + 5-fold CV, incl. OOF preds) and the 5-fold split files | `car-accident/stage2/long_context_v2_experiments/{results,folds}` |
+| `stage2/cache/long_context_v2_cache_dense/` (6.4 GB) | dense native-frame DINO cache (`<id>.npy`, `.frames.npy`, `.motion.npy`) used by all LC-v2 runs and v5 | `car-accident/stage2/long_context_v2_experiments/cache_dense/` |
+| `stage2/runs/2026-09-25/nexar65_experiments/{results,candidate_seed0,candidate_all_seeds}` | NEXAR-specialist heads (checkpoints) and exported candidates | `car-accident/stage2/nexar65_experiments/<same>` |
+| `submissions/2026-09-25/` | `submit_v5_*.zip`, `submit_hybrid_*.zip`, `submit_nexar_specialist_*.zip` (+ smoke JSONs) (§4) | `/workspace/outputs/` |
+| `handoff/2026-09-24/` | git bundle (**refreshed 2026-09-25**; the older bundle is kept in `archive_2026-09-24/`), HANDOFF.md copy, SETUP_REPORT, prompts, patch, previous agent memory notes | — |
 
 Obsolete (do not download): `stage2/cache/{geometry,joint_features_v1,v2}`, `stage2/pretrained/{vjepa*,rfdetr*,sam2*,depth*,dinov3_vitb16}`,
 `stage2/{frames,videos,aihub,unusable}`, `stage2/outputs/submit*` (old joint model).
@@ -108,7 +117,18 @@ $C $R/stage2/cache/temporal_pyramid_cache_383 stage2/temporal_pyramid_experiment
 $C $R/stage2/runs/2026-09-24/temporal_pyramid_experiments stage2/temporal_pyramid_experiments/results
 $C $R/stage2/runs/2026-09-24/spotting_experiments/E3-ASFormer-349 stage2/spotting_experiments/results/E3-ASFormer-349
 $C $R/stage2/runs/2026-09-24/long_video_experiments stage2/long_video_experiments/results
+# 2026-09-25 session (long-context v2 / phase loss / v5, NEXAR specialist, hybrid):
+$C $R/stage2/runs/2026-09-25/long_context_v2_experiments/results stage2/long_context_v2_experiments/results
+$C $R/stage2/runs/2026-09-25/long_context_v2_experiments/folds stage2/long_context_v2_experiments/folds   # also in git
+$C $R/stage2/cache/long_context_v2_cache_dense stage2/long_context_v2_experiments/cache_dense           # or regenerate, see below
+for s in results candidate_seed0 candidate_all_seeds; do $C $R/stage2/runs/2026-09-25/nexar65_experiments/$s stage2/nexar65_experiments/$s; done
 ```
+The dense cache is regenerable (~20 min GPU for DINO + motion):
+`python -m stage2.long_context_v2_experiments.extract_dense` then `python -m stage2.long_context_v2_experiments.extract_motion`
+(defaults: `/workspace/data/stage2/manifests/all.jsonl`, the geometry backbone, output `stage2/long_context_v2_experiments/cache_dense`).
+LC-v2 training (fixed split seeds + 5-fold CV seeds, parallel): `stage2/long_context_v2_experiments/run_config.sh <RUN_ID> "0 1 2 3" "0 1" [train.py args]`,
+e.g. `--ema 0.99`, `--crop-aug 0.5`, `--motion`, `--loss phase`. Existing run dirs refuse overwrite.
+NEXAR specialist: `python -m stage2.nexar65_experiments.batch` (see `stage2/nexar65_experiments/REPORT.md`).
 Train (examples; all heads are small, <1 GB VRAM, minutes):
 ```bash
 # Pyramid P2 with early stopping on the 70-clip val split (one seed)
@@ -168,7 +188,7 @@ Build + test: `python submission_tools/build_zip.py --output /workspace/outputs/
 with `rsync -a --delete --exclude __pycache__ --exclude experiments --exclude configs --exclude '*.md' --exclude cuda_benchmark.json stage3/ submission/model/stage3/code/stage3/` whenever stage3 changes).
 Stage 2 runtime was verified bit-exact against the training evaluation (frame selection, features, predictions).
 
-## 4. Submissions built (R2 `submissions/2026-09-24/`)
+## 4. Submissions built (R2 `submissions/2026-09-24/` and `submissions/2026-09-25/`)
 
 | Zip | Stage 2 | Stage 3 | Leaderboard |
 |---|---|---|---|
@@ -176,6 +196,12 @@ Stage 2 runtime was verified bit-exact against the training evaluation (frame se
 | v2 `submit_v2_P2ens-trainsplit_V3.zip` | P2 ensemble (279 clips) | V3, 5° | not submitted when written |
 | v3 `submit_v3_P2ens-full349_V3.zip` | P2 ensemble refit (349) | V3, 5° | **S1 0.953197975 / S2 0.461806490 / S3 0.7273634082** (best) |
 | v4 `submit_v4_P2ens-full349_V3_steer1p5.zip` | P2 ensemble refit (349) | V3, **1.5°** | S3 0.6899652932 (only change vs v3; worse by 0.037) |
+| v5 `2026-09-25/submit_v5_LCv2ens4-motion_V3_acc1_steer5.zip` | LC-v2 15-head ensemble (C0/X_ema/M_motion/PH, 279 clips) + motion fusion | V3, 5°, accel ±1.0 m/s² | not recorded (built last, 07:49) — ask the user |
+| `2026-09-25/submit_nexar_specialist_steer5_accel0p5.zip` | NEXAR specialist (seed-0 candidate: 3 heads + NEXAR temporal prior) on every clip | V3, 5°, accel ±0.5 | S2 **0.437** (< v3 0.4618); S3 not recorded |
+| `2026-09-25/submit_hybrid_stage2_steer5_accel0p75.zip` | length-gated: >500 native frames → all-seed NEXAR specialist (9 heads), else P2 ensemble | V3, 5°, accel ±0.75 | not recorded — ask the user |
+
+v5 rebuild: `submission_tools/v5_stage2/build_v5.sh`. The specialist/hybrid packages were built from the zips' own code, which is
+saved (without weights) in `submission_tools/{nexar_specialist,hybrid_stage2}_package/`; the zips in R2 are the complete versions.
 
 Leaderboard results for v3/v4 recorded 2026-09-25. Steering 1.5° (fit on the 50 OPEN labels) *lost* 0.037 on the
 leaderboard vs 5°, so the OPEN-sample threshold fit does not transfer; keep 5° unless new evidence.
@@ -192,7 +218,21 @@ Ask the user for any newer leaderboard results before deciding next steps.
    clips or grouped CV; then a coarse-to-fine (candidate window → dense re-scoring) design for event selection.
 4. Verify the Stage 2 frame-number convention against DACON's `stage2` OPEN sample (`labels.csv` there has `t_collision` only).
 
-## 6. Constraints from the user (keep following)
+## 6. 2026-09-25 session summary (Stage 2 only; Stage 3 untouched)
+
+* Leaderboard of v3/v4 recorded (§4). Hypothesis "the Stage 2 test set looks like NEXAR (long clips)": `reports/stage2_leaderboard_vs_nexar.md`.
+* **Long-context v2** (`reports/stage2_long_context_v2_report.md`): NEXAR misses are mostly 0.3–1 s near-misses already present with
+  128–256 frames of context, not wrong-event selection. No architecture change reliably improves NEXAR. Best: context-crop 0.5 + EMA 4-seed
+  ensemble (fixed 0.757, CV 0.714). Found the GroupNorm padding issue: evaluate at batch 1 (= submission runtime).
+* **Phase loss** (`reports/stage2_phase_loss_report.md`): structured phase decoding hurts long clips; the phase model helps as an ensemble member.
+  v5 ensemble: fixed val 0.767 / NEXAR 0.619, CV 0.769 / NEXAR 0.670 (leaderboard not yet recorded).
+* **NEXAR specialist** (`stage2/nexar65_experiments/REPORT.md`): 3 heads + NEXAR-fitted temporal KDE prior; NEXAR val 0.71–0.74, but it
+  was selected on the same 15 val clips and hurts non-NEXAR clips; its submission scored **S2 0.437 on the leaderboard** (< v3 0.4618). **Length-gated hybrid** (`stage2/length_gated_experiments/REPORT.md`): offline 0.80.
+* NEXAR specialist and length-gated hybrid were done in a parallel Codex session (prompts in `~/.codex/history.jsonl` on that server, not backed up).
+* Takeaway: offline NEXAR gains have not transferred to the leaderboard so far. Get the leaderboard scores of v5 and the hybrid
+  from the user before building on either.
+
+## 7. Constraints from the user (keep following)
 
 * Do not delete anything from R2; do not overwrite valuable checkpoints/runs; keep other jobs' GPU memory safe
   (experiments here used a per-process memory cap and required ≥2–3 GiB free).
