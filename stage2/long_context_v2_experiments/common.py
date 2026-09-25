@@ -176,6 +176,10 @@ def run(model, items, device, batch_size=1, keep_logits=False):
         x, valid = batch["x"].to(device), batch["time_valid"].to(device)
         out = model(x, valid, motion=batch["motion"].to(device)) if getattr(model, "uses_motion", False) else model(x, valid)
         ei, ci = constrained_anchors(out["entry_logits"], out["collision_logits"])
+        if getattr(model, "decoder", "direct") == "structured" and "phase_logits" in out:
+            from .phase_loss import decode_structured
+            pairs = [decode_structured(out["phase_logits"][j, :len(it["x"])]) for j, it in enumerate(chunk)]
+            ei = torch.tensor([p_[0] for p_ in pairs]); ci = torch.tensor([p_[1] for p_ in pairs])
         for j, it in enumerate(chunk):
             t = len(it["x"]); frames = it["frame_numbers"].numpy()
             p = {"sample_id": it["sample_id"], "source_id": it["source_id"],

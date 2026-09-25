@@ -50,7 +50,7 @@ def main():
         b = C.breakdown(ps); res[name] = b; n = b["source:NEXAR"]
         print(f"{name:32s} all {b['overall']['score']:.3f} | NEXAR {n['score']:.3f} E {n['entry_acc']:.2f} C {n['collision_acc']:.2f} "
               f"side {n['side_f1']:.2f} eva {n['evasion_f1']:.2f} | non-NEXAR {b['source:non-NEXAR']['score']:.3f} | >1000 {b['bin:>1000']['score']:.3f}")
-    C.dump(R / "fixed_eval_recipe.json", {"members": len(models), "runs": a.runs, "beta": a.beta, **res})
+    C.dump(R / f"fixed_eval_recipe_{'+'.join(a.runs)}.json", {"members": len(models), "runs": a.runs, "beta": a.beta, **res})
 
 
 if __name__ == "__main__": main()

@@ -66,9 +66,28 @@ class LocalAttn(nn.Module):
         return x + (out * valid[..., None]).transpose(1, 2)
 
 
-class LCPyramid(nn.Module):
-    def __init__(self, hidden=128, token_dim=16, dropout=0.35, levels=4, pool="avg", phase=0, coarse="none", motion=False):
+class PhaseRefine(nn.Module):
+    """MS-TCN-style refinement stage: phase probabilities -> dilated residual convs -> refined phase logits."""
+    def __init__(self, channels=32, dilations=(1, 2, 4, 8), dropout=0.35):
         super().__init__()
+        self.inp = nn.Conv1d(3, channels, 1)
+        self.layers = nn.ModuleList(nn.ModuleDict({"d": nn.Conv1d(channels, channels, 3, padding=d, dilation=d),
+                                                   "p": nn.Conv1d(channels, channels, 1)}) for d in dilations)
+        self.drop = nn.Dropout(dropout); self.out = nn.Conv1d(channels, 3, 1)
+
+    def forward(self, logits, valid):  # logits [B,T,3]
+        m = valid[:, None].float()
+        h = self.inp(logits.float().softmax(-1).transpose(1, 2)) * m
+        for l in self.layers: h = (h + self.drop(l["p"](F.relu(l["d"](h))))) * m
+        return self.out(h).transpose(1, 2)
+
+
+class LCPyramid(nn.Module):
+    def __init__(self, hidden=128, token_dim=16, dropout=0.35, levels=4, pool="avg", phase=0, coarse="none", motion=False,
+                 phase_refine=0, decoder="direct"):
+        super().__init__()
+        self.decoder = decoder
+        self.refine = nn.ModuleList(PhaseRefine(dropout=dropout) for _ in range(phase_refine))
         self.uses_motion = motion
         if motion:
             self.motion_proj = nn.Sequential(nn.LayerNorm(28), nn.Linear(28, hidden), nn.GELU(), nn.Dropout(dropout), nn.Linear(hidden, hidden))
@@ -120,6 +139,9 @@ class LCPyramid(nn.Module):
         weights = self.attn(h).squeeze(-1).masked_fill(~valid, neg).softmax(-1)
         pooled = torch.einsum("bt,bth->bh", weights, h)
         out["side_logits"] = self.side(self.drop(pooled)); out["evasion_logits"] = self.evasion(self.drop(pooled)).squeeze(-1)
-        if self.phase is not None: out["phase_logits"] = self.phase(self.drop(h))
+        if self.phase is not None:
+            stages = [self.phase(self.drop(h))]
+            for r in self.refine: stages.append(r(stages[-1], valid))
+            out["phase_logits"] = stages[-1]; out["phase_stages"] = stages[:-1]
         if return_hidden: out["hidden"] = h
         return out

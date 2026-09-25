@@ -23,6 +23,7 @@ from stage2.temporal_pyramid_experiments.train import experiment_loss
 from . import common as C
 from .diagnostics import recall_at_k, summarize_recall
 from .models import LCPyramid
+from .phase_loss import newtargets_loss, phase_loss
 
 RESULTS = C.REPO / "stage2/long_context_v2_experiments/results"
 
@@ -63,6 +64,8 @@ def main():
     p.add_argument("--coarse", choices=["none", "ssm", "local_attn"], default="none")
     p.add_argument("--phase-weight", type=float, default=0.0)
     p.add_argument("--motion", action="store_true")
+    p.add_argument("--loss", choices=["p2", "newtargets", "phase"], default="p2")
+    p.add_argument("--phase-refine", type=int, default=0)
     p.add_argument("--ema", type=float, default=0.0)
     p.add_argument("--crop-aug", type=float, default=0.0, help="probability of random context crop for clips > 256 frames")
     p.add_argument("--epochs", type=int, default=30)
@@ -93,7 +96,8 @@ def main():
                event_target="soft_normalized", target_width=.015, target_width_mode="normalized_fixed",
                hard_negative_weight=0.0, token_dropout=0.0, channel_jitter=0.0, strict_fps_blind=True,
                n_train=len(train_rows), n_val=len(val_rows))
-    model = LCPyramid(pool=a.pool, phase=3 if a.phase_weight else 0, coarse=a.coarse, motion=a.motion).to(device)
+    model = LCPyramid(pool=a.pool, phase=3 if (a.phase_weight or a.loss == "phase") else 0, coarse=a.coarse, motion=a.motion,
+                      phase_refine=a.phase_refine, decoder="structured" if a.loss == "phase" else "direct").to(device)
     params = sum(x.numel() for x in model.parameters())
     ema = copy.deepcopy(model).eval() if a.ema else None
     if ema is not None:
@@ -115,7 +119,9 @@ def main():
                      and rng.random() < a.crop_aug else train_fixed[i] for i in idx]
             batch = to_device(C.collate_m(items), device)
             o = model(batch["x"], batch["time_valid"], motion=batch["motion"]) if a.motion else model(batch["x"], batch["time_valid"])
-            loss, _ = experiment_loss(o, batch, cfg)
+            if a.loss == "phase": loss, _ = phase_loss(o, batch, o.get("phase_stages", []))
+            elif a.loss == "newtargets": loss, _ = newtargets_loss(o, batch)
+            else: loss, _ = experiment_loss(o, batch, cfg)
             if a.phase_weight:
                 ph = F.cross_entropy(o["phase_logits"].float().transpose(1, 2), phase_targets(batch), reduction="none")
                 ph = (ph * batch["time_valid"]).sum() / batch["time_valid"].sum()

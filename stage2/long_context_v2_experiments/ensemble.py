@@ -14,7 +14,8 @@ R = C.REPO / "stage2/long_context_v2_experiments/results"
 
 def load(path, device):
     st = torch.load(path, map_location="cpu", weights_only=False); cfg = st["config"]
-    m = LCPyramid(pool=cfg.get("pool", "avg"), phase=3 if cfg.get("phase_weight") else 0, coarse=cfg.get("coarse", "none"), motion=cfg.get("motion", False))
+    m = LCPyramid(pool=cfg.get("pool", "avg"), phase=3 if (cfg.get("phase_weight") or cfg.get("loss") == "phase") else 0, coarse=cfg.get("coarse", "none"), motion=cfg.get("motion", False),
+                  phase_refine=cfg.get("phase_refine", 0), decoder="structured" if cfg.get("loss") == "phase" else "direct")
     m.load_state_dict(st["model"]); return m.to(device).eval()
 
 

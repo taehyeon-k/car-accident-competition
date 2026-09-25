@@ -77,7 +77,9 @@ def main():
             out[run][name] = {"breakdown": bd, "beta_per_fold": chosen}
             print(f"  {name:32s} beta/fold {list(chosen.values())} | all {bd['overall']['score']:.3f} | NEXAR {n['score']:.3f} "
                   f"E {n['entry_acc']:.2f} C {n['collision_acc']:.2f} Ccat {n['collision_catastrophic']:.2f} | non-NEXAR {bd['source:non-NEXAR']['score']:.3f}", flush=True)
-    C.dump(R / "decode_motion.json", out)
+    import json as _j
+    prev = _j.loads((R / "decode_motion.json").read_text()) if (R / "decode_motion.json").exists() else {}
+    C.dump(R / "decode_motion.json", {**prev, **out})
 
 
 if __name__ == "__main__": main()

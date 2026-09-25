@@ -1,0 +1,104 @@
+{
+ "C0_avg": {
+  "full": {
+   "score": 0.5509933610198766,
+   "entry_acc": 0.44375,
+   "collision_acc": 0.5,
+   "entry_catastrophic": 0.20625,
+   "collision_catastrophic": 0.1375,
+   "mean_event_rel_pos": 0.47847894880926195
+  },
+  "0.3": {
+   "score": 0.5707049313889314,
+   "entry_acc": 0.4625,
+   "collision_acc": 0.53125,
+   "entry_catastrophic": 0.1625,
+   "collision_catastrophic": 0.10625,
+   "mean_event_rel_pos": 0.30530912434069457
+  },
+  "0.5": {
+   "score": 0.5534170686679867,
+   "entry_acc": 0.4375,
+   "collision_acc": 0.5125,
+   "entry_catastrophic": 0.2,
+   "collision_catastrophic": 0.1125,
+   "mean_event_rel_pos": 0.4968575383640669
+  },
+  "0.7": {
+   "score": 0.5798232692095971,
+   "entry_acc": 0.46875,
+   "collision_acc": 0.5625,
+   "entry_catastrophic": 0.2,
+   "collision_catastrophic": 0.10625000000000001,
+   "mean_event_rel_pos": 0.6893658856094759
+  }
+ },
+ "NT_newtargets": {
+  "full": {
+   "score": 0.5659503303056844,
+   "entry_acc": 0.45,
+   "collision_acc": 0.54375,
+   "entry_catastrophic": 0.19375,
+   "collision_catastrophic": 0.13125,
+   "mean_event_rel_pos": 0.47847894880926195
+  },
+  "0.3": {
+   "score": 0.5857252920566625,
+   "entry_acc": 0.46875,
+   "collision_acc": 0.5625,
+   "entry_catastrophic": 0.14375,
+   "collision_catastrophic": 0.09375,
+   "mean_event_rel_pos": 0.30530912434069457
+  },
+  "0.5": {
+   "score": 0.5794885581101695,
+   "entry_acc": 0.44999999999999996,
+   "collision_acc": 0.5687500000000001,
+   "entry_catastrophic": 0.2125,
+   "collision_catastrophic": 0.11875,
+   "mean_event_rel_pos": 0.4968575383640669
+  },
+  "0.7": {
+   "score": 0.591660755413936,
+   "entry_acc": 0.475,
+   "collision_acc": 0.5874999999999999,
+   "entry_catastrophic": 0.23125,
+   "collision_catastrophic": 0.1375,
+   "mean_event_rel_pos": 0.6893658856094759
+  }
+ },
+ "PH_phase": {
+  "full": {
+   "score": 0.4602546179664544,
+   "entry_acc": 0.35,
+   "collision_acc": 0.35,
+   "entry_catastrophic": 0.24375000000000002,
+   "collision_catastrophic": 0.26875,
+   "mean_event_rel_pos": 0.47847894880926195
+  },
+  "0.3": {
+   "score": 0.5097940918804675,
+   "entry_acc": 0.36875,
+   "collision_acc": 0.44999999999999996,
+   "entry_catastrophic": 0.21875,
+   "collision_catastrophic": 0.25625,
+   "mean_event_rel_pos": 0.30530912434069457
+  },
+  "0.5": {
+   "score": 0.493484263366396,
+   "entry_acc": 0.36875,
+   "collision_acc": 0.41875,
+   "entry_catastrophic": 0.29375,
+   "collision_catastrophic": 0.32499999999999996,
+   "mean_event_rel_pos": 0.4968575383640669
+  },
+  "0.7": {
+   "score": 0.45730299678855724,
+   "entry_acc": 0.33125000000000004,
+   "collision_acc": 0.35625,
+   "entry_catastrophic": 0.375,
+   "collision_catastrophic": 0.40625,
+   "mean_event_rel_pos": 0.6893658856094759
+  }
+ }
+}
