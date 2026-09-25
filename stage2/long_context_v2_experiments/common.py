@@ -67,6 +67,24 @@ def select_adaptive(frame_numbers):
 
 
 SELECTORS = {"fixed128": select_fixed128, "adaptive": select_adaptive}
+MOTION_DIM = 28
+
+
+@lru_cache(maxsize=400)
+def motion(sample_id):
+    m = np.load(DENSE / f"{sample_id}.motion.npy")
+    out = np.concatenate([np.abs(m[:, :3]), m[:, 3:4], np.log1p(100 * m[:, 4:])], 1).astype(np.float32)
+    return out
+
+
+def motion_segments(sample_id, abs_idx):
+    """max and mean of per-frame motion over native frames (prev sample, this sample]; frame-index only."""
+    m = motion(sample_id); feats = np.zeros((len(abs_idx), MOTION_DIM), np.float32)
+    prev = abs_idx[0] - 1
+    for t, a in enumerate(abs_idx):
+        lo = min(prev + 1, a); seg = m[max(lo, 0):a + 1]
+        feats[t] = np.concatenate([seg.max(0), seg.mean(0)]); prev = a
+    return feats
 
 
 def make_item(row, sampling, start=0, stop=None, positions=None):
@@ -77,7 +95,8 @@ def make_item(row, sampling, start=0, stop=None, positions=None):
     idx = SELECTORS[sampling](frames_crop) if positions is None else np.asarray(positions)
     frames = frames_crop[idx]
     normalized = (frames - frames[0]).astype(np.float32) / max(int(frames[-1] - frames[0]), 1)
-    return {"x": torch.from_numpy(np.ascontiguousarray(feats_all[start:stop][idx])),
+    item_motion = torch.from_numpy(motion_segments(row["sample_id"], start + idx)) if (DENSE / f"{row['sample_id']}.motion.npy").exists() else None
+    return {"x": torch.from_numpy(np.ascontiguousarray(feats_all[start:stop][idx])), "motion": item_motion,
             "frame_numbers": torch.from_numpy(frames.copy()), "normalized_positions": torch.from_numpy(normalized),
             "entry_index": int(np.abs(frames - int(row["entry_frame"])).argmin()),
             "collision_index": int(np.abs(frames - int(row["collision_frame"])).argmin()),
@@ -103,8 +122,11 @@ class ProbEnsemble(torch.nn.Module):
     def __init__(self, models):
         super().__init__(); self.models = torch.nn.ModuleList(models)
 
-    def forward(self, x, valid):
-        parts = [m(x, valid) for m in self.models]
+    @property
+    def uses_motion(self): return any(getattr(m, "uses_motion", False) for m in self.models)
+
+    def forward(self, x, valid, motion=None):
+        parts = [m(x, valid, motion=motion) if getattr(m, "uses_motion", False) else m(x, valid) for m in self.models]
         out = {}
         for e in ("entry", "collision"):
             out[f"{e}_logits"] = torch.stack([p[f"{e}_logits"].float().softmax(-1) for p in parts]).mean(0).clamp_min(1e-12).log()
@@ -132,6 +154,17 @@ def load_named(name, device):
     return (models[0] if len(models) == 1 else ProbEnsemble(models).eval()), sampling
 
 
+def collate_m(items):
+    batch = collate(items)
+    if all(it.get("motion") is not None for it in items):
+        m = torch.zeros(len(items), batch["x"].shape[1], MOTION_DIM)
+        for j, it in enumerate(items): m[j, :len(it["motion"])] = it["motion"]
+        batch["motion"] = m
+    else:
+        batch["motion"] = torch.zeros(len(items), batch["x"].shape[1], MOTION_DIM)
+    return batch
+
+
 # ---------------------------------------------------------------- inference
 @torch.inference_mode()
 def run(model, items, device, batch_size=1, keep_logits=False):
@@ -139,9 +172,9 @@ def run(model, items, device, batch_size=1, keep_logits=False):
     preds = []
     for i in range(0, len(items), batch_size):
         chunk = items[i:i + batch_size]
-        batch = collate(chunk)
+        batch = collate_m(chunk)
         x, valid = batch["x"].to(device), batch["time_valid"].to(device)
-        out = model(x, valid)
+        out = model(x, valid, motion=batch["motion"].to(device)) if getattr(model, "uses_motion", False) else model(x, valid)
         ei, ci = constrained_anchors(out["entry_logits"], out["collision_logits"])
         for j, it in enumerate(chunk):
             t = len(it["x"]); frames = it["frame_numbers"].numpy()

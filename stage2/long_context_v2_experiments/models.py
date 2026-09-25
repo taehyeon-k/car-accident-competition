@@ -67,8 +67,11 @@ class LocalAttn(nn.Module):
 
 
 class LCPyramid(nn.Module):
-    def __init__(self, hidden=128, token_dim=16, dropout=0.35, levels=4, pool="avg", phase=0, coarse="none"):
+    def __init__(self, hidden=128, token_dim=16, dropout=0.35, levels=4, pool="avg", phase=0, coarse="none", motion=False):
         super().__init__()
+        self.uses_motion = motion
+        if motion:
+            self.motion_proj = nn.Sequential(nn.LayerNorm(28), nn.Linear(28, hidden), nn.GELU(), nn.Dropout(dropout), nn.Linear(hidden, hidden))
         self.norm = nn.LayerNorm(384)
         self.token = nn.Linear(384, token_dim)
         self.frame = nn.Sequential(nn.Dropout(dropout), nn.Linear(70 * token_dim, hidden), nn.GELU())
@@ -91,9 +94,11 @@ class LCPyramid(nn.Module):
         if self.pool == "max": return F.max_pool1d(h, 2, stride=2, ceil_mode=True)
         return self.downs[i - 1](h)
 
-    def forward(self, x, valid, return_hidden=False):
+    def forward(self, x, valid, return_hidden=False, motion=None):
         tokens = self.token(self.norm(x.float()))
-        h = self.frame(tokens.flatten(2)).transpose(1, 2)
+        h = self.frame(tokens.flatten(2))
+        if self.uses_motion: h = h + self.motion_proj(motion.float())
+        h = h.transpose(1, 2)
         levels, masks = [], []
         level_valid = valid[:, None].float()
         for i, block in enumerate(self.blocks):

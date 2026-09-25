@@ -62,6 +62,7 @@ def main():
     p.add_argument("--pool", choices=["avg", "max", "sgp"], default="avg")
     p.add_argument("--coarse", choices=["none", "ssm", "local_attn"], default="none")
     p.add_argument("--phase-weight", type=float, default=0.0)
+    p.add_argument("--motion", action="store_true")
     p.add_argument("--ema", type=float, default=0.0)
     p.add_argument("--crop-aug", type=float, default=0.0, help="probability of random context crop for clips > 256 frames")
     p.add_argument("--epochs", type=int, default=30)
@@ -92,7 +93,7 @@ def main():
                event_target="soft_normalized", target_width=.015, target_width_mode="normalized_fixed",
                hard_negative_weight=0.0, token_dropout=0.0, channel_jitter=0.0, strict_fps_blind=True,
                n_train=len(train_rows), n_val=len(val_rows))
-    model = LCPyramid(pool=a.pool, phase=3 if a.phase_weight else 0, coarse=a.coarse).to(device)
+    model = LCPyramid(pool=a.pool, phase=3 if a.phase_weight else 0, coarse=a.coarse, motion=a.motion).to(device)
     params = sum(x.numel() for x in model.parameters())
     ema = copy.deepcopy(model).eval() if a.ema else None
     if ema is not None:
@@ -112,8 +113,8 @@ def main():
             idx = order[s:s + a.batch_size]
             items = [random_crop_item(train_rows[i], rng) if a.crop_aug and int(train_rows[i]["num_frames"]) > 256
                      and rng.random() < a.crop_aug else train_fixed[i] for i in idx]
-            batch = to_device(collate(items), device)
-            o = model(batch["x"], batch["time_valid"])
+            batch = to_device(C.collate_m(items), device)
+            o = model(batch["x"], batch["time_valid"], motion=batch["motion"]) if a.motion else model(batch["x"], batch["time_valid"])
             loss, _ = experiment_loss(o, batch, cfg)
             if a.phase_weight:
                 ph = F.cross_entropy(o["phase_logits"].float().transpose(1, 2), phase_targets(batch), reduction="none")

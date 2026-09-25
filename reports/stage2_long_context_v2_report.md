@@ -177,3 +177,60 @@ The encoded frames per video are unchanged (adaptive 128–320); G would add up 
 (LCPyramid: pool/phase/coarse variants), `train.py`, `pair_scorer.py` (E), `refine.py` (G), `ensemble.py`, `summarize.py`, `run_config.sh`, `folds/`.
 Results: `results/<run>/seed*/` and `results/<run>/cv/fold*_seed*/` (config, history, metrics incl. by-source/by-bin/Recall@K, per-video predictions with logits,
 checkpoints), `results/diagnostics/`, `results/summary_table.json`, `results/ensemble_*.json`. Dense cache `cache_dense/` (6.4 GB) is not in git.
+
+---
+
+# Part 2 — goal "NEXAR validation score > 0.65" (2026-09-25, later)
+
+Constraint: another agent was running `stage2/nexar65_experiments` on this machine; its files were only read, and my jobs were
+capped at 3 parallel, niced, with memory checked first. Its best single-seed 15-clip results with a position prior + NEXAR
+fine-tuning were 0.64–0.66; the CV analysis below suggests such 15-clip numbers are dominated by noise (clip-level SE ≈ 0.07).
+
+## New findings
+
+1. **Provenance.** All 750 NEXAR positives are in R2 (`stage2/videos/nexar/`), 80 labelled. The clips are the original ~40 s Nexar
+   files (5-digit ids), with the collision at ~50 % (p10–p90: 0.47–0.52) — a property of Nexar's curation, not of our trimming.
+   A position prior exploits it; it transfers only to Nexar-curated test clips. Nexar `time_of_event` metadata is gated on HF (401 without a token).
+2. **No systematic NEXAR offset on 80 clips** (median signed error 0.00 s both events); the "collision 0.35 s early" seen on the
+   15 val clips was sample-specific. Residual error is symmetric, IQR ≈ ±0.3 s = the tolerance.
+3. **Decode-time position/gap priors** (fitted on training folds, applied to N > 500 frames) cut NEXAR catastrophic misses 14 % → 3–5 %
+   but raise the NEXAR score only 0.561 → 0.60 (near-misses dominate).
+4. **Camera-shift motion is a precise collision cue.** Per-native-frame phase-correlation global shift (CPU, 160×90, FPS-blind;
+   `extract_motion.py`): its raw argmax is within 0.3 s of the labelled collision in **56–59 %** of the 80 NEXAR clips — as good as the
+   trained model. Late fusion (collision score += β·robust-z(shift), β chosen on other folds) + native snap to the shift peak:
+   NEXAR collision 0.50 → 0.65, and it also helps short clips.
+5. **Entry is the binding constraint.** Even with the GT collision, entry from the model + gap prior reaches only 0.54 on NEXAR;
+   no motion channel predicts entry (0.15–0.28 ≈ chance).
+6. **Attributes:** global heads pool over 40 s; an event-conditioned head (24 frames around the decoded entry→collision) raises
+   NEXAR side F1 0.84 → 0.90 in CV but is inconsistent on the fixed split (0.93 → 0.78).
+
+## Results (NEXAR official offline score)
+
+| recipe | CV 80 NEXAR clips (5-fold OOF, 2 seeds/fold) | all 349 (CV) | fixed 15 NEXAR val clips | fixed 70 |
+|---|---|---|---|---|
+| P2 4-seed ensemble (current submission recipe) | — | — | 0.500 | 0.757 |
+| C0 control, 2-seed OOF ensemble | 0.561 | 0.704 | — | — |
+| M_motion single model (motion as model input) | 0.576 ± 0.016 | 0.718 | 0.469 ± 0.015 (3 seeds) | 0.718 |
+| C0 + X_ema + M_motion ensemble, plain decode | — | — | 0.510 | 0.738 |
+| … + motion fusion + native snap (no prior) | **0.643** | **0.759** | **0.557** | 0.743 |
+| … + position/gap prior | 0.643 | 0.756 | 0.557 | 0.743 |
+| … + event-conditioned attribute head (no prior) | **0.655** | 0.760 | 0.535 | 0.733 |
+
+(Ensemble members: C0 seeds 0–3, X_ema seeds 0–3, M_motion seeds 0–2 for the fixed split; the matching CV fold models for CV.
+β for the fixed split frozen at 1.0 = CV median; nothing tuned on the 70 val clips.)
+
+**Status vs goal:** > 0.65 is reached only in 80-clip CV (0.655, ≈ ±0.05) and not on the fixed 15-clip val (0.557), where entry is
+5/15. The motion fusion is the one robust gain (+0.05–0.06 NEXAR on both protocols, and better short clips).
+
+## New plan (ordered by expected NEXAR gain per effort)
+
+1. **More labelled long clips (entry is data-limited).** 670 unlabelled Nexar positives are already in R2. Label ENTRY/side/evasion
+   for ~150–200 of them with the existing `stage2/external/labeling_app.py` (≈ 1 min/clip) → NEXAR training set 65 → ~250.
+   Also give an HF token so Nexar `time_of_event` can supervise COLLISION on all 670 (collision-only loss, entry masked).
+2. **Entry representation.** Entry is a lateral lane-crossing event; 7×10 average-pooled tokens are too coarse. Re-extract the 383-grid
+   positions at 14×25 pooled tokens with PCA-64 (≈ 6 GB) and/or regional flow (SEA-RAFT is already in `stage3/pretrained`) in a
+   ±2 s window before the fused collision; train an entry head conditioned on the collision.
+3. **Ship motion fusion.** Add phase-correlation shift (≈ 1–2 s CPU per 1200-frame clip) + fusion + snap to the Stage 2 runtime; it is
+   FPS-blind and improves both long and short clips in CV. Use an M_motion + C0 + EMA refit-on-349 ensemble.
+4. **Evaluation discipline.** Use the 80-clip CV as the primary NEXAR metric (report CI); treat 15-clip numbers as a secondary check.
+5. **Label audit.** Double-label entry on 20 NEXAR clips to measure the human ceiling at ±0.3 s before investing further in entry.
