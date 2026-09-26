@@ -20,7 +20,7 @@ from stage2.long_context_v2_experiments.decode_motion import decode
 from stage2.phase_study import ensemble_test as PE
 
 ROOTS = [C.REPO / "stage2/long_context_v2_experiments/results", C.REPO / "stage2/phase_study/results",
-         C.REPO / "stage2/aux_signal_experiments/results"]
+         C.REPO / "stage2/aux_signal_experiments/results", C.REPO / "stage2/generalization/results"]
 PE.root = lambda run: next(r for r in ROOTS if (r / run).is_dir())  # members_fold resolves runs through PE.root
 
 

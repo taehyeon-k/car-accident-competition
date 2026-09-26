@@ -67,11 +67,14 @@ def main():
         folds = {}
         for q in cv: folds.setdefault(q["fold"], []).append({**q, "frames": q["frames_kept"]})
         st = stack(folds); bst = C.breakdown(st)
-    fx, n = fixed_preds(spec); bfx = C.breakdown(fx)
+    try:
+        fx, n = fixed_preds(spec); bfx = C.breakdown(fx)
+    except IndexError:  # some family has no fixed-split runs (CV-only research runs)
+        fx, n, bfx = None, 0, None
     members = len(ET.members(spec, 0))
     print(" + ".join(a.families)); print(line("CV", bcv, f"| members/fold {members} beta {betas}"))
     if a.attr_stack: print(line("CV+AS", bst, "| event-window attribute stacker"))
-    print(line("fixed", bfx, f"| members {n}"))
+    if bfx is not None: print(line("fixed", bfx, f"| members {n}"))
     if a.out: C.dump(a.out, {"families": a.families, "cv": bcv, "fixed": bfx, "beta": betas})
 
 
