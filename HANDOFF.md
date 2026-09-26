@@ -55,7 +55,7 @@ Obsolete (do not download): `stage2/cache/{geometry,joint_features_v1,v2}`, `sta
 |---|---|---|---|
 | 1 | original `global_g1_threshold_0_50` model (unchanged; `submission/model/stage1/`) | — | **0.953** (v1) |
 | 2 | **v5: LC-v2 15-head ensemble (C0/X_ema/M_motion/PH) + motion fusion**, trained on 279 clips (not refit) | 0.767 fixed / 0.769 CV (NEXAR 0.619 / 0.670) | v5: **0.5314** (v3 P2 refit: 0.4618; v1 E3: 0.441) |
-| 3 | **V3_tcnssm_100ep** (SEA-RAFT → geometry/physics → MotionCNN → TCN+SSM, 100 ep, best ep 91) + steering **5°** + accel **±0.75 m/s²** | 0.7954 (BATON val) | hybrid (accel ±0.75): **0.7313**; v3 (±0.25): 0.7274; v5 (±1.0): 0.6972; v4 (steer 1.5°): 0.6900 |
+| 3 | **V3_tcnssm_100ep** (SEA-RAFT → geometry/physics → MotionCNN → TCN+SSM, 100 ep, best ep 91) + steering **5°** + accel **±0.5 m/s²** | 0.7954 (BATON val) | specialist zip (accel ±0.5): **0.7388**; ±0.75: 0.7313; ±0.25: 0.7274; ±1.0: 0.6972; v4 (steer 1.5°): 0.6900 |
 
 Stage 2 facts that matter:
 * Offline val overestimates the leaderboard. MM-AU clips (short, ~100 frames) are easy; long clips (>1000 frames, NEXAR)
@@ -201,8 +201,8 @@ Stage 2 runtime was verified bit-exact against the training evaluation (frame se
 | v3 `submit_v3_P2ens-full349_V3.zip` | P2 ensemble refit (349) | V3, 5° | **S1 0.953197975 / S2 0.461806490 / S3 0.7273634082** (best) |
 | v4 `submit_v4_P2ens-full349_V3_steer1p5.zip` | P2 ensemble refit (349) | V3, **1.5°** | S3 0.6899652932 (only change vs v3; worse by 0.037) |
 | v5 `2026-09-25/submit_v5_LCv2ens4-motion_V3_acc1_steer5.zip` | LC-v2 15-head ensemble (C0/X_ema/M_motion/PH, 279 clips) + motion fusion | V3, 5°, accel ±1.0 m/s² | S1 0.953 / **S2 0.5314** (best) / S3 0.6972 |
-| `2026-09-25/submit_nexar_specialist_steer5_accel0p5.zip` | NEXAR specialist (seed-0 candidate: 3 heads + NEXAR temporal prior) on every clip | V3, 5°, accel ±0.5 | S2 **0.437** (< v3 0.4618); S3 not recorded |
-| `2026-09-25/submit_hybrid_stage2_steer5_accel0p75.zip` | length-gated: >500 native frames → all-seed NEXAR specialist (9 heads), else P2 ensemble | V3, 5°, accel ±0.75 | S1 0.953 / S2 0.4154 / **S3 0.7313** (best) |
+| `2026-09-25/submit_nexar_specialist_steer5_accel0p5.zip` | NEXAR specialist (seed-0 candidate: 3 heads + NEXAR temporal prior) on every clip | V3, 5°, accel ±0.5 | S2 **0.437** (< v3 0.4618); **S3 0.7388** (best) |
+| `2026-09-25/submit_hybrid_stage2_steer5_accel0p75.zip` | length-gated: >500 native frames → all-seed NEXAR specialist (9 heads), else P2 ensemble | V3, 5°, accel ±0.75 | S1 0.953 / S2 0.4154 / S3 0.7313 |
 
 v5 rebuild: `submission_tools/v5_stage2/build_v5.sh`. The specialist/hybrid packages were built from the zips' own code, which is
 saved (without weights) in `submission_tools/{nexar_specialist,hybrid_stage2}_package/`; the zips in R2 are the complete versions.
@@ -217,7 +217,8 @@ Ask the user for any newer leaderboard results before deciding next steps.
 1. **Stage 2**: build on v5 (LB 0.5314, +0.07 over v3). Cheapest next candidate: the same v5 recipe refit on all 349 clips
    (v5 members were trained on 279 only; the P2 refit was how v3 was made). Then more/diverse ensemble members, judged by 5-fold CV
    (the 15-clip NEXAR val slice is not trustworthy — the specialist/hybrid won there and lost on the LB).
-2. **Stage 3 accel thresholds**: LB is non-monotone (±0.25 0.7274, ±0.75 0.7313, ±1.0 0.6972; ±0.5 not isolated). Steering 5°.
+2. **Stage 3 accel thresholds** (same V3 model, steer 5°): ±0.25 0.7274, **±0.5 0.7388**, ±0.75 0.7313, ±1.0 0.6972 — peak near ±0.5
+   (±0.5–0.6 untested). Use ±0.5 by default. Next submission: v5 Stage 2 + V3 accel ±0.5 (combines both best stages).
    Any further threshold choice must come from BATON/10 Hz data, not the DACON baseline samples.
 3. **Stage 3 model**: 10 Hz input/output is already what V3 does (trained `target_hz: 10`, one row per decoded frame). Improvements
    should target BATON-style generalisation, not the baseline clips.
@@ -254,18 +255,19 @@ Leaderboard (from the user):
 |---|---|---|---|---|
 | v3 P2 refit | 0.953 | 0.4618 | 0.7274 | accel ±0.25, steer 5° |
 | v4 | — | — | 0.6900 | accel ±0.25, steer 1.5° |
-| NEXAR specialist | — | 0.437 | not recorded | accel ±0.5, steer 5° |
+| NEXAR specialist | — | 0.437 | **0.7388** | accel ±0.5, steer 5° |
 | **v5 LC-v2 15-head + motion** | 0.953 | **0.5314** | 0.6972 | accel ±1.0, steer 5° |
-| length-gated hybrid | 0.953 | 0.4154 | **0.7313** | accel ±0.75, steer 5° |
+| length-gated hybrid | 0.953 | 0.4154 | 0.7313 | accel ±0.75, steer 5° |
 
-Verified: the Stage 3 package in v3, v5 and hybrid uses the same `best.pt` (V3) and code; v5/hybrid only add `decoder_overrides.json`
+Verified: the Stage 3 package in v3, v5, hybrid and the NEXAR-specialist zip uses the same `best.pt` (V3) and code; v5/hybrid only add `decoder_overrides.json`
 (accel thresholds). So the S3 differences are purely the acceleration threshold.
 
 Reading:
 * **Stage 2**: v5 is the first model with a clear LB gain (+0.070 over v3), and it was chosen by 5-fold CV (NEXAR n = 80), not the
   15-clip val slice. Both models tuned on the NEXAR val slice (specialist, hybrid) lost against v3; the hybrid only changes >500-frame
   clips vs the P2 ensemble and dropped 0.046, so the hidden test does contain long clips, and the NEXAR temporal prior hurts on them.
-* **Best combined zip does not exist yet**: v5 Stage 2 + Stage 3 accel ±0.75 would combine the two best stage results.
+* Stage 3 accel-threshold curve on the LB (same V3 weights, steer 5°): ±0.25 0.7274 → **±0.5 0.7388** → ±0.75 0.7313 → ±1.0 0.6972.
+* **Best combined zip does not exist yet**: v5 Stage 2 + Stage 3 accel ±0.5 would combine the two best stage results.
 * **Stage 3 rule**: the competition explicitly states Stage 3 input and output are 10 Hz and the baseline data is only an example,
   unlike the real evaluation data. The current runtime emits one row per decoded frame without resampling and V3 trains at
   `target_hz: 10`, so it already follows the rule. The old "per-frame vs 10 Hz A/B" item is dropped.
