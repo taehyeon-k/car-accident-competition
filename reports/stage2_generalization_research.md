@@ -86,3 +86,11 @@ per family the EMA ensemble looked better (0.720 vs 0.711), with 6 seeds per fam
 is better (0.721 / 0.617 vs 0.712 / 0.600) and mixing does not recover both. **Recommendation corrected: v8 (stride aug) is the best
 ensemble on every ensemble-level measure at submission size** (CV 0.787, frame-rate robustness 0.775 / 0.759 / 0.718, 12-member LOSO
 0.721 / 0.617). v9 remains built as an alternative (better single models; use it if the ensemble were much smaller).
+
+## ENTRY visual audit (`stage2_generalization_assets/entry_audit_long_gap.jpg`)
+33 long-gap (> 1.5 s) clips where the E4 model predicts ENTRY > 0.3 s late; 6 shown (NEXAR / AIHUB / CCD) at GT−1 s, GT ENTRY, predicted ENTRY,
+COLLISION. At **GT ENTRY the other vehicle is still distant and small, or just beginning to deviate (manoeuvre onset)**; at the **predicted
+ENTRY (0.9–1.7 s later) it is large and close in the ego lane** — the first moment it is salient in 7×10 pooled global features.
+**Future direction (not attempted in this session):** ENTRY needs an **object-centric representation** (per-vehicle boxes / tracks and their
+lateral trajectories, e.g. from the detector/tracker that the earlier joint model used), not more global resolution (14×25 tokens overfit)
+or global motion statistics. Evasion needs a **label audit** (conventions differ by source).
