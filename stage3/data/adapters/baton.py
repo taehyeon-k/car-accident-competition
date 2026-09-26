@@ -2,10 +2,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-import numpy as np
-import pandas as pd
-
-from .base import ClipRecord, DatasetAdapter, Signals
+from .base import ClipRecord, DatasetAdapter, load_openpilot_signals
 
 
 class BatonAdapter(DatasetAdapter):
@@ -26,16 +23,7 @@ class BatonAdapter(DatasetAdapter):
             video, csv_path = route / "qcamera.mp4", route / "vehicle_dynamics.csv"
             if not video.is_file() or not csv_path.is_file():
                 continue
-            frame = pd.read_csv(csv_path, usecols=list(self.REQUIRED))
-            frame = frame.replace([np.inf, -np.inf], np.nan).dropna(subset=["time_s"])
-            frame = frame.drop_duplicates("time_s", keep="first").sort_values("time_s")
-            signals = Signals(
-                t=frame["time_s"].to_numpy(np.float64),
-                v=frame["vEgo"].to_numpy(np.float64),
-                a_long=frame["aEgo"].to_numpy(np.float64),
-                steering_angle=frame["steeringAngleDeg"].to_numpy(np.float64),
-                valid=np.ones(len(frame), dtype=bool),
-            )
+            signals = load_openpilot_signals(csv_path)
             records.append(
                 ClipRecord(
                     clip_id=route.name,

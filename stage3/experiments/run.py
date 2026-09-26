@@ -56,7 +56,15 @@ def main() -> None:
     parser.add_argument("--eval-only", action="store_true")
     parser.add_argument("--resume", action="store_true",
                         help="continue an interrupted run from its last.pt using its saved config.yaml")
+    parser.add_argument("--gpu-memory-fraction", type=float,
+                        help="cap PyTorch's allocation on this GPU; runtime-only, not a training hyperparameter")
     args = parser.parse_args()
+    if args.gpu_memory_fraction is not None:
+        if not 0 < args.gpu_memory_fraction < .6:
+            parser.error("--gpu-memory-fraction must be in (0, 0.6) for Stage 3 shared-GPU runs")
+        if not torch.cuda.is_available():
+            parser.error("CUDA is required for --gpu-memory-fraction")
+        torch.cuda.set_per_process_memory_fraction(args.gpu_memory_fraction, 0)
 
     out = Path(args.root) / args.name
     resume_from = None

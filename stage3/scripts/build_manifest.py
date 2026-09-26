@@ -8,6 +8,7 @@ import av
 import numpy as np
 
 from stage3.data.adapters.baton import BatonAdapter
+from stage3.data.adapters.base import ClipRecord
 
 
 def video_end_time(path: str | Path) -> float:
@@ -20,6 +21,25 @@ def video_end_time(path: str | Path) -> float:
         if container.duration is not None:
             return float(container.duration / av.time_base)
     raise ValueError(f"Could not determine video duration: {path}")
+
+
+def segment_record(record: ClipRecord, cache_dir: str | Path, segment_seconds: float) -> list[dict]:
+    """Apply the BATON 30-second segmentation rule to any canonical record."""
+    duration = min(float(record.signals.t[-1]), video_end_time(record.video_path))
+    rows = []
+    for segment_index, start in enumerate(np.arange(0.0, duration, segment_seconds)):
+        end = min(float(start + segment_seconds), duration)
+        if end - start < 2.0:
+            continue
+        clip_id = f"{record.clip_id}__{segment_index:05d}"
+        metadata = {**record.metadata, "source_clip_id": record.clip_id, "segment_start_time": float(start), "segment_end_time": end}
+        rows.append({
+            "clip_id": clip_id, "video_path": str(record.video_path),
+            "signals_path": record.metadata["signals_path"],
+            "cache_path": str(Path(cache_dir) / f"{clip_id}.pt"),
+            "group_keys": record.group_keys, "metadata": metadata,
+        })
+    return rows
 
 
 def main() -> None:
@@ -42,19 +62,7 @@ def main() -> None:
     output.mkdir(parents=True, exist_ok=True)
     partitions = {"train": [], "val": [], "all": []}
     for record in records:
-        duration = min(float(record.signals.t[-1]), video_end_time(record.video_path))
-        for segment_index, start in enumerate(np.arange(0.0, duration, args.segment_seconds)):
-            end = min(float(start + args.segment_seconds), duration)
-            if end - start < 2.0:
-                continue
-            clip_id = f"{record.clip_id}__{segment_index:05d}"
-            metadata = {**record.metadata, "source_clip_id": record.clip_id, "segment_start_time": float(start), "segment_end_time": end}
-            row = {
-                "clip_id": clip_id, "video_path": str(record.video_path),
-                "signals_path": record.metadata["signals_path"],
-                "cache_path": str(Path(args.cache_dir) / f"{clip_id}.pt"),
-                "group_keys": record.group_keys, "metadata": metadata,
-            }
+        for row in segment_record(record, args.cache_dir, args.segment_seconds):
             partitions["all"].append(row)
             partitions["val" if record.clip_id in validation_routes else "train"].append(row)
     smoke_dir = Path(args.cache_dir).parent / "smoke"
