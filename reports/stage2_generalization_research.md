@@ -55,3 +55,7 @@ it is visible in these frozen 7×10 features. ENTRY is limited by label definiti
   NEXAR's difficulty as an unseen source is appearance/domain + label conventions, **not** long context (so no context-length method).
 * Pattern: generic regularisers (H3, H9, H11, H12) help held-out AIHUB / CCD but hurt NEXAR / MMAU; only residual motion (+0.111) and EMA
   (+0.006) improve the worst source.
+* **H1 + H13 (stride aug + EMA)** is the best cross-source combination: LOSO mean +0.031, **worst (NEXAR) +0.027**, 3/4 sources (MMAU −0.001);
+  complementary (EMA alone +0.022 / +0.006, stride aug alone +0.002 / −0.003). In-domain single-model CV +0.005 (3/5), lowest ENTRY
+  catastrophic rate (0.134). **Trade-off**: EMA members are less diverse, so 3-seed ensembles gain less (robustness ensemble 0.752 / 0.735 /
+  0.693 vs 0.768 / 0.753 / 0.701 for stride aug alone); EMA alone is not frame-rate robust (0.759 → 0.611 at 1/3 fps).
