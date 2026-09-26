@@ -43,17 +43,22 @@ def fps_of(vid):
 
 @torch.inference_mode()
 def main():
-    ap = argparse.ArgumentParser(); ap.add_argument("--window-s", type=float, default=2.0); a = ap.parse_args()
+    ap = argparse.ArgumentParser(); ap.add_argument("--window-s", type=float, default=2.0)
+    ap.add_argument("--full", nargs="*", default=None, help="only build the 'all' split with these full-data teacher runs (fixed seeds)")
+    a = ap.parse_args()
     dev = torch.device("cuda"); meta = {r["video_id"]: r for r in csv.DictReader(open(CAND))}
     unl = sorted(p.name[:-4] for p in OUT.glob("nexaru_*.npy") if p.name.count(".") == 1)
     fps = {sid: fps_of(sid.split("_")[1]) for sid in unl}
     splits = {f"fold{k}": (C.rows(str(FOLDS / f"fold{k}_train.jsonl")), [f"cv/fold{k}_seed"]) for k in range(5)}
     splits["fixed"] = (C.rows("train"), ["seed"])
+    if a.full is not None:  # full-data refit: teachers trained on all 349 labelled clips, offset from all labelled NEXAR clips
+        global TEACHERS
+        TEACHERS = a.full; splits = {"all": (C.rows("all"), ["seed"])}
     for name, (train_rows, prefixes) in splits.items():
         nex = [r for r in train_rows if C.source(r) == "NEXAR"]
         off = float(np.median([int(r["collision_frame"]) / float(r["native_fps"]) - float(meta[r["sample_id"].split("_")[1]]["time_of_event"]) for r in nex]))
         # fixed teacher set for every split: CV seeds 0-2 (fold models) / fixed seeds 0-1
-        allowed = {"0", "1", "2"} if name != "fixed" else {"0", "1"}
+        allowed = {"0", "1", "2"} if name.startswith("fold") else ({"0", "1"} if name == "fixed" else {"0", "1", "2", "3"})
         cks = [p for t in TEACHERS for pre in prefixes for p in sorted((RES / t).glob(f"{pre}*/checkpoint.pt"))
                if p.parent.name.split("seed")[-1] in allowed]
         models = [load_model(p, dev) for p in cks]

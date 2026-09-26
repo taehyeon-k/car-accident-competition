@@ -1,0 +1,149 @@
+{
+ "model": "Stage 2 v7: equal-weight ensemble E4 + E2 + XN4 (4 seeds each), all refit on the full 349 labelled clips (XN4 also on 670 unlabelled NEXAR clips); CV of the recipe 0.7995 / NEXAR 0.721",
+ "backbone_variant": "phase1_partial_noanchor",
+ "grid": [
+  7,
+  10
+ ],
+ "batch_size": 16,
+ "workers": 2,
+ "motion_workers": 4,
+ "decoding": {
+  "entry_families": [
+   "E4_full",
+   "E2_full",
+   "XN4_full"
+  ],
+  "collision_families": [
+   "E4_full",
+   "E2_full",
+   "XN4_full"
+  ],
+  "beta": 0.5,
+  "zmax": 6.0,
+  "snap": true
+ },
+ "sampling": "adaptive: N<=128 all, <=256:128, <=512:192, <=768:256, else 320 from 192/383 normalized grids",
+ "members": [
+  {
+   "file": "members/E4_full_seed0.pt",
+   "run": "E4_full",
+   "seed": "seed0",
+   "arch": "aux",
+   "motion": "both",
+   "motion_dim": 100,
+   "boundary": "none",
+   "source": "stage2/aux_signal_experiments/results/E4_full/seed0/checkpoint.pt"
+  },
+  {
+   "file": "members/E4_full_seed1.pt",
+   "run": "E4_full",
+   "seed": "seed1",
+   "arch": "aux",
+   "motion": "both",
+   "motion_dim": 100,
+   "boundary": "none",
+   "source": "stage2/aux_signal_experiments/results/E4_full/seed1/checkpoint.pt"
+  },
+  {
+   "file": "members/E4_full_seed2.pt",
+   "run": "E4_full",
+   "seed": "seed2",
+   "arch": "aux",
+   "motion": "both",
+   "motion_dim": 100,
+   "boundary": "none",
+   "source": "stage2/aux_signal_experiments/results/E4_full/seed2/checkpoint.pt"
+  },
+  {
+   "file": "members/E4_full_seed3.pt",
+   "run": "E4_full",
+   "seed": "seed3",
+   "arch": "aux",
+   "motion": "both",
+   "motion_dim": 100,
+   "boundary": "none",
+   "source": "stage2/aux_signal_experiments/results/E4_full/seed3/checkpoint.pt"
+  },
+  {
+   "file": "members/E2_full_seed0.pt",
+   "run": "E2_full",
+   "seed": "seed0",
+   "arch": "aux",
+   "motion": "both",
+   "motion_dim": 100,
+   "boundary": "bnd2",
+   "source": "stage2/aux_signal_experiments/results/E2_full/seed0/checkpoint.pt"
+  },
+  {
+   "file": "members/E2_full_seed1.pt",
+   "run": "E2_full",
+   "seed": "seed1",
+   "arch": "aux",
+   "motion": "both",
+   "motion_dim": 100,
+   "boundary": "bnd2",
+   "source": "stage2/aux_signal_experiments/results/E2_full/seed1/checkpoint.pt"
+  },
+  {
+   "file": "members/E2_full_seed2.pt",
+   "run": "E2_full",
+   "seed": "seed2",
+   "arch": "aux",
+   "motion": "both",
+   "motion_dim": 100,
+   "boundary": "bnd2",
+   "source": "stage2/aux_signal_experiments/results/E2_full/seed2/checkpoint.pt"
+  },
+  {
+   "file": "members/E2_full_seed3.pt",
+   "run": "E2_full",
+   "seed": "seed3",
+   "arch": "aux",
+   "motion": "both",
+   "motion_dim": 100,
+   "boundary": "bnd2",
+   "source": "stage2/aux_signal_experiments/results/E2_full/seed3/checkpoint.pt"
+  },
+  {
+   "file": "members/XN4_full_seed0.pt",
+   "run": "XN4_full",
+   "seed": "seed0",
+   "arch": "aux",
+   "motion": "both",
+   "motion_dim": 100,
+   "boundary": "none",
+   "source": "stage2/aux_signal_experiments/results/XN4_full/seed0/checkpoint.pt"
+  },
+  {
+   "file": "members/XN4_full_seed1.pt",
+   "run": "XN4_full",
+   "seed": "seed1",
+   "arch": "aux",
+   "motion": "both",
+   "motion_dim": 100,
+   "boundary": "none",
+   "source": "stage2/aux_signal_experiments/results/XN4_full/seed1/checkpoint.pt"
+  },
+  {
+   "file": "members/XN4_full_seed2.pt",
+   "run": "XN4_full",
+   "seed": "seed2",
+   "arch": "aux",
+   "motion": "both",
+   "motion_dim": 100,
+   "boundary": "none",
+   "source": "stage2/aux_signal_experiments/results/XN4_full/seed2/checkpoint.pt"
+  },
+  {
+   "file": "members/XN4_full_seed3.pt",
+   "run": "XN4_full",
+   "seed": "seed3",
+   "arch": "aux",
+   "motion": "both",
+   "motion_dim": 100,
+   "boundary": "none",
+   "source": "stage2/aux_signal_experiments/results/XN4_full/seed3/checkpoint.pt"
+  }
+ ]
+}

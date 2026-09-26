@@ -67,11 +67,12 @@ def attach_inputs(it, motion, lane, geo=False):
     return it
 
 
-def extra_items(train_split, entry_w):
+def extra_items(train_split, entry_w, name=None):
     """Pseudo/metadata-labelled unlabelled NEXAR clips for this split (labels_<fold k | fixed>.json), 'both' motion input."""
     import json, re
     from .nexar_labels import unl_item, OUT as UOUT
-    m = re.search(r"fold(\d)_train", str(train_split)); name = f"fold{m.group(1)}" if m else "fixed"
+    if name is None:
+        m = re.search(r"fold(\d)_train", str(train_split)); name = f"fold{m.group(1)}" if m else "fixed"
     labels = json.loads((UOUT / f"labels_{name}.json").read_text()); items = []
     for sid, lab in labels.items():
         fr, _, mot = unl_item(sid); f = torch.from_numpy(fr.copy())
@@ -158,6 +159,8 @@ def main():
     p.add_argument("--w-entry", type=float, default=1.0, help="ENTRY weight in the NT direct loss (1 = NT)")
     p.add_argument("--sigma", type=float, default=1.0, help="direct-target Gaussian width in sampled positions (1 = NT)")
     p.add_argument("--extra-nexar", action="store_true", help="add the metadata/pseudo-labelled unlabelled NEXAR clips (nexar_labels.py)")
+    p.add_argument("--extra-labels", default=None, help="label set name for --extra-nexar (default: from --train-split: foldK / fixed)")
+    p.add_argument("--stop-epoch", type=int, default=0, help="full-data refit: no selection, save the weights after this epoch")
     p.add_argument("--extra-entry-w", type=float, default=0.5, help="loss weight of pseudo-labelled ENTRY on the extra clips")
     p.add_argument("--epochs", type=int, default=30); p.add_argument("--patience", type=int, default=7)
     p.add_argument("--batch-size", type=int, default=4)
@@ -172,7 +175,7 @@ def main():
     train_items = [attach_inputs(lazy_item(r), a.motion, a.lane, a.geo) for r in train_rows]
     val_items = [attach_inputs(lazy_item(r), a.motion, a.lane, a.geo) for r in val_rows]
     mode = "custom" if (a.geo or a.motion in ("residual", "both")) else a.motion  # collate: custom-width input tensor
-    extra, extra_name = (extra_items(a.train_split, a.extra_entry_w) if a.extra_nexar else ([], None))
+    extra, extra_name = (extra_items(a.train_split, a.extra_entry_w, a.extra_labels) if a.extra_nexar else ([], None))
     if extra: assert a.motion == "both" and not a.geo and a.lane == "none", "extra NEXAR clips support the 'both' motion input only"
     for it in train_items + extra: it["phase_entry_index"], it["phase_collision_index"] = it["entry_index"], it["collision_index"]
     if a.hr:
@@ -226,6 +229,10 @@ def main():
         score = normalized_metrics(val_pred)["fpsblind_selection_score"]
         rec = {"epoch": epoch, **{f"train_{k}": v / steps for k, v in sums.items()}, "val_fpsblind_score": score, "val_official": C.metrics(val_pred)["score"]}
         history.append(rec); print(json.dumps(rec), flush=True)
+        if a.stop_epoch:  # full-data refit: fixed epoch, no validation-based selection
+            if epoch == a.stop_epoch:
+                best, best_epoch = score, epoch; best_state = {k: v.detach().cpu().clone() for k, v in m_eval.state_dict().items()}; break
+            continue
         if score > best + 1e-8:
             best, best_epoch, stale = score, epoch, 0; best_state = {k: v.detach().cpu().clone() for k, v in m_eval.state_dict().items()}
         else: stale += 1
