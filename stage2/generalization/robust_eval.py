@@ -23,7 +23,7 @@ STRIDE = C.REPO / "stage2/generalization/cache_stride"
 FOLDS = C.REPO / "stage2/long_context_v2_experiments/folds"
 
 
-def root(run): return next(r for r in ROOTS if (r / run).is_dir())
+def root(run): return next(r for r in ROOTS if (r / run.split("+")[0]).is_dir())
 
 
 def item(row, k, crop=0.0):
@@ -69,9 +69,10 @@ def predict(models, it, dev):
 
 
 def evaluate(run, k, seeds, dev, per_seed=False, crop=0.0):
+    """run may be 'A+B+C': an equal-weight ensemble of several families (all their given seeds)."""
     preds = []
     for f in range(5):
-        cks = [root(run) / run / "cv" / f"fold{f}_seed{s}" / "checkpoint.pt" for s in seeds]
+        cks = [root(r) / r / "cv" / f"fold{f}_seed{s}" / "checkpoint.pt" for r in run.split("+") for s in seeds]
         cks = [c for c in cks if c.exists()]
         models = []
         for c in cks:

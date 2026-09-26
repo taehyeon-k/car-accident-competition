@@ -247,6 +247,7 @@ def main():
     p.add_argument("--truncate-aug", type=float, default=0.0, help="probability of pre-collision truncation per labelled clip (H7)")
     p.add_argument("--unl-consistency", type=float, default=0.0, help="H9: consistency weight on unlabelled clips (native vs stride 2/3 view)")
     p.add_argument("--unl-batch", type=int, default=4)
+    p.add_argument("--unl-exclude", default="", help="exclude unlabelled clips of this source (LOSO: the held-out source -> pure domain generalisation)")
     p.add_argument("--consistency", type=float, default=0.0,
                    help="weight of cross-frame-rate consistency: each batch is also seen at stride 2/3; teacher = native-rate view")
     p.add_argument("--stride-aug", default="", help="temporal-rate augmentation, e.g. '0.5,0.25,0.25' = P(stride 1,2,3) per clip per epoch")
@@ -283,6 +284,9 @@ def main():
         assert a.motion == "both" and not a.geo and not extra, "--objmotion is appended to the 'both' motion input"
         for it in train_items + val_items: add_obj(it, 1)
     unl_ids = sorted(p_.name[:-len(".k3.npz")] for p_ in UNL.glob("*.k3.npz")) if a.unl_consistency else []
+    if a.unl_exclude:
+        prefix = {"AIHUB": "aihub_", "CCD": "ccd_", "MMAU": "mmauu_", "NEXAR": "nexaru_"}[a.unl_exclude]
+        unl_ids = [s_ for s_ in unl_ids if not s_.startswith(prefix)]
     if a.unl_consistency: assert a.motion == "both" and not a.objmotion and not a.geo and unl_ids, "H9 needs the 'both' motion input and cache_unl"
     views = {}
     if a.consistency and not a.stride_aug: a.stride_aug = "1,0,0"  # consistency needs the stride views (supervised view stays native)

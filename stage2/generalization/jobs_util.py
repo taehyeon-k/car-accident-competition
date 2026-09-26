@@ -13,6 +13,12 @@ def loso(run, seeds, args, stop=9):
             f"--val-split {G}/loso/{src}_val.jsonl --stop-epoch {stop} {args}" for s in seeds for src in SOURCES]
 
 
+def loso_unl(run, seeds, args, stop=9):
+    """LOSO with the unlabelled pool minus the held-out source (pure domain generalisation)."""
+    return [f"{run}|{G}/results/{run}/{src}_seed{s}|--seed {s} --train-split {G}/loso/{src}_train.jsonl "
+            f"--val-split {G}/loso/{src}_val.jsonl --stop-epoch {stop} --unl-exclude {src} {args}" for s in seeds for src in SOURCES]
+
+
 def cv(run, seeds, args):
     return [f"{run}|{G}/results/{run}/cv/fold{k}_seed{s}|--seed {s} --train-split {FOLDS}/fold{k}_train.jsonl "
             f"--val-split {FOLDS}/fold{k}_val.jsonl {args}" for s in seeds for k in range(5)]
