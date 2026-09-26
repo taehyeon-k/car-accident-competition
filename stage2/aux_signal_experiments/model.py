@@ -39,7 +39,7 @@ class CausalEntry(nn.Module):
 
 class AuxPyramid(PhasePyramid):
     def __init__(self, phase_rep="none", risk=False, boundary="none", lane="none", motion_dim=0, hr=False, clip_norm="none",
-                 causal_entry=-1, **kw):
+                 causal_entry=-1, anchor_attr=False, **kw):
         super().__init__(phase_rep=phase_rep, attach="final", motion=False, **kw)
         H = self.event.in_features
         self.risk = nn.Sequential(nn.Linear(H, 32), nn.GELU(), nn.Linear(32, 1)) if risk else None
@@ -55,6 +55,7 @@ class AuxPyramid(PhasePyramid):
         # "m" = divide motion inputs by their per-clip median magnitude; "xm" = both
         self.clip_norm = clip_norm
         self.causal_entry = CausalEntry(H, lookahead=causal_entry) if causal_entry >= 0 else None
+        self.anchor_attr = anchor_attr  # H15: side / evasion pooled at the model's own (detached) ENTRY / COLLISION distributions
         if hr:  # 14x25 high-resolution tokens: per-token LayerNorm + 384->4 projection, flattened (1400) into the input projection
             self.hr_norm = nn.LayerNorm(384); self.hr_tok = nn.Linear(384, 4); motion_dim = motion_dim + 350 * 4
         if motion_dim:
@@ -79,6 +80,13 @@ class AuxPyramid(PhasePyramid):
             if self.uses_motion: emb = emb + self.motion_proj(motion.float())
             neg = torch.finfo(out["entry_logits"].dtype).min / 4
             out["entry_logits"] = self.causal_entry(emb, valid).masked_fill(~valid, neg)
+        if self.anchor_attr:
+            hid = out["hidden"]; neg = torch.finfo(hid.dtype).min / 4
+            wa = self.attn(hid).squeeze(-1).masked_fill(~valid, neg).softmax(-1)
+            we = out["entry_logits"].detach().float().masked_fill(~valid, neg).softmax(-1)
+            wc = out["collision_logits"].detach().float().masked_fill(~valid, neg).softmax(-1)
+            pooled = torch.einsum("bt,bth->bh", (wa + we.to(wa.dtype) + wc.to(wa.dtype)) / 3, hid)
+            out["side_logits"] = self.side(self.drop(pooled)); out["evasion_logits"] = self.evasion(self.drop(pooled)).squeeze(-1)
         h = out["hidden"] * valid[..., None]
         # dropout only when an auxiliary head exists (keeps the RNG stream identical to the plain control)
         hd = self.drop(h) if (self.risk is not None or self.lane is not None or self.boundary_mode in ("bnd1", "bnd3")) else h
@@ -98,7 +106,8 @@ class AuxPyramid(PhasePyramid):
 def build(cfg):
     return AuxPyramid(phase_rep=cfg.get("phase_rep", "none"), risk=cfg.get("risk", "none") != "none",
                       boundary=cfg.get("boundary", "none"), lane=cfg.get("lane", "none"), motion_dim=cfg.get("motion_dim", 0),
-                      hr=cfg.get("hr", False), clip_norm=cfg.get("clip_norm", "none"), causal_entry=cfg.get("causal_entry", -1))
+                      hr=cfg.get("hr", False), clip_norm=cfg.get("clip_norm", "none"), causal_entry=cfg.get("causal_entry", -1),
+                      anchor_attr=cfg.get("anchor_attr", False))
 
 
 def load(path, device):

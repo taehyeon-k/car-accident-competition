@@ -247,6 +247,7 @@ def main():
     p.add_argument("--attr-balance", action="store_true", help="H11: per-source class-balanced side / evasion loss weights (label-shift robustness)")
     p.add_argument("--mask-entry-sources", default="", help="comma list of sources whose ENTRY loss is masked (e.g. MMAU; label-consistency test)")
     p.add_argument("--objmotion", action="store_true", help="append object-level independent motion (requires --motion both)")
+    p.add_argument("--anchor-attr", action="store_true", help="H15: pool side/evasion at the predicted ENTRY/COLLISION distributions")
     p.add_argument("--causal-entry", type=int, default=-1, help="H8: ENTRY from a causal branch with this look-ahead (positions); -1 = off")
     p.add_argument("--truncate-aug", type=float, default=0.0, help="probability of pre-collision truncation per labelled clip (H7)")
     p.add_argument("--unl-consistency", type=float, default=0.0, help="H9: consistency weight on unlabelled clips (native vs stride 2/3 view)")
@@ -321,7 +322,7 @@ def main():
     if a.hr and motion_dim == 0: mode = "custom"
     cfg = dict(vars(a), n_unl=len(unl_ids), hr=a.hr, extra_labels=extra_name, n_extra=len(extra), soft_width=0.0, lr=1e-3, weight_decay=.05, strict_fps_blind=True, selection="direct",
                motion_dim=motion_dim, n_train=len(train_rows), n_val=len(val_rows))
-    model = AuxPyramid(phase_rep=a.phase_rep, risk=a.risk != "none", boundary=a.boundary, lane=a.lane, motion_dim=motion_dim, hr=a.hr, clip_norm=a.clip_norm, causal_entry=a.causal_entry).to(device)
+    model = AuxPyramid(phase_rep=a.phase_rep, risk=a.risk != "none", boundary=a.boundary, lane=a.lane, motion_dim=motion_dim, hr=a.hr, clip_norm=a.clip_norm, causal_entry=a.causal_entry, anchor_attr=a.anchor_attr).to(device)
     params = sum(x.numel() for x in model.parameters())
     import copy
     ema = copy.deepcopy(model).eval() if a.ema else None
