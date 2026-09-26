@@ -242,6 +242,7 @@ def main():
     p.add_argument("--w-lane-tr", type=float, default=0.0)
     p.add_argument("--motion", choices=["none", "global", "residual", "both"], default="none")
     p.add_argument("--geo", action="store_true", help="append geometry-head features (cache_geo) to the per-position input")
+    p.add_argument("--corrupt-aug", type=float, default=0.0, help="probability of replacing a clip's DINO tokens by an image-corrupted version (lowres / jpeg)")
     p.add_argument("--feat-aug", default="", help="H12 feature-space augmentation 'p_token_drop,noise_std' on the frozen DINO tokens (training only)")
     p.add_argument("--attr-balance", action="store_true", help="H11: per-source class-balanced side / evasion loss weights (label-shift robustness)")
     p.add_argument("--mask-entry-sources", default="", help="comma list of sources whose ENTRY loss is masked (e.g. MMAU; label-consistency test)")
@@ -357,6 +358,13 @@ def main():
                     tr = truncated_item(train_rows[i], np.random.default_rng(int(torch.randint(1 << 30, (1,), generator=gen))))
                     if tr is not None: base[i] = tr
             for it in base: it.setdefault("attr_w", 1.0); it.setdefault("entry_w", 1.0)
+        if a.corrupt_aug:  # image-quality augmentation: same clip, DINO tokens re-encoded from low-res / JPEG-15 frames (stride-1 views only)
+            CC = C.REPO / "stage2/generalization/cache_corrupt"; base = list(base)
+            flips = (torch.rand(len(base), generator=gen) < a.corrupt_aug).tolist(); kinds = torch.randint(2, (len(base),), generator=gen).tolist()
+            for i, f in enumerate(flips):
+                it = base[i]
+                if f and "x_path" not in it and it.get("x_shape") == len(train_items[i]["frame_numbers"]) and it is train_items[i]:
+                    base[i] = {**it, "x_path": str(CC / ("lowres", "jpeg")[kinds[i]] / f"{it['sample_id']}.npy")}
         pool = base + [extra[i] for i in pick]
         if a.balance_sources:  # same number of samples per epoch, drawn with probability 1 / (clips of that source)
             from collections import Counter

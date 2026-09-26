@@ -26,7 +26,7 @@ FOLDS = C.REPO / "stage2/long_context_v2_experiments/folds"
 def root(run): return next(r for r in ROOTS if (r / run.split("+")[0]).is_dir())
 
 
-def item(row, k, crop=0.0):
+def item(row, k, crop=0.0, corrupt=""):
     sid = row["sample_id"]; frames_all, feats = C.dense(sid)
     if k == 1:
         kept = np.arange(len(frames_all)); mot = np.load(C.DENSE / f"{sid}.motion.npy")
@@ -42,6 +42,10 @@ def item(row, k, crop=0.0):
         sl = slice(start, start + L); kept, mot, res = kept[sl], mot[sl].copy(), res[sl].copy(); mot[0] = 0; res[0] = 0
     reduced = frames_all[kept]; pos = C.select_adaptive(reduced)
     frames = reduced[pos]; x = torch.from_numpy(np.ascontiguousarray(feats[kept[pos]]))
+    if corrupt:  # image-quality corruption: DINO tokens re-encoded from corrupted frames (extract_corrupt.py; stride 1, no crop only)
+        assert k == 1 and not crop
+        cf = np.load(C.REPO / f"stage2/generalization/cache_corrupt/{corrupt}/{sid}.frames.npy"); assert (cf == frames).all()
+        x = torch.from_numpy(np.load(C.REPO / f"stage2/generalization/cache_corrupt/{corrupt}/{sid}.npy"))
     g = segments(motion28(mot), pos); r = segments(res, pos)
     ob = np.load(C.REPO / f"stage2/generalization/cache_objmotion/k{k}/{sid}.npy") if (C.REPO / f"stage2/generalization/cache_objmotion/k{k}/{sid}.npy").exists() else None
     if ob is not None and crop: ob = ob[sl]
@@ -68,7 +72,7 @@ def predict(models, it, dev):
             "entry_side_gt": int(r["entry_side"] == "RIGHT"), "evasion_gt": int(r["evasion_space"]), "num_available_frames": it["n"]}
 
 
-def evaluate(run, k, seeds, dev, per_seed=False, crop=0.0):
+def evaluate(run, k, seeds, dev, per_seed=False, crop=0.0, corrupt=""):
     """run may be 'A+B+C': an equal-weight ensemble of several families (all their given seeds)."""
     preds = []
     for f in range(5):
@@ -81,12 +85,13 @@ def evaluate(run, k, seeds, dev, per_seed=False, crop=0.0):
             if cfg.get("objmotion"): kind = "both_obj"
             models.append((m, kind))
         if per_seed: models = models[:1]
-        for r in C.rows(str(FOLDS / f"fold{f}_val.jsonl")): preds.append(predict(models, item(r, k, crop), dev))
+        for r in C.rows(str(FOLDS / f"fold{f}_val.jsonl")): preds.append(predict(models, item(r, k, crop, corrupt), dev))
     return C.breakdown(preds)
 
 
 def main():
     ap = argparse.ArgumentParser(); ap.add_argument("runs", nargs="+"); ap.add_argument("--strides", type=int, nargs="+", default=[1, 2, 3])
+    ap.add_argument("--corrupt", nargs="+", default=[""], help="'' (clean), lowres, jpeg")
     ap.add_argument("--crop", type=float, nargs="+", default=[0.0], help="0 = full clip; e.g. 0.5 = random half-length window with both events")
     ap.add_argument("--seeds", type=int, nargs="+", default=[0, 1, 2]); ap.add_argument("--out", default=None); a = ap.parse_args()
     dev = torch.device("cuda"); res = {}
@@ -94,8 +99,9 @@ def main():
         res[run] = {}
         for k in a.strides:
           for cr in a.crop:
-            b = evaluate(run, k, a.seeds, dev, crop=cr); res[run][f"k{k}_crop{cr}"] = b; o = b["overall"]
-            print(f"{run:28s} stride {k} crop {cr}: all {o['score']:.4f} (E {o['entry_acc']:.3f} C {o['collision_acc']:.3f} side {o['side_f1']:.3f} "
+           for co in a.corrupt:
+            b = evaluate(run, k, a.seeds, dev, crop=cr, corrupt=co); res[run][f"k{k}_crop{cr}_{co or 'clean'}"] = b; o = b["overall"]
+            print(f"{run:28s} stride {k} crop {cr} {co or 'clean'}: all {o['score']:.4f} (E {o['entry_acc']:.3f} C {o['collision_acc']:.3f} side {o['side_f1']:.3f} "
                   f"eva {o['evasion_f1']:.3f}) NEXAR {b['source:NEXAR']['score']:.4f} >1000 {b['bin:>1000']['score']:.4f}", flush=True)
     if a.out: C.dump(a.out, res)
 
