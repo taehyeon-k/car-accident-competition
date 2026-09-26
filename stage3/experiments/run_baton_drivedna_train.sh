@@ -32,7 +32,7 @@ if [ ! -f "${OUT}/metrics.json" ]; then
     python -m stage3.experiments.run --root "${ROOT}" --name "${NAME}" \
       --base "${BASE}/config.yaml" --gpu-memory-fraction 0.55 \
       --set data.manifest="${MANIFESTS}/train.jsonl" \
-      --set data.val_manifest="${MANIFESTS}/val.jsonl"
+      --set data.val_manifest="${MANIFESTS}/baton_val.jsonl"
   fi
 fi
 

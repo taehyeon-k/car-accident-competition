@@ -67,7 +67,7 @@ def main() -> None:
         "AdamW/cosine schedule, EMA, and 100-epoch stopping rule. Only the training manifest changed. "
         "Both were evaluated full-clip with the same EMA protocol, steering 5°, acceleration ±0.5 m/s², "
         "and ground-truth STOPPED frames masked from steering F1. The saved baseline checkpoint was used as A; "
-        "the merged run's best checkpoint was selected on combined validation using the original ±0.25 m/s² "
+        "the merged run's best checkpoint was selected on the unchanged BATON validation set using the original ±0.25 m/s² "
         "training decoder, then both checkpoints were evaluated at ±0.5 m/s² for this comparison.", "",
         "## Results", "",
         "| Model and domain | Accel Macro-F1 | Steer Macro-F1 | Stage 3 score |", "|---|---:|---:|---:|",
