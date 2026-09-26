@@ -17,9 +17,10 @@ SOURCES = ("AIHUB", "CCD", "MMAU", "NEXAR")
 
 
 def load(run):
+    """run may be 'A+B': the seed lists of several families are pooled (equal-weight ensemble over all members)."""
     out = {}
     for src in SOURCES:
-        seeds = [json.loads(p.read_text()) for p in sorted((R / run).glob(f"{src}_seed*/predictions.json"))]
+        seeds = [json.loads(p.read_text()) for r in run.split("+") for p in sorted((R / r).glob(f"{src}_seed*/predictions.json"))]
         if seeds: out[src] = seeds
     return out
 

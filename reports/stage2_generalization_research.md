@@ -59,3 +59,14 @@ it is visible in these frozen 7×10 features. ENTRY is limited by label definiti
   complementary (EMA alone +0.022 / +0.006, stride aug alone +0.002 / −0.003). In-domain single-model CV +0.005 (3/5), lowest ENTRY
   catastrophic rate (0.134). **Trade-off**: EMA members are less diverse, so 3-seed ensembles gain less (robustness ensemble 0.752 / 0.735 /
   0.693 vs 0.768 / 0.753 / 0.701 for stride aug alone); EMA alone is not frame-rate robust (0.759 → 0.611 at 1/3 fps).
+
+## Recipe decision (ensemble level)
+| recipe (3 families × 3 seeds) | CV all / NEXAR (v5 decoding) | frame rate 1/1, 1/2, 1/3 (plain) | LOSO E4+E2 ensemble: single mean / worst | seed-ens mean / worst |
+|---|---|---|---|---|
+| v7 (no aug) | 0.784 / 0.717 | 0.772 / 0.720 / 0.648 | (E4 alone) 0.663 / 0.561 | 0.703 / 0.611 |
+| **v8 = stride aug** | **0.787** / 0.707 | **0.775 / 0.759 / 0.718** | 0.672 / 0.564 | 0.711 / 0.606 |
+| **v9 = stride aug + EMA** | 0.783 / 0.707 | 0.771 / 0.747 / 0.696 | **0.698 / 0.593** (4/4 sources ↑) | **0.720 / 0.613** |
+
+Best single family: E2 + stride aug + EMA (LOSO mean +0.040, worst +0.035, 4/4 sources). Decision rule fixed before the result: cross-source
+generalization first (the test set is stated to be unlike the training data). **v9 is the recommended next Stage 2**; v8 is the choice if
+frame-rate shift is believed to be the bigger risk than domain shift. Both packages are built and verified (parity exact, smoke passes).
