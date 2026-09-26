@@ -122,3 +122,7 @@ or global motion statistics. Evasion needs a **label audit** (conventions differ
   distributions)/3). LOSO vs E4_sa (same seeds 0–2): AIHUB +0.033, CCD +0.002, MMAU −0.011, NEXAR −0.011 (mean +0.003, worst −0.011).
   Side F1 drops on every source (−0.013 … −0.040), evasion rises on 3/4 (+0.019 … +0.028). **Rejected** — attribute evidence is not
   concentrated at the predicted event positions (side is better read from the whole approach), and the evasion gain is too small/inconsistent.
+* **H17 — ENTRY-only wider targets** (`--sigma-entry`, motivated by the ENTRY convention shift above; COLLISION stays σ=1).
+  LOSO 3 seeds vs E4_sa (same seeds): σ_E=2 AIHUB +0.002 / CCD +0.007 / MMAU +0.019 / NEXAR +0.023 (mean +0.013, worst +0.023, 4/4;
+  seed-ensemble mean 0.693 → 0.716, worst 0.582 → 0.621); σ_E=3 mean +0.011, worst +0.023, 3/4 (CCD −0.012). Confirmation queued
+  (seeds 3–5 LOSO + 3-seed CV).
