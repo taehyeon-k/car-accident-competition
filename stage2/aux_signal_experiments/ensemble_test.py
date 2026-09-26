@@ -38,8 +38,9 @@ def pooled(spec):
             p = {kk: v for kk, v in items[0].items() if not kk.endswith("_logits") and kk != "phase_logp"}
             for e in ("entry", "collision"):
                 p[f"{e}_logp"] = np.log(np.mean([np.exp(PE.lp(it[f"{e}_logits"])) for it in items], 0) + 1e-12)
-            p["entry_side"] = int(np.mean([m[1][sid][0] for m in mem]) >= .5)
-            p["evasion_space"] = int(np.mean([m[1][sid][1] for m in mem]) >= .5)
+            p["side_prob"] = float(np.mean([m[1][sid][0] for m in mem])); p["evasion_prob"] = float(np.mean([m[1][sid][1] for m in mem]))
+            p["entry_side"] = int(p["side_prob"] >= .5); p["evasion_space"] = int(p["evasion_prob"] >= .5)
+            p["fold"] = k; p["frames_kept"] = p["frames"]
             merged.append(p)
         out[k] = merged
     return out

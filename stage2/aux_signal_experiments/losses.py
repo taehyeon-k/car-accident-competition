@@ -78,11 +78,46 @@ def lane_loss(out, batch, mode, transition_weight=0.0):
     return (F.binary_cross_entropy_with_logits(z[..., 0], y.clamp(0, 1), reduction="none") * m).sum() / m.sum().clamp_min(1)
 
 
+def weighted_direct(out, batch, w_entry, sigma):
+    """NT direct loss with an ENTRY weight and target width (sampled positions); w_entry=1, sigma=1 == NT."""
+    from stage2.spotting_experiments.objective import distribution_loss
+    valid, pos = batch["time_valid"], batch["normalized_positions"].float()
+    le = distribution_loss(out["entry_logits"], batch["entry_index"], valid, pos, "soft_index", sigma).mean()
+    lc = distribution_loss(out["collision_logits"], batch["collision_index"], valid, pos, "soft_index", sigma).mean()
+    return (w_entry * le + lc) / (w_entry + 1)
+
+
+def weighted_nt(out, batch, cfg):
+    """NT loss with per-clip weights: entry_w (pseudo-labelled ENTRY) and attr_w (0 = attributes unknown)."""
+    from stage2.spotting_experiments.objective import distribution_loss
+    valid, pos = batch["time_valid"], batch["normalized_positions"].float(); ew, aw = batch["entry_w"].float(), batch["attr_w"].float()
+    sig = cfg.get("sigma", 1.0); we = cfg.get("w_entry", 1.0)
+    le = distribution_loss(out["entry_logits"], batch["entry_index"], valid, pos, "soft_index", sig)
+    lc = distribution_loss(out["collision_logits"], batch["collision_index"], valid, pos, "soft_index", sig)
+    direct = ((we * ew * le).sum() / ew.sum().clamp_min(1e-6) * ew.mean() + lc.mean()) / (we + 1)
+    side = (F.cross_entropy(out["side_logits"].float(), batch["entry_side"], reduction="none") * aw).sum() / aw.sum().clamp_min(1e-6)
+    eva = (F.binary_cross_entropy_with_logits(out["evasion_logits"].float(), batch["evasion"].float(), reduction="none") * aw).sum() / aw.sum().clamp_min(1e-6)
+    loss = cfg["w_direct"] * direct + 0.5 * side + 0.5 * eva
+    return _aux(loss, {"direct": direct}, out, batch, cfg)
+
+
 def total_loss(out, batch, cfg):
+    if "attr_w" in batch and cfg.get("base_loss", "nt") == "nt":
+        return weighted_nt(out, batch, cfg)
+    if cfg.get("base_loss", "nt") == "nt" and (cfg.get("w_entry", 1.0) != 1.0 or cfg.get("sigma", 1.0) != 1.0):
+        from stage2.long_context_v2_experiments.phase_loss import attribute_losses
+        side, evasion = attribute_losses(out, batch)
+        parts = {"direct": weighted_direct(out, batch, cfg["w_entry"], cfg["sigma"])}
+        loss = cfg["w_direct"] * parts["direct"] + 0.5 * side + 0.5 * evasion
+        return _aux(loss, parts, out, batch, cfg)
     if cfg.get("base_loss", "nt") == "p2":
         loss, parts = experiment_loss(out, batch, {**cfg, **P2_CFG}); parts = {"base": float(loss)}
     else:
         loss, parts = nt_total(out, batch, cfg)
+    return _aux(loss, parts, out, batch, cfg)
+
+
+def _aux(loss, parts, out, batch, cfg):
     if cfg.get("risk", "none") != "none":
         parts["risk"] = risk_loss(out, batch, cfg["risk"]); loss = loss + cfg["w_risk"] * parts["risk"]
     if cfg.get("boundary", "none") != "none":

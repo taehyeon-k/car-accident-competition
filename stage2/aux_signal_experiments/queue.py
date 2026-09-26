@@ -36,20 +36,28 @@ def live_outputs():
     return out
 
 
+def ready(args):
+    if "--geo" in args and len(list((D / "cache_geo").glob("*.geo.npz"))) < 349: return False
+    return True
+
+
 def main():
-    started = {}
+    started, attempts = {}, {}
     while True:
         jobs = [l.strip().split("|") for l in JOBS.read_text().splitlines() if l.strip() and not l.startswith("#")]
         live = live_outputs()
-        pending = [(r, o, a) for r, o, a in jobs if not (Path("/workspace/car-accident") / o / "checkpoint.pt").exists() and o not in live]
-        if not pending and not live:
+        todo = [(r, o, a) for r, o, a in jobs if not (Path("/workspace/car-accident") / o / "checkpoint.pt").exists() and o not in live
+                and attempts.get(o, 0) < 2]
+        pending = [j for j in todo if ready(j[2])]
+        if not todo and not live:
             (D / "logs/batches.log").open("a").write("QUEUE_DONE\n"); return
         recent = [t for t in started.values() if time.time() - t < 60]
         if pending and len(live) < MAX_RUNS and avail_gb() - RESERVE_GB * len(recent) >= MIN_AVAIL_GB:
             run, out, args = pending[0]
             cmd = (f"cd /workspace/car-accident && OMP_NUM_THREADS=2 /venv/main/bin/python -m stage2.aux_signal_experiments.train "
                    f"--run-id {run} --output {out} {args} 2>&1 | grep -E 'RESULT|Error|Traceback|rror' >> {D}/logs/{run}.log")
-            subprocess.Popen(["bash", "-c", cmd]); started[out] = time.time()
+            subprocess.Popen(["bash", "-c", cmd]); started[out] = time.time(); attempts[out] = attempts.get(out, 0) + 1
+            if attempts[out] == 2: print(time.strftime("%H:%M:%S"), f"retry {out}", flush=True)
             print(time.strftime("%H:%M:%S"), f"launch {out} (avail {avail_gb():.1f} GB, live {len(live) + 1})", flush=True)
             time.sleep(SETTLE_S)
             continue
