@@ -151,7 +151,27 @@ def truncated_item(row, rng):
     return it
 
 
+UNL = C.REPO / "stage2/generalization/cache_unl"
+
+
+def unl_view(sid, k):
+    """Unlabelled clip (stage2/generalization/unl_expand.py) at stride k: adaptive sampling of frames[::k], dense DINO tokens of the
+    sampled frames (lazy), 'both' motion recomputed on the retained frames. No labels (dummy indices are never used in a loss)."""
+    from .nexar_labels import motion28
+    n = int(np.load(UNL / f"{sid}.motion.npy", mmap_mode="r").shape[0])
+    if k == 1: kept, mot, res = np.arange(n), np.load(UNL / f"{sid}.motion.npy"), np.load(UNL / f"{sid}.residual.npy")
+    else: d = np.load(UNL / f"{sid}.k{k}.npz"); kept, mot, res = d["kept"], d["motion"], d["residual"]
+    pos = C.select_adaptive(kept); fr = kept[pos]
+    norm = (fr - fr[0]).astype(np.float32) / max(int(fr[-1] - fr[0]), 1)
+    both = np.concatenate([segments(motion28(mot), pos), segments(res, pos)], 1)
+    return {"sample_id": sid, "source_id": "UNL:" + sid, "frame_numbers": torch.from_numpy(fr.copy()), "normalized_positions": torch.from_numpy(norm),
+            "x_path": str(UNL / f"{sid}.npy"), "x_idx": fr, "x_shape": len(fr), "motion": torch.from_numpy(both),
+            "entry_index": 0, "collision_index": 0, "entry_frame": 0, "collision_frame": 0, "entry_side": 0, "evasion": 0, "num_available_frames": len(kept)}
+
+
 def materialize_any(it):
+    if "x_idx" in it:
+        return {**it, "x": torch.from_numpy(np.ascontiguousarray(np.load(it["x_path"], mmap_mode="r")[it["x_idx"]]))}
     out = {**it, "x": torch.from_numpy(np.ascontiguousarray(np.load(it["x_path"], mmap_mode="r")))} if "x_path" in it else materialize(it)
     if it.get("hr_path"): out["hr"] = torch.from_numpy(np.ascontiguousarray(np.load(it["hr_path"], mmap_mode="r")))
     return out
@@ -225,6 +245,8 @@ def main():
     p.add_argument("--objmotion", action="store_true", help="append object-level independent motion (requires --motion both)")
     p.add_argument("--causal-entry", type=int, default=-1, help="H8: ENTRY from a causal branch with this look-ahead (positions); -1 = off")
     p.add_argument("--truncate-aug", type=float, default=0.0, help="probability of pre-collision truncation per labelled clip (H7)")
+    p.add_argument("--unl-consistency", type=float, default=0.0, help="H9: consistency weight on unlabelled clips (native vs stride 2/3 view)")
+    p.add_argument("--unl-batch", type=int, default=4)
     p.add_argument("--consistency", type=float, default=0.0,
                    help="weight of cross-frame-rate consistency: each batch is also seen at stride 2/3; teacher = native-rate view")
     p.add_argument("--stride-aug", default="", help="temporal-rate augmentation, e.g. '0.5,0.25,0.25' = P(stride 1,2,3) per clip per epoch")
@@ -260,6 +282,8 @@ def main():
     if a.objmotion:
         assert a.motion == "both" and not a.geo and not extra, "--objmotion is appended to the 'both' motion input"
         for it in train_items + val_items: add_obj(it, 1)
+    unl_ids = sorted(p_.name[:-len(".k3.npz")] for p_ in UNL.glob("*.k3.npz")) if a.unl_consistency else []
+    if a.unl_consistency: assert a.motion == "both" and not a.objmotion and not a.geo and unl_ids, "H9 needs the 'both' motion input and cache_unl"
     views = {}
     if a.consistency and not a.stride_aug: a.stride_aug = "1,0,0"  # consistency needs the stride views (supervised view stays native)
     if a.stride_aug:
@@ -277,7 +301,7 @@ def main():
     motion_dim = 0 if (a.motion == "none" and not a.geo) else int(train_items[0]["motion"].shape[1])
     if a.objmotion: mode = "custom"
     if a.hr and motion_dim == 0: mode = "custom"
-    cfg = dict(vars(a), hr=a.hr, extra_labels=extra_name, n_extra=len(extra), soft_width=0.0, lr=1e-3, weight_decay=.05, strict_fps_blind=True, selection="direct",
+    cfg = dict(vars(a), n_unl=len(unl_ids), hr=a.hr, extra_labels=extra_name, n_extra=len(extra), soft_width=0.0, lr=1e-3, weight_decay=.05, strict_fps_blind=True, selection="direct",
                motion_dim=motion_dim, n_train=len(train_rows), n_val=len(val_rows))
     model = AuxPyramid(phase_rep=a.phase_rep, risk=a.risk != "none", boundary=a.boundary, lane=a.lane, motion_dim=motion_dim, hr=a.hr, clip_norm=a.clip_norm, causal_entry=a.causal_entry).to(device)
     params = sum(x.numel() for x in model.parameters())
@@ -338,6 +362,13 @@ def main():
                         o_ref = model(b_ref["x"], b_ref["time_valid"], motion=b_ref["motion"], hr=b_ref.get("hr")) if model.uses_motion else model(b_ref["x"], b_ref["time_valid"])
                     o_aug = model(b_aug["x"], b_aug["time_valid"], motion=b_aug["motion"], hr=b_aug.get("hr")) if model.uses_motion else model(b_aug["x"], b_aug["time_valid"])
                     parts["consistency"] = consistency_loss(o_ref, b_ref, o_aug, b_aug); loss = loss + a.consistency * parts["consistency"]
+            if a.unl_consistency:  # H9: unlabelled multi-domain clips, native-rate teacher (no grad) vs stride-2/3 student
+                pick_u = torch.randint(len(unl_ids), (a.unl_batch,), generator=gen).tolist(); kk = int(torch.randint(2, 4, (1,), generator=gen))
+                b_ref = to_device(collate([materialize_any(unl_view(unl_ids[i], 1)) for i in pick_u], "custom", a.lane), device)
+                b_aug = to_device(collate([materialize_any(unl_view(unl_ids[i], kk)) for i in pick_u], "custom", a.lane), device)
+                with torch.no_grad(): o_ref = model(b_ref["x"], b_ref["time_valid"], motion=b_ref["motion"])
+                o_aug = model(b_aug["x"], b_aug["time_valid"], motion=b_aug["motion"])
+                parts["unl_consistency"] = consistency_loss(o_ref, b_ref, o_aug, b_aug); loss = loss + a.unl_consistency * parts["unl_consistency"]
             opt.zero_grad(set_to_none=True); loss.backward()
             torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0); opt.step(); sched.step()
             if ema is not None:

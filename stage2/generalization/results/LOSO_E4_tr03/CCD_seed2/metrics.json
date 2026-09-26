@@ -1,0 +1,92 @@
+{
+ "breakdown": {
+  "overall": {
+   "n": 83,
+   "entry_acc": 0.5060240963855421,
+   "entry_mae_frames": 5.132530120481928,
+   "entry_median_frames": 3.0,
+   "entry_norm_mae": 0.10474551266289649,
+   "entry_catastrophic": 0.3855421686746988,
+   "collision_acc": 0.7831325301204819,
+   "collision_mae_frames": 2.3855421686746987,
+   "collision_median_frames": 1.0,
+   "collision_norm_mae": 0.048684534054585685,
+   "collision_catastrophic": 0.1686746987951807,
+   "side_f1": 0.9079676857278631,
+   "evasion_f1": 0.613953488372093,
+   "score": 0.6794929953921017
+  },
+  "source:CCD": {
+   "n": 83,
+   "entry_acc": 0.5060240963855421,
+   "entry_mae_frames": 5.132530120481928,
+   "entry_median_frames": 3.0,
+   "entry_norm_mae": 0.10474551266289649,
+   "entry_catastrophic": 0.3855421686746988,
+   "collision_acc": 0.7831325301204819,
+   "collision_mae_frames": 2.3855421686746987,
+   "collision_median_frames": 1.0,
+   "collision_norm_mae": 0.048684534054585685,
+   "collision_catastrophic": 0.1686746987951807,
+   "side_f1": 0.9079676857278631,
+   "evasion_f1": 0.613953488372093,
+   "score": 0.6794929953921017
+  },
+  "source:non-NEXAR": {
+   "n": 83,
+   "entry_acc": 0.5060240963855421,
+   "entry_mae_frames": 5.132530120481928,
+   "entry_median_frames": 3.0,
+   "entry_norm_mae": 0.10474551266289649,
+   "entry_catastrophic": 0.3855421686746988,
+   "collision_acc": 0.7831325301204819,
+   "collision_mae_frames": 2.3855421686746987,
+   "collision_median_frames": 1.0,
+   "collision_norm_mae": 0.048684534054585685,
+   "collision_catastrophic": 0.1686746987951807,
+   "side_f1": 0.9079676857278631,
+   "evasion_f1": 0.613953488372093,
+   "score": 0.6794929953921017
+  },
+  "bin:<150": {
+   "n": 83,
+   "entry_acc": 0.5060240963855421,
+   "entry_mae_frames": 5.132530120481928,
+   "entry_median_frames": 3.0,
+   "entry_norm_mae": 0.10474551266289649,
+   "entry_catastrophic": 0.3855421686746988,
+   "collision_acc": 0.7831325301204819,
+   "collision_mae_frames": 2.3855421686746987,
+   "collision_median_frames": 1.0,
+   "collision_norm_mae": 0.048684534054585685,
+   "collision_catastrophic": 0.1686746987951807,
+   "side_f1": 0.9079676857278631,
+   "evasion_f1": 0.613953488372093,
+   "score": 0.6794929953921017
+  },
+  "bin:150-300": {
+   "n": 0
+  },
+  "bin:300-500": {
+   "n": 0
+  },
+  "bin:500-750": {
+   "n": 0
+  },
+  "bin:750-1000": {
+   "n": 0
+  },
+  "bin:>1000": {
+   "n": 0
+  }
+ },
+ "best_epoch": 9,
+ "last_epoch": 9,
+ "train_official_at_best": 0.6794929953921017,
+ "val_fpsblind_at_best": 0.3210592604523428,
+ "runtime": {
+  "wall_seconds": 41.439950205385685,
+  "parameter_count": 303582,
+  "head_ms_per_video": 1.610056373728327
+ }
+}
