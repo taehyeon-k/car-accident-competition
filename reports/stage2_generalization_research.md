@@ -107,3 +107,6 @@ or global motion statistics. Evasion needs a **label audit** (conventions differ
   test set (median, train-prior quantile, logit centring). LOSO evasion macro-F1 mean: fixed 0.623–0.629 → best adaptive 0.634–0.640
   (+0.01 ⇒ +0.0015 score); side: fixed 0.5 is best (adaptive −0.002 … −0.03). **Rejected** — calibration is not the bottleneck; evasion
   is limited by ranking quality (AUC ≤ 0.8), i.e. by what the pooled features encode about free space, not by the decision rule.
+* **H16 — frame-rate test-time augmentation** (`stage2/generalization/tta_eval.py`: average the ENTRY/COLLISION distributions of the
+  native and 1/2-frame-rate views, projected by frame number). CV (3 seeds, clean input): E4 0.7485 → 0.7541 (+0.006), E4_sa 0.7683 → 0.7659
+  (−0.002). **Rejected** — within noise, and once the model is trained with stride augmentation the views already agree; not worth 1.5× runtime.
