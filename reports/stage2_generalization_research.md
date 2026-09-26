@@ -36,6 +36,8 @@ Code: `stage2/generalization/` (+ options in `stage2/aux_signal_experiments/trai
 | H8 | causal ENTRY head (ENTRY from positions ≤ t + L only; leak-free, verified) | same shortcut, architecturally | **rejected** (L = 4: CV −0.014, CI excludes 0) and **still predicts ENTRY late on long gaps** |
 | H10 | geometry-head features (ego vs alternative drivable area, corridor occupancy) under LOSO | physical evasion cue | **no evasion transfer** (held-out evasion F1 unchanged ≈ 0.55–0.65); LOSO mean +0.009 |
 | H11 | per-source class-balanced side / evasion loss weights | label-shift (base-rate) shortcut | **modest consistent gain**: LOSO mean +0.010, 3/4 sources, worst −0.003; side F1 ↑ on all 4 held-out sources; evasion still ≈ chance |
+| H12 | feature-space augmentation (10 % token drop + 0.1·σ Gaussian noise on frozen DINO tokens) | appearance robustness | **mixed**: LOSO mean +0.010 (AIHUB +0.036, CCD +0.052, MMAU −0.022, NEXAR −0.027) |
+| H13 | EMA weights (0.99) | flat minima generalise | **best cross-source single-model result**: LOSO mean +0.022, worst +0.006, **4/4 sources**; but seed-ensemble mean −0.007 (less diversity) |
 | H9 | semi-supervised cross-frame-rate consistency on 1,046 unlabelled AIHUB / CCD / MMAU clips (+ H1); LOSO excludes the held-out source's clips | more domains, no labels | **not a generalization win**: CV −0.009; LOSO mean +0.000 / worst −0.026 (CCD +0.061, AIHUB +0.013, MMAU −0.046, NEXAR −0.026); robustness 0.752 / 0.760 / 0.714 (flatter, like H5) |
 
 **ENTRY conclusion (H6–H8 + H4):** the gap dependence is not a learnable shortcut through the collision nor a missing input cue — even a
@@ -48,3 +50,8 @@ it is visible in these frozen 7×10 features. ENTRY is limited by label definiti
 * **Attributes**: side F1 transfers across sources (0.80–0.92 held-out); **evasion F1 does not** (0.51–0.70 held-out, near chance for CCD /
   MMAU / NEXAR; base rates differ: MMAU 72 % positive vs 45–57 %). Motion input slightly hurts evasion transfer. Tested next (H10): physically
   grounded geometry features (ego vs alternative drivable area, corridor occupancy) under LOSO.
+* H11 in-domain CV: −0.008 (0/5 folds) — class balancing trades a little in-domain accuracy for cross-source transfer.
+* **NEXAR context probe**: NEXAR-held-out models on NEXAR clips cropped to 1/2, 1/4, 1/8 of their length: score flat (0.61–0.63), ENTRY even lower.
+  NEXAR's difficulty as an unseen source is appearance/domain + label conventions, **not** long context (so no context-length method).
+* Pattern: generic regularisers (H3, H9, H11, H12) help held-out AIHUB / CCD but hurt NEXAR / MMAU; only residual motion (+0.111) and EMA
+  (+0.006) improve the worst source.
