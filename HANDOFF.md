@@ -64,7 +64,7 @@ Obsolete (do not download): `stage2/cache/{geometry,joint_features_v1,v2}`, `sta
 |---|---|---|---|
 | 1 | original `global_g1_threshold_0_50` model (unchanged; `submission/model/stage1/`) | — | **0.953** (v1) |
 | 2 | **v5: LC-v2 15-head ensemble (C0/X_ema/M_motion/PH) + motion fusion**, trained on 279 clips (not refit) | 0.767 fixed / 0.769 CV (NEXAR 0.619 / 0.670) | v5: **0.5314** (v3 P2 refit: 0.4618; v1 E3: 0.441) |
-| 2 (offline best, not yet on LB) | **v7: E4 + E2 + XN4 residual-motion ensemble** (12 heads, full-data refit; §10) | CV of the recipe **0.7995 / NEXAR 0.721** | v7 zip built 2026-09-26, **not submitted yet** — ask the user |
+| 2 (**current LB best**) | **v7: E4 + E2 + XN4 residual-motion ensemble** (12 heads, full-data refit; §10) | CV of the recipe **0.7995 / NEXAR 0.721** | v7: **0.5464** (+0.015 over v5) |
 | 2 (recommended next, §11) | **v8: v7 recipe + temporal-rate augmentation** (recommended) / v9: + EMA (alternative: better single models, less ensemble diversity) | v9: LOSO unseen-source mean 0.698 / worst 0.593 (v7-type 0.663 / 0.561); v8: 0.775 / 0.759 / 0.718 at 1/1, 1/2, 1/3 fps (v7 0.772 / 0.720 / 0.648) | zips built + verified, not submitted |
 | 3 | **V3_tcnssm_100ep** (SEA-RAFT → geometry/physics → MotionCNN → TCN+SSM, 100 ep, best ep 91) + steering **5°** + accel **±0.5 m/s²** | 0.7954 (BATON val) | specialist zip (accel ±0.5): **0.7388**; ±0.75: 0.7313; ±0.25: 0.7274; ±1.0: 0.6972; v4 (steer 1.5°): 0.6900 |
 
@@ -242,11 +242,11 @@ Ask the user for any newer leaderboard results before deciding next steps.
 
 ## 5. Recommended next steps (revised 2026-09-26 evening, see §10)
 
-1. **Ask the user for leaderboard results of v6 / v7.** v7 changes Stage 2 (new ensemble) *and* Stage 3 (steer 3° untested); to read
-   Stage 2 alone, build the same zip with steer 5° (edit `submission_tools/v7_stage2/stage3_decoder_overrides.json`, rerun build_v7.sh).
+1. **v7 on LB (2026-09-26): S2 0.5464 (best), S3 0.7340.** Steer 3° loses to 5° (0.7340 vs 0.7388 at accel ±0.5) → keep **steer 5°**.
+   The built v8 / v9 zips still use steer 3°: rebuild them with steer 5° (`stage3_decoder_overrides.json`) before submitting.
 2. **Stage 2**: the plateau is ENTRY (CV 0.69; NEXAR/AIHUB ~0.55). Things that did not help ENTRY are listed in §10 — don't repeat them.
    Untried: labelling ENTRY on more NEXAR positives (labelling app), and 8-seed confirmation of XN2/XN4e0/E3 families.
-3. **Stage 3**: accel ±0.5 is the best measured (0.7388 at steer 5°). Steering: 5° 0.7388 / 1.5° 0.690; 3° is in v7 (untested).
+3. **Stage 3**: accel ±0.5 is the best measured (0.7388 at steer 5°). Steering at accel ±0.5: 5° 0.7388 / 3° 0.7340; at ±0.25: 1.5° 0.690.
 4. Stage 1 unchanged at 0.953.
 
 ## 6. 2026-09-25 session summary (Stage 2 experiments; no Stage 3 retraining, but the new zips change Stage 3 accel thresholds — see §4)
@@ -282,6 +282,7 @@ Leaderboard (from the user):
 | Submission | S1 | S2 | S3 | Stage 3 settings |
 |---|---|---|---|---|
 | v3 P2 refit | 0.953 | 0.4618 | 0.7274 | accel ±0.25, steer 5° |
+| **v7 E4+E2+XN4 full refit** (2026-09-26) | — | **0.5464** | 0.7340 | accel ±0.5, steer **3°** |
 | v4 | — | — | 0.6900 | accel ±0.25, steer 1.5° |
 | NEXAR specialist | — | 0.437 | **0.7388** | accel ±0.5, steer 5° |
 | **v5 LC-v2 15-head + motion** | 0.953 | **0.5314** | 0.6972 | accel ±1.0, steer 5° |
