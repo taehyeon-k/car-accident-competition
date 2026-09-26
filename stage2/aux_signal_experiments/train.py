@@ -261,6 +261,7 @@ def main():
     p.add_argument("--hr", action="store_true", help="add 14x25 high-resolution frozen tokens (cache_hr) to the input")
     p.add_argument("--ema", type=float, default=0.0, help="EMA decay of weights used for evaluation/selection (X_ema family: 0.99)")
     p.add_argument("--w-entry", type=float, default=1.0, help="ENTRY weight in the NT direct loss (1 = NT)")
+    p.add_argument("--sigma-entry", type=float, default=None, help="H17: ENTRY-only target width (convention-shift tolerance); default = --sigma")
     p.add_argument("--sigma", type=float, default=1.0, help="direct-target Gaussian width in sampled positions (1 = NT)")
     p.add_argument("--extra-nexar", action="store_true", help="add the metadata/pseudo-labelled unlabelled NEXAR clips (nexar_labels.py)")
     p.add_argument("--extra-labels", default=None, help="label set name for --extra-nexar (default: from --train-split: foldK / fixed)")

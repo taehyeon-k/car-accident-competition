@@ -78,11 +78,11 @@ def lane_loss(out, batch, mode, transition_weight=0.0):
     return (F.binary_cross_entropy_with_logits(z[..., 0], y.clamp(0, 1), reduction="none") * m).sum() / m.sum().clamp_min(1)
 
 
-def weighted_direct(out, batch, w_entry, sigma):
+def weighted_direct(out, batch, w_entry, sigma, sigma_entry=None):
     """NT direct loss with an ENTRY weight and target width (sampled positions); w_entry=1, sigma=1 == NT."""
     from stage2.spotting_experiments.objective import distribution_loss
     valid, pos = batch["time_valid"], batch["normalized_positions"].float()
-    le = distribution_loss(out["entry_logits"], batch["entry_index"], valid, pos, "soft_index", sigma).mean()
+    le = distribution_loss(out["entry_logits"], batch["entry_index"], valid, pos, "soft_index", sigma_entry or sigma).mean()
     lc = distribution_loss(out["collision_logits"], batch["collision_index"], valid, pos, "soft_index", sigma).mean()
     return (w_entry * le + lc) / (w_entry + 1)
 
@@ -92,7 +92,7 @@ def weighted_nt(out, batch, cfg):
     from stage2.spotting_experiments.objective import distribution_loss
     valid, pos = batch["time_valid"], batch["normalized_positions"].float(); ew, aw = batch["entry_w"].float(), batch["attr_w"].float()
     sig = cfg.get("sigma", 1.0); we = cfg.get("w_entry", 1.0)
-    le = distribution_loss(out["entry_logits"], batch["entry_index"], valid, pos, "soft_index", sig)
+    le = distribution_loss(out["entry_logits"], batch["entry_index"], valid, pos, "soft_index", cfg.get("sigma_entry") or sig)
     lc = distribution_loss(out["collision_logits"], batch["collision_index"], valid, pos, "soft_index", sig)
     cw = batch["collision_w"].float() if "collision_w" in batch else torch.ones_like(ew)
     direct = (we * (ew * le).mean() + (cw * lc).mean()) / (we + 1)
@@ -106,10 +106,10 @@ def weighted_nt(out, batch, cfg):
 def total_loss(out, batch, cfg):
     if "attr_w" in batch and cfg.get("base_loss", "nt") == "nt":
         return weighted_nt(out, batch, cfg)
-    if cfg.get("base_loss", "nt") == "nt" and (cfg.get("w_entry", 1.0) != 1.0 or cfg.get("sigma", 1.0) != 1.0):
+    if cfg.get("base_loss", "nt") == "nt" and (cfg.get("w_entry", 1.0) != 1.0 or cfg.get("sigma", 1.0) != 1.0 or cfg.get("sigma_entry")):
         from stage2.long_context_v2_experiments.phase_loss import attribute_losses
         side, evasion = attribute_losses(out, batch)
-        parts = {"direct": weighted_direct(out, batch, cfg["w_entry"], cfg["sigma"])}
+        parts = {"direct": weighted_direct(out, batch, cfg["w_entry"], cfg["sigma"], cfg.get("sigma_entry"))}
         loss = cfg["w_direct"] * parts["direct"] + 0.5 * side + 0.5 * evasion
         return _aux(loss, parts, out, batch, cfg)
     if cfg.get("base_loss", "nt") == "p2":
