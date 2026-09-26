@@ -242,6 +242,7 @@ def main():
     p.add_argument("--w-lane-tr", type=float, default=0.0)
     p.add_argument("--motion", choices=["none", "global", "residual", "both"], default="none")
     p.add_argument("--geo", action="store_true", help="append geometry-head features (cache_geo) to the per-position input")
+    p.add_argument("--feat-aug", default="", help="H12 feature-space augmentation 'p_token_drop,noise_std' on the frozen DINO tokens (training only)")
     p.add_argument("--attr-balance", action="store_true", help="H11: per-source class-balanced side / evasion loss weights (label-shift robustness)")
     p.add_argument("--mask-entry-sources", default="", help="comma list of sources whose ENTRY loss is masked (e.g. MMAU; label-consistency test)")
     p.add_argument("--objmotion", action="store_true", help="append object-level independent motion (requires --motion both)")
@@ -366,6 +367,12 @@ def main():
             order = torch.randperm(len(pool), generator=gen).tolist()
         for s in range(0, len(order), a.batch_size):
             batch = make_batch(order[s:s + a.batch_size])
+            if a.feat_aug:  # H12: drop whole spatial tokens + small Gaussian noise (relative to the per-token feature scale)
+                pdrop, std = (float(v) for v in a.feat_aug.split(","))
+                xb = batch["x"].float()
+                keep = (torch.rand(xb.shape[0], xb.shape[1], xb.shape[2], 1, device=xb.device) >= pdrop).float()
+                xb = xb * keep + std * xb.std(-1, keepdim=True) * torch.randn_like(xb)
+                batch["x"] = xb
             o = model(batch["x"], batch["time_valid"], motion=batch["motion"], hr=batch.get("hr")) if model.uses_motion else model(batch["x"], batch["time_valid"])
             loss, parts = total_loss(o, batch, cfg)
             if a.consistency:  # same clips at a random lower frame rate; native-rate view (index into train_items) is the teacher
