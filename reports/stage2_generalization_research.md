@@ -118,3 +118,7 @@ or global motion statistics. Evasion needs a **label audit** (conventions differ
   AIHUB 1.27 s, CCD 1.10 s, NEXAR 1.11 s, MMAU 0.40 s. Implication for the leaderboard: ENTRY accuracy on an unseen source is bounded by
   how close its convention is to the training mix; keeping all sources in training (as v8 does) is the robust choice, and an explicit
   ENTRY definition audit across sources (e.g. re-annotating a small shared subset) is the highest-value next step for ENTRY.
+* **H15 — event-anchored attribute pooling** (`--anchor-attr`: side/evasion pooled with (attention + detached ENTRY + detached COLLISION
+  distributions)/3). LOSO vs E4_sa (same seeds 0–2): AIHUB +0.033, CCD +0.002, MMAU −0.011, NEXAR −0.011 (mean +0.003, worst −0.011).
+  Side F1 drops on every source (−0.013 … −0.040), evasion rises on 3/4 (+0.019 … +0.028). **Rejected** — attribute evidence is not
+  concentrated at the predicted event positions (side is better read from the whole approach), and the evasion gain is too small/inconsistent.
