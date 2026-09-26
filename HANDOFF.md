@@ -3,8 +3,9 @@
 **Start command for a new session (unchanged):** "Clone https://github.com/taehyeon-k/car-accident-competition.git into
 /workspace/car-accident, check out branch handoff-2026-09-24, and read HANDOFF.md fully. Follow its section 2 to restore the
 Stage 2 and Stage 3 training environment from GitHub and R2 (r2:car-accident-dataset). Don't delete anything from R2."
-The branch name stays `handoff-2026-09-24`; it now also contains the 2026-09-25 session (§6) and the 2026-09-26 leaderboard results +
-Stage 3 10 Hz rule (§8 — **read §8 first**, it overrides older Stage 3 notes below).
+The branch name stays `handoff-2026-09-24`; it now also contains the 2026-09-25 session (§6), the 2026-09-26 leaderboard results +
+Stage 3 10 Hz rule (§8 — **read §8 first**, it overrides older Stage 3 notes below), and the 2026-09-26 Stage 2 studies and the
+**v7 submission** (§9, §10 — **read §10 first for Stage 2**).
 
 Start here on a fresh Vast.ai server. This file says what exists, where it is stored,
 how to restore a training-ready environment, and what to do next. Older, narrower notes:
@@ -45,7 +46,12 @@ how to restore a training-ready environment, and what to do next. Older, narrowe
 | `stage2/runs/2026-09-25/nexar65_experiments/{results,candidate_seed0,candidate_all_seeds}` | NEXAR-specialist heads (checkpoints) and exported candidates | `car-accident/stage2/nexar65_experiments/<same>` |
 | `submissions/2026-09-25/` | `submit_v5_*.zip`, `submit_hybrid_*.zip`, `submit_nexar_specialist_*.zip` (+ smoke JSONs) (§4) | `/workspace/outputs/` |
 | `stage2/runs/2026-09-26/phase_study/results/` | 2026-09-26 phase-supervision study: all 560 runs (checkpoints, configs, histories, predictions with phase log-probs), summary JSONs | `car-accident/stage2/phase_study/results/` |
-| `handoff/2026-09-24/` | git bundle (**refreshed 2026-09-25**; the older bundle is kept in `archive_2026-09-24/`), HANDOFF.md copy, SETUP_REPORT, prompts, patch, previous agent memory notes | — |
+| `stage2/runs/2026-09-26/aux_signal_experiments/{results,logs}` | 2026-09-26 complementary-signal study + goal campaign + v7 full-data refits (`E4_full`, `E2_full`, `XN4_full`): checkpoints, configs, histories, predictions | `car-accident/stage2/aux_signal_experiments/{results,logs}` |
+| `stage2/runs/2026-09-26/aux_signal_experiments/cache_residual` (19 MB) | **residual motion** per native frame, 349 clips (needed by E4/E2/XN4 and v7) | `car-accident/stage2/aux_signal_experiments/cache_residual` |
+| `stage2/runs/2026-09-26/aux_signal_experiments/{cache_geo,cache_lane_v2,cache_lane}` | geometry-head features / lane pseudo-labels (experiments only, not used by v7) | same under `stage2/aux_signal_experiments/` |
+| `stage2/cache/nexar_unlabelled_670/` (10.7 GB) | the 670 unlabelled NEXAR positives: DINO 7x10 at sampled frames, global + residual motion, `labels_{fold0..4,fixed,all}.json`, `nexar_candidates.csv` | `car-accident/stage2/aux_signal_experiments/cache_nexar_u` |
+| `submissions/2026-09-26/` | **`submit_v7_E4E2XN4full_V3_acc0p5_steer3.zip`** (+ smoke JSON); Codex-built `submit_v6_ES7-auxens_V3_acc0p5_steer5.zip` (+ smoke) | `/workspace/outputs/` |
+| `handoff/2026-09-24/` | git bundle (**refreshed 2026-09-26**; older bundles in `archive_*`), HANDOFF.md copy, SETUP_REPORT, prompts, patch, previous agent memory notes; `uncommitted_snapshot_2026-09-26/` = patch + tarball of a parallel Codex session's uncommitted Stage 3 work and `submission_tools/v6_stage2` (not committed by this session) | — |
 
 Obsolete (do not download): `stage2/cache/{geometry,joint_features_v1,v2}`, `stage2/pretrained/{vjepa*,rfdetr*,sam2*,depth*,dinov3_vitb16}`,
 `stage2/{frames,videos,aihub,unusable}`, `stage2/outputs/submit*` (old joint model).
@@ -56,6 +62,7 @@ Obsolete (do not download): `stage2/cache/{geometry,joint_features_v1,v2}`, `sta
 |---|---|---|---|
 | 1 | original `global_g1_threshold_0_50` model (unchanged; `submission/model/stage1/`) | — | **0.953** (v1) |
 | 2 | **v5: LC-v2 15-head ensemble (C0/X_ema/M_motion/PH) + motion fusion**, trained on 279 clips (not refit) | 0.767 fixed / 0.769 CV (NEXAR 0.619 / 0.670) | v5: **0.5314** (v3 P2 refit: 0.4618; v1 E3: 0.441) |
+| 2 (offline best, not yet on LB) | **v7: E4 + E2 + XN4 residual-motion ensemble** (12 heads, full-data refit; §10) | CV of the recipe **0.7995 / NEXAR 0.721** | v7 zip built 2026-09-26, **not submitted yet** — ask the user |
 | 3 | **V3_tcnssm_100ep** (SEA-RAFT → geometry/physics → MotionCNN → TCN+SSM, 100 ep, best ep 91) + steering **5°** + accel **±0.5 m/s²** | 0.7954 (BATON val) | specialist zip (accel ±0.5): **0.7388**; ±0.75: 0.7313; ±0.25: 0.7274; ±1.0: 0.6972; v4 (steer 1.5°): 0.6900 |
 
 Stage 2 facts that matter:
@@ -127,6 +134,13 @@ $C $R/stage2/runs/2026-09-25/long_context_v2_experiments/results stage2/long_con
 $C $R/stage2/runs/2026-09-25/long_context_v2_experiments/folds stage2/long_context_v2_experiments/folds   # also in git
 $C $R/stage2/cache/long_context_v2_cache_dense stage2/long_context_v2_experiments/cache_dense           # or regenerate, see below
 for s in results candidate_seed0 candidate_all_seeds; do $C $R/stage2/runs/2026-09-25/nexar65_experiments/$s stage2/nexar65_experiments/$s; done
+# 2026-09-26 (phase study, complementary signals, goal campaign, v7): results + residual motion + NEXAR expansion
+$C $R/stage2/runs/2026-09-26/phase_study/results stage2/phase_study/results
+for d in results logs cache_residual; do $C $R/stage2/runs/2026-09-26/aux_signal_experiments/$d stage2/aux_signal_experiments/$d; done
+$C $R/stage2/cache/nexar_unlabelled_670 stage2/aux_signal_experiments/cache_nexar_u      # 10.7 GB, only for XN* training
+# optional (experiments only): cache_geo, cache_lane_v2, cache_lane from the same prefix; cache_hr (14 GB) is NOT backed up —
+# regenerate with python -m stage2.aux_signal_experiments.extract_hr if ever needed (the HR experiment failed).
+# Residual motion can also be regenerated: python -m stage2.aux_signal_experiments.extract_residual --workers 8 (~5 min).
 ```
 The dense cache is regenerable (~20 min GPU for DINO + motion):
 `python -m stage2.long_context_v2_experiments.extract_dense` then `python -m stage2.long_context_v2_experiments.extract_motion`
@@ -193,7 +207,7 @@ Build + test: `python submission_tools/build_zip.py --output /workspace/outputs/
 with `rsync -a --delete --exclude __pycache__ --exclude experiments --exclude configs --exclude '*.md' --exclude cuda_benchmark.json stage3/ submission/model/stage3/code/stage3/` whenever stage3 changes).
 Stage 2 runtime was verified bit-exact against the training evaluation (frame selection, features, predictions).
 
-## 4. Submissions built (R2 `submissions/2026-09-24/` and `submissions/2026-09-25/`)
+## 4. Submissions built (R2 `submissions/2026-09-24/`, `submissions/2026-09-25/`, `submissions/2026-09-26/`)
 
 | Zip | Stage 2 | Stage 3 | Leaderboard |
 |---|---|---|---|
@@ -204,8 +218,12 @@ Stage 2 runtime was verified bit-exact against the training evaluation (frame se
 | v5 `2026-09-25/submit_v5_LCv2ens4-motion_V3_acc1_steer5.zip` | LC-v2 15-head ensemble (C0/X_ema/M_motion/PH, 279 clips) + motion fusion | V3, 5°, accel ±1.0 m/s² | S1 0.953 / **S2 0.5314** (best) / S3 0.6972 |
 | `2026-09-25/submit_nexar_specialist_steer5_accel0p5.zip` | NEXAR specialist (seed-0 candidate: 3 heads + NEXAR temporal prior) on every clip | V3, 5°, accel ±0.5 | S2 **0.437** (< v3 0.4618); **S3 0.7388** (best) |
 | `2026-09-25/submit_hybrid_stage2_steer5_accel0p75.zip` | length-gated: >500 native frames → all-seed NEXAR specialist (9 heads), else P2 ensemble | V3, 5°, accel ±0.75 | S1 0.953 / S2 0.4154 / S3 0.7313 |
+| `2026-09-26/submit_v6_ES7-auxens_V3_acc0p5_steer5.zip` (built by a parallel Codex session) | event-specific 18-head ensemble (v5 families + E4/E2/M1), all trained on 279 clips; CV 0.7884 / NEXAR 0.7103 | V3, 5°, accel ±0.5 | not recorded |
+| **`2026-09-26/submit_v7_E4E2XN4full_V3_acc0p5_steer3.zip`** | **E4 + E2 + XN4, 4 seeds each, full-data refit** (§10); CV of the recipe 0.7995 / NEXAR 0.721 | V3, **3°**, accel ±0.5 | not submitted yet |
 
-v5 rebuild: `submission_tools/v5_stage2/build_v5.sh`. The specialist/hybrid packages were built from the zips' own code, which is
+v5 rebuild: `submission_tools/v5_stage2/build_v5.sh`. v7 rebuild: `submission_tools/v7_stage2/build_v7.sh` (needs the `*_full` checkpoints in
+`stage2/aux_signal_experiments/results/` and the base zip `submit_nexar_specialist_steer5_accel0p5.zip` in `/workspace/outputs/`);
+parity check `submission_tools/v7_stage2/check_v7_parity.py <unzipped dir>`. The specialist/hybrid packages were built from the zips' own code, which is
 saved (without weights) in `submission_tools/{nexar_specialist,hybrid_stage2}_package/`; the zips in R2 are the complete versions.
 
 Leaderboard results for v3/v4 recorded 2026-09-25. Steering 1.5° (fit on the 50 OPEN labels) *lost* 0.037 on the
@@ -213,16 +231,13 @@ leaderboard vs 5°, so the OPEN-sample threshold fit does not transfer; keep 5°
 Stage 2 leaderboard vs per-source validation: `reports/stage2_leaderboard_vs_nexar.md`.
 Ask the user for any newer leaderboard results before deciding next steps.
 
-## 5. Recommended next steps (revised 2026-09-26, see §8)
+## 5. Recommended next steps (revised 2026-09-26 evening, see §10)
 
-1. **Stage 2**: build on v5 (LB 0.5314, +0.07 over v3). Cheapest next candidate: the same v5 recipe refit on all 349 clips
-   (v5 members were trained on 279 only; the P2 refit was how v3 was made). Then more/diverse ensemble members, judged by 5-fold CV
-   (the 15-clip NEXAR val slice is not trustworthy — the specialist/hybrid won there and lost on the LB).
-2. **Stage 3 accel thresholds** (same V3 model, steer 5°): ±0.25 0.7274, **±0.5 0.7388**, ±0.75 0.7313, ±1.0 0.6972 — peak near ±0.5
-   (±0.5–0.6 untested). Use ±0.5 by default. Next submission: v5 Stage 2 + V3 accel ±0.5 (combines both best stages).
-   Any further threshold choice must come from BATON/10 Hz data, not the DACON baseline samples.
-3. **Stage 3 model**: 10 Hz input/output is already what V3 does (trained `target_hz: 10`, one row per decoded frame). Improvements
-   should target BATON-style generalisation, not the baseline clips.
+1. **Ask the user for leaderboard results of v6 / v7.** v7 changes Stage 2 (new ensemble) *and* Stage 3 (steer 3° untested); to read
+   Stage 2 alone, build the same zip with steer 5° (edit `submission_tools/v7_stage2/stage3_decoder_overrides.json`, rerun build_v7.sh).
+2. **Stage 2**: the plateau is ENTRY (CV 0.69; NEXAR/AIHUB ~0.55). Things that did not help ENTRY are listed in §10 — don't repeat them.
+   Untried: labelling ENTRY on more NEXAR positives (labelling app), and 8-seed confirmation of XN2/XN4e0/E3 families.
+3. **Stage 3**: accel ±0.5 is the best measured (0.7388 at steer 5°). Steering: 5° 0.7388 / 1.5° 0.690; 3° is in v7 (untested).
 4. Stage 1 unchanged at 0.953.
 
 ## 6. 2026-09-25 session summary (Stage 2 experiments; no Stage 3 retraining, but the new zips change Stage 3 accel thresholds — see §4)
@@ -247,6 +262,9 @@ Ask the user for any newer leaderboard results before deciding next steps.
 * **Stage 3 is 10 Hz in and 10 Hz out** (competition rule). Do not resample, do not use the baseline samples' frame rate, and do not
   fit thresholds or conventions to the DACON baseline data: it is only an example and the real evaluation data is explicitly unlike it.
 * Commit + back up code/reports (GitHub and R2 bundle) before starting new experiments.
+* **Keep ≥ 10 GB of RAM free for other jobs (a Codex run shares the machine); never kill another job's running runs.** Launch Stage 2
+  training through `stage2/aux_signal_experiments/queue.py` (reads `jobs.txt`, launches only while MemAvailable ≥ 14 GB).
+* Judge Stage 2 by 5-fold CV over all 349 clips (80 NEXAR), not the 70-clip fixed split; use ≥ 3 CV seeds (single runs move ±0.03).
 
 ## 8. 2026-09-26: leaderboard results and Stage 3 rule
 
@@ -291,3 +309,26 @@ Spec `stage2/stage2_phase_loss_experiments.md`; code `stage2/phase_study/`; 560 
 * Runs read features lazily from the memory-mapped dense cache (~1 GB RAM/process). P = 10 parallel jobs saturates 16 CPUs;
   the GPU is not the bottleneck.
 
+## 10. 2026-09-26 (afternoon/evening): Stage 2 complementary signals, goal campaign, v7 submission
+
+Reports: `reports/stage2_complementary_signals_interim.md` (stopped by the user), `reports/stage2_goal_campaign.md`.
+Code: `stage2/aux_signal_experiments/` (train.py = harness incl. motion/geo/HR/lane/risk/boundary/extra-NEXAR options, queue.py,
+analyze.py, ensemble_test.py, goal_eval.py, event_select.py, extract_residual.py, extract_geo.py, extract_hr.py, pseudo_lane.py,
+qa_lane.py, nexar_expand.py, nexar_labels.py, attr_stack.py, m3_late_cue.py).
+* **Residual motion input** (camera similarity motion from sparse LK + RANSAC removed, residual summarised; `extract_residual.py`) is the
+  big win: NT + global+residual motion (E4) CV 0.740 vs 0.699 without motion (8 seeds). As a late decode cue it does nothing.
+* **Boundary heads [h, Δh]** (E2): ≈ E4 alone, better in ensembles. Risk supervision, lane intrusion, geometry features, 14×25 tokens,
+  ENTRY loss weight, sharper targets, attribute stacking/selection: no reliable gain (details in the reports).
+* **NEXAR expansion (XN4)**: R2 `stage2/manifests/nexar_candidates.csv` has Nexar's public `time_of_event` for all 750 positives
+  (matches our COLLISION within 0.3 s for 80–88 % of labelled clips). The 670 unlabelled clips were decoded (`nexar_expand.py`; parity with
+  the JPEG caches verified; note `cv2.phaseCorrelate` modifies inputs in place) and labelled per split (`nexar_labels.py`: COLLISION from
+  time_of_event + offset, ENTRY pseudo-label from a teacher that never saw the evaluated fold). XN4: long-clip COLLISION catastrophic
+  0.071 → 0.013, NEXAR 0.642 → 0.657; ENTRY slightly worse.
+* **Goal campaign** (target CV > 0.8 / NEXAR > 0.7): best = equal-weight **E4 + E2 + XN4** (8 seeds each): **CV 0.7995 / NEXAR 0.721**,
+  fixed split 0.784 / 0.689. Not met on overall by 0.0005; stopped rather than select combinations on the same CV.
+* **v7 submission** (`submission_tools/v7_stage2/`): Stage 2 = E4_full + E2_full + XN4_full (4 seeds each, refit on all 349 clips,
+  stop epochs 8/8/9 = CV median; XN4 labels from the full-data E4+E2 teacher), runtime reused from `submission_tools/v6_stage2`
+  (Codex session), parity exact (residual and member logits diff 0.0 on 70 clips), offline smoke test passes; Stage 1 unchanged;
+  Stage 3 V3 with steer 3.0° / accel ±0.5.
+* A parallel Codex session worked on Stage 3 DriveDNA data scaling and built `submission_tools/v6_stage2` + a v6 zip; its uncommitted
+  files are snapshotted in R2 `handoff/2026-09-24/uncommitted_snapshot_2026-09-26/` (not committed by this session).

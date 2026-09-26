@@ -19,7 +19,7 @@ from stage2.long_context_v2_experiments import common as C
 
 OUT = C.REPO / "stage2/aux_signal_experiments/cache_nexar_u"
 VID = Path("/workspace/data/stage2/nexar_unlabeled/videos")
-CAND = Path("/tmp/claude-0/-workspace/88ec6ee4-f362-48bc-aca0-5e1dc5300e33/scratchpad/nexar_candidates.csv")
+CAND = C.REPO / "stage2/aux_signal_experiments/nexar_candidates.csv"  # copy of R2 stage2/manifests/nexar_candidates.csv
 W, H = 160, 90
 
 
