@@ -20,7 +20,10 @@ R = C.REPO / "stage2/aux_signal_experiments/results"
 CTRL_ROOT = C.REPO / "stage2/phase_study/results"
 
 
-def root_of(run): return R if (R / run).is_dir() else CTRL_ROOT
+GEN_ROOT = C.REPO / "stage2/generalization/results"
+
+
+def root_of(run): return R if (R / run).is_dir() else (GEN_ROOT if (GEN_ROOT / run).is_dir() else CTRL_ROOT)
 
 
 def logsig(x): x = np.asarray(x, float); return -np.logaddexp(0, -x)

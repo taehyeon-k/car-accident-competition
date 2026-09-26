@@ -17,8 +17,29 @@ from torch import nn
 from stage2.phase_study.model import PhasePyramid
 
 
+class CausalEntry(nn.Module):
+    """H8: ENTRY logits from frame embeddings using only positions <= t + lookahead (dilated causal convs, residual).
+    The bidirectional pyramid (which sees the collision) is not used for ENTRY."""
+    def __init__(self, hidden, lookahead=0, dilations=(1, 2, 4, 8, 16), dropout=0.35):
+        super().__init__()
+        self.lookahead = lookahead
+        self.convs = nn.ModuleList(nn.Conv1d(hidden, hidden, 3, dilation=d) for d in dilations)
+        self.norms = nn.ModuleList(nn.LayerNorm(hidden) for _ in dilations)  # per position: no temporal statistics (GroupNorm leaks the future)
+        self.drop = nn.Dropout(dropout); self.out = nn.Linear(hidden, 1)
+
+    def forward(self, emb, valid):  # emb [B,T,H]
+        h = (emb * valid[..., None]).transpose(1, 2)
+        if self.lookahead: h = F.pad(h, (0, self.lookahead))[..., self.lookahead:]  # input shifted left: output t sees inputs <= t + lookahead
+        for conv, norm in zip(self.convs, self.norms):
+            d = conv.dilation[0]
+            hn = norm(h.transpose(1, 2)).transpose(1, 2)
+            h = h + self.drop(F.gelu(conv(F.pad(hn, (2 * d, 0)))))  # left padding only = causal
+        return self.out(self.drop(h.transpose(1, 2))).squeeze(-1)
+
+
 class AuxPyramid(PhasePyramid):
-    def __init__(self, phase_rep="none", risk=False, boundary="none", lane="none", motion_dim=0, hr=False, clip_norm="none", **kw):
+    def __init__(self, phase_rep="none", risk=False, boundary="none", lane="none", motion_dim=0, hr=False, clip_norm="none",
+                 causal_entry=-1, **kw):
         super().__init__(phase_rep=phase_rep, attach="final", motion=False, **kw)
         H = self.event.in_features
         self.risk = nn.Sequential(nn.Linear(H, 32), nn.GELU(), nn.Linear(32, 1)) if risk else None
@@ -33,6 +54,7 @@ class AuxPyramid(PhasePyramid):
         # per-clip input normalisation (domain / frame-rate robustness): "x" = centre DINO tokens over the clip's valid positions;
         # "m" = divide motion inputs by their per-clip median magnitude; "xm" = both
         self.clip_norm = clip_norm
+        self.causal_entry = CausalEntry(H, lookahead=causal_entry) if causal_entry >= 0 else None
         if hr:  # 14x25 high-resolution tokens: per-token LayerNorm + 384->4 projection, flattened (1400) into the input projection
             self.hr_norm = nn.LayerNorm(384); self.hr_tok = nn.Linear(384, 4); motion_dim = motion_dim + 350 * 4
         if motion_dim:
@@ -52,6 +74,11 @@ class AuxPyramid(PhasePyramid):
             h_small = self.hr_tok(self.hr_norm(hr.float())).flatten(2)
             motion = h_small if motion is None or motion.shape[-1] == 0 else torch.cat([motion.float(), h_small], -1)
         out = super().forward(x, valid, motion=motion, return_hidden=True)
+        if self.causal_entry is not None:  # frame embeddings (same modules as the pyramid input), then the causal ENTRY branch
+            emb = self.frame(self.token(self.norm(x.float())).flatten(2))
+            if self.uses_motion: emb = emb + self.motion_proj(motion.float())
+            neg = torch.finfo(out["entry_logits"].dtype).min / 4
+            out["entry_logits"] = self.causal_entry(emb, valid).masked_fill(~valid, neg)
         h = out["hidden"] * valid[..., None]
         # dropout only when an auxiliary head exists (keeps the RNG stream identical to the plain control)
         hd = self.drop(h) if (self.risk is not None or self.lane is not None or self.boundary_mode in ("bnd1", "bnd3")) else h
@@ -71,7 +98,7 @@ class AuxPyramid(PhasePyramid):
 def build(cfg):
     return AuxPyramid(phase_rep=cfg.get("phase_rep", "none"), risk=cfg.get("risk", "none") != "none",
                       boundary=cfg.get("boundary", "none"), lane=cfg.get("lane", "none"), motion_dim=cfg.get("motion_dim", 0),
-                      hr=cfg.get("hr", False), clip_norm=cfg.get("clip_norm", "none"))
+                      hr=cfg.get("hr", False), clip_norm=cfg.get("clip_norm", "none"), causal_entry=cfg.get("causal_entry", -1))
 
 
 def load(path, device):
