@@ -359,6 +359,9 @@ User rule for this work: no validation-specific tricks; methods must generalize 
 * **Deliverables**: `submission_tools/v8_stage2` (stride aug) and `submission_tools/v9_stage2` (stride aug + EMA), full-data refits
   (`stage2/generalization/results/*_sa_full`, `*_sa_ema_full`), zips in R2 `submissions/2026-09-26/`, parity exact, smoke tests pass.
   Stage 3 in both = V3 steer 3° / accel ±0.5 (same as v7), so v7 → v8/v9 isolates the Stage 2 change on the leaderboard.
-* Caches: `stage2/generalization/cache_stride` (k2/k3 motion), `cache_objmotion`, `cache_unl` (1,046 unlabelled clips) — in R2
-  `stage2/runs/2026-09-26/generalization/` (see §0).
+* Robustness summary: frame rate = the one large weakness (fixed by stride augmentation); clip crops and 4× lower image resolution cause no
+  degradation; ENTRY and evasion are limited by label definitions (see report: ENTRY visual audit; object-centric ENTRY features and an
+  evasion label audit are the recommended future directions).
+* Caches: `stage2/generalization/cache_stride` (k2/k3 motion), `cache_objmotion`, `cache_unl` (1,046 unlabelled clips), `cache_corrupt/lowres` —
+  in R2 `stage2/runs/2026-09-26/generalization/`; results (all LOSO / CV runs) in the same prefix under `results/`.
 

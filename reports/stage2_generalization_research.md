@@ -94,3 +94,10 @@ ENTRY (0.9–1.7 s later) it is large and close in the ego lane** — the first 
 **Future direction (not attempted in this session):** ENTRY needs an **object-centric representation** (per-vehicle boxes / tracks and their
 lateral trajectories, e.g. from the detector/tracker that the earlier joint model used), not more global resolution (14×25 tokens overfit)
 or global motion statistics. Evasion needs a **label audit** (conventions differ by source).
+
+## Additional robustness / data findings
+* **Image quality (4× lower resolution, DINO re-encoded)**: no degradation for any model (within ±0.004; v8-recipe ensemble 0.7754 → 0.7741,
+  NEXAR 0.690 → 0.703). 7×10 pooled DINO tokens are low-frequency summaries (token cosine 0.997–0.999 vs clean), so the pipeline is robust
+  to camera resolution by construction; no corruption augmentation needed (JPEG pass skipped).
+* **Cross-domain data expansion** (the 670 unlabelled NEXAR clips with COLLISION-only supervision from public metadata, LOSO folds where NEXAR
+  is a training source): AIHUB +0.013, CCD +0.040, MMAU −0.005 → extra data from one domain transfers modestly to other unseen domains.
