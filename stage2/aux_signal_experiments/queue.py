@@ -12,7 +12,7 @@ from pathlib import Path
 
 D = Path("/workspace/car-accident/stage2/aux_signal_experiments")
 JOBS = D / "jobs.txt"
-MIN_AVAIL_GB, MAX_RUNS, SETTLE_S, RESERVE_GB = 14.0, 10, 5, 1.8  # recent launches count as RESERVE_GB each for 60 s
+MIN_AVAIL_GB, MAX_RUNS, SETTLE_S, RESERVE_GB = 12.5, 10, 5, 1.8  # recent launches count as RESERVE_GB each for 60 s
 
 
 def avail_gb():

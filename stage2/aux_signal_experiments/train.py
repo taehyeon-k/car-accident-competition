@@ -85,6 +85,34 @@ def extra_items(train_split, entry_w, name=None):
     return items, name
 
 
+STRIDE = C.REPO / "stage2/generalization/cache_stride"
+OBJ = C.REPO / "stage2/generalization/cache_objmotion"
+
+
+def add_obj(it, k=1):
+    """append object-level independent motion (extract_objmotion.py, stride-k cache) segments to the motion input"""
+    o = np.load(OBJ / f"k{k}" / f"{it['sample_id']}.npy")
+    pos = it["_pos"] if "_pos" in it else it["abs_idx"]
+    it["motion"] = torch.cat([it["motion"], torch.from_numpy(segments(o, pos))], 1)
+    return it
+
+
+def stride_item(base, k):
+    """The same labelled clip seen at 1/k of its frame rate: native frames[::k], adaptive re-sampling of the reduced sequence,
+    DINO tokens of the retained frames (lazy, via abs_idx), motion recomputed on retained frames (extract_stride_motion.py)."""
+    from .nexar_labels import motion28
+    sid = base["sample_id"]; frames_all, _ = C.dense(sid); d = np.load(STRIDE / f"k{k}" / f"{sid}.npz")
+    kept = d["kept"]; reduced = frames_all[kept]; pos = C.select_adaptive(reduced); fr = reduced[pos]
+    g = segments(motion28(d["motion"]), pos); r = segments(d["residual"], pos)
+    norm = (fr - fr[0]).astype(np.float32) / max(int(fr[-1] - fr[0]), 1)
+    it = {k_: v for k_, v in base.items() if k_ not in ("motion", "abs_idx", "frame_numbers", "normalized_positions", "x_shape")}
+    it.update(frame_numbers=torch.from_numpy(fr.copy()), normalized_positions=torch.from_numpy(norm), abs_idx=kept[pos], x_shape=len(fr),
+              entry_index=int(np.abs(fr - base["entry_frame"]).argmin()), collision_index=int(np.abs(fr - base["collision_frame"]).argmin()),
+              num_available_frames=len(reduced), motion=torch.from_numpy(np.concatenate([g, r], 1)), _pos=pos)
+    it["phase_entry_index"], it["phase_collision_index"] = it["entry_index"], it["collision_index"]
+    return it
+
+
 def materialize_any(it):
     out = {**it, "x": torch.from_numpy(np.ascontiguousarray(np.load(it["x_path"], mmap_mode="r")))} if "x_path" in it else materialize(it)
     if it.get("hr_path"): out["hr"] = torch.from_numpy(np.ascontiguousarray(np.load(it["hr_path"], mmap_mode="r")))
@@ -154,6 +182,11 @@ def main():
     p.add_argument("--w-lane-tr", type=float, default=0.0)
     p.add_argument("--motion", choices=["none", "global", "residual", "both"], default="none")
     p.add_argument("--geo", action="store_true", help="append geometry-head features (cache_geo) to the per-position input")
+    p.add_argument("--mask-entry-sources", default="", help="comma list of sources whose ENTRY loss is masked (e.g. MMAU; label-consistency test)")
+    p.add_argument("--objmotion", action="store_true", help="append object-level independent motion (requires --motion both)")
+    p.add_argument("--stride-aug", default="", help="temporal-rate augmentation, e.g. '0.5,0.25,0.25' = P(stride 1,2,3) per clip per epoch")
+    p.add_argument("--clip-norm", choices=["none", "x", "m", "xm"], default="none", help="per-clip input normalisation (see model.py)")
+    p.add_argument("--balance-sources", action="store_true", help="sample training clips with probability 1/(source count)")
     p.add_argument("--hr", action="store_true", help="add 14x25 high-resolution frozen tokens (cache_hr) to the input")
     p.add_argument("--ema", type=float, default=0.0, help="EMA decay of weights used for evaluation/selection (X_ema family: 0.99)")
     p.add_argument("--w-entry", type=float, default=1.0, help="ENTRY weight in the NT direct loss (1 = NT)")
@@ -177,6 +210,19 @@ def main():
     mode = "custom" if (a.geo or a.motion in ("residual", "both")) else a.motion  # collate: custom-width input tensor
     extra, extra_name = (extra_items(a.train_split, a.extra_entry_w, a.extra_labels) if a.extra_nexar else ([], None))
     if extra: assert a.motion == "both" and not a.geo and a.lane == "none", "extra NEXAR clips support the 'both' motion input only"
+    if a.mask_entry_sources:  # keep these clips for COLLISION + attributes, drop their ENTRY supervision
+        masked = set(a.mask_entry_sources.split(","))
+        for it in train_items: it["attr_w"] = 1.0; it["entry_w"] = 0.0 if C.source(it) in masked else 1.0
+        assert a.base_loss == "nt", "--mask-entry-sources uses the weighted NT loss"
+    if a.objmotion:
+        assert a.motion == "both" and not a.geo and not extra, "--objmotion is appended to the 'both' motion input"
+        for it in train_items + val_items: add_obj(it, 1)
+    views = {}
+    if a.stride_aug:
+        assert a.motion == "both" and not a.geo and not a.hr and a.lane == "none", "stride augmentation supports the 'both' motion input only"
+        probs = [float(x) for x in a.stride_aug.split(",")]
+        views = {k: [stride_item(it, k) for it in train_items] for k in range(2, len(probs) + 1) if probs[k - 1] > 0}
+        if a.objmotion: views = {k: [add_obj(it, k) for it in v] for k, v in views.items()}
     for it in train_items + extra: it["phase_entry_index"], it["phase_collision_index"] = it["entry_index"], it["collision_index"]
     if a.hr:
         assert not extra, "HR tokens are not extracted for the extra NEXAR clips"
@@ -185,10 +231,11 @@ def main():
             it["hr_path"] = str(HR / f"{it['sample_id']}.npy")
             assert (np.load(HR / f"{it['sample_id']}.frames.npy") == it["frame_numbers"].numpy()).all()
     motion_dim = 0 if (a.motion == "none" and not a.geo) else int(train_items[0]["motion"].shape[1])
+    if a.objmotion: mode = "custom"
     if a.hr and motion_dim == 0: mode = "custom"
     cfg = dict(vars(a), hr=a.hr, extra_labels=extra_name, n_extra=len(extra), soft_width=0.0, lr=1e-3, weight_decay=.05, strict_fps_blind=True, selection="direct",
                motion_dim=motion_dim, n_train=len(train_rows), n_val=len(val_rows))
-    model = AuxPyramid(phase_rep=a.phase_rep, risk=a.risk != "none", boundary=a.boundary, lane=a.lane, motion_dim=motion_dim, hr=a.hr).to(device)
+    model = AuxPyramid(phase_rep=a.phase_rep, risk=a.risk != "none", boundary=a.boundary, lane=a.lane, motion_dim=motion_dim, hr=a.hr, clip_norm=a.clip_norm).to(device)
     params = sum(x.numel() for x in model.parameters())
     import copy
     ema = copy.deepcopy(model).eval() if a.ema else None
@@ -212,8 +259,19 @@ def main():
     for epoch in range(1, a.epochs + 1):
         model.train(); sums = {}
         pick = torch.randperm(len(extra), generator=gen)[:n_extra].tolist() if extra else []
-        pool = train_items + [extra[i] for i in pick]
-        order = torch.randperm(len(pool), generator=gen).tolist()
+        if views:  # temporal-rate augmentation: each labelled clip at stride 1/2/3 with the given probabilities
+            ks = torch.multinomial(torch.tensor(probs), len(train_items), replacement=True, generator=gen).tolist()
+            base = [train_items[i] if ks[i] == 0 else views[ks[i] + 1][i] for i in range(len(train_items))]
+        else:
+            base = train_items
+        pool = base + [extra[i] for i in pick]
+        if a.balance_sources:  # same number of samples per epoch, drawn with probability 1 / (clips of that source)
+            from collections import Counter
+            srcs = [C.source(it) for it in pool]; cnt = Counter(srcs)
+            w = torch.tensor([1.0 / cnt[s_] for s_ in srcs])
+            order = torch.multinomial(w, len(pool), replacement=True, generator=gen).tolist()
+        else:
+            order = torch.randperm(len(pool), generator=gen).tolist()
         for s in range(0, len(order), a.batch_size):
             batch = make_batch(order[s:s + a.batch_size])
             o = model(batch["x"], batch["time_valid"], motion=batch["motion"], hr=batch.get("hr")) if model.uses_motion else model(batch["x"], batch["time_valid"])
@@ -225,6 +283,8 @@ def main():
                     for t_, s_ in zip(ema.parameters(), model.parameters()): t_.lerp_(s_, 1 - a.ema)
                     for t_, s_ in zip(ema.buffers(), model.buffers()): t_.copy_(s_)
             for k, v in {"loss": loss, **parts}.items(): sums[k] = sums.get(k, 0.0) + float(v)
+        if a.stop_epoch and epoch != a.stop_epoch:  # fixed-epoch mode: per-epoch validation is logging only -> skip it
+            history.append({"epoch": epoch, **{f"train_{k}": v / steps for k, v in sums.items()}}); continue
         val_pred = infer(m_eval, val_items, device, mode, a.lane)
         score = normalized_metrics(val_pred)["fpsblind_selection_score"]
         rec = {"epoch": epoch, **{f"train_{k}": v / steps for k, v in sums.items()}, "val_fpsblind_score": score, "val_official": C.metrics(val_pred)["score"]}
@@ -239,7 +299,7 @@ def main():
         if stale >= a.patience: break
     m_eval.load_state_dict(best_state)
     t0 = time.perf_counter(); preds = infer(m_eval, val_items, device, mode, a.lane); head_ms = 1000 * (time.perf_counter() - t0) / len(preds)
-    train_pred = infer(m_eval, train_items, device, mode, a.lane)
+    train_pred = infer(m_eval, train_items, device, mode, a.lane) if not a.stop_epoch else preds
     summary = {"breakdown": C.breakdown(preds), "best_epoch": best_epoch, "last_epoch": epoch,
                "train_official_at_best": C.metrics(train_pred)["score"], "val_fpsblind_at_best": best,
                "runtime": {"wall_seconds": time.perf_counter() - wall, "parameter_count": params, "head_ms_per_video": head_ms}}
