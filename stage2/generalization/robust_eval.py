@@ -26,17 +26,25 @@ FOLDS = C.REPO / "stage2/long_context_v2_experiments/folds"
 def root(run): return next(r for r in ROOTS if (r / run).is_dir())
 
 
-def item(row, k):
+def item(row, k, crop=0.0):
     sid = row["sample_id"]; frames_all, feats = C.dense(sid)
     if k == 1:
         kept = np.arange(len(frames_all)); mot = np.load(C.DENSE / f"{sid}.motion.npy")
         res = np.load(C.REPO / f"stage2/aux_signal_experiments/cache_residual/{sid}.residual.npy")
     else:
         d = np.load(STRIDE / f"k{k}" / f"{sid}.npz"); kept, mot, res = d["kept"], d["motion"], d["residual"]
+    if crop:  # random window of crop*N retained frames that still contains ENTRY..COLLISION (seeded per clip)
+        fr_k = frames_all[kept]; n = len(fr_k); L = max(int(round(crop * n)), 8)
+        e = int(np.abs(fr_k - int(row["entry_frame"])).argmin()); c = int(np.abs(fr_k - int(row["collision_frame"])).argmin())
+        L = max(L, c - e + 1); rng = np.random.default_rng(abs(hash(sid)) % (2 ** 32))
+        lo, hi = max(0, c - L + 1), min(e, n - L)
+        start = int(rng.integers(lo, hi + 1)) if hi >= lo else max(0, min(e, n - L))
+        sl = slice(start, start + L); kept, mot, res = kept[sl], mot[sl].copy(), res[sl].copy(); mot[0] = 0; res[0] = 0
     reduced = frames_all[kept]; pos = C.select_adaptive(reduced)
     frames = reduced[pos]; x = torch.from_numpy(np.ascontiguousarray(feats[kept[pos]]))
     g = segments(motion28(mot), pos); r = segments(res, pos)
     ob = np.load(C.REPO / f"stage2/generalization/cache_objmotion/k{k}/{sid}.npy") if (C.REPO / f"stage2/generalization/cache_objmotion/k{k}/{sid}.npy").exists() else None
+    if ob is not None and crop: ob = ob[sl]
     both = np.concatenate([g, r], 1)
     return {"sid": sid, "frames": frames, "x": x, "global": torch.from_numpy(g), "both": torch.from_numpy(both),
             "both_obj": torch.from_numpy(np.concatenate([both, segments(ob, pos)], 1)) if ob is not None else None,
@@ -60,7 +68,7 @@ def predict(models, it, dev):
             "entry_side_gt": int(r["entry_side"] == "RIGHT"), "evasion_gt": int(r["evasion_space"]), "num_available_frames": it["n"]}
 
 
-def evaluate(run, k, seeds, dev, per_seed=False):
+def evaluate(run, k, seeds, dev, per_seed=False, crop=0.0):
     preds = []
     for f in range(5):
         cks = [root(run) / run / "cv" / f"fold{f}_seed{s}" / "checkpoint.pt" for s in seeds]
@@ -72,19 +80,21 @@ def evaluate(run, k, seeds, dev, per_seed=False):
             if cfg.get("objmotion"): kind = "both_obj"
             models.append((m, kind))
         if per_seed: models = models[:1]
-        for r in C.rows(str(FOLDS / f"fold{f}_val.jsonl")): preds.append(predict(models, item(r, k), dev))
+        for r in C.rows(str(FOLDS / f"fold{f}_val.jsonl")): preds.append(predict(models, item(r, k, crop), dev))
     return C.breakdown(preds)
 
 
 def main():
     ap = argparse.ArgumentParser(); ap.add_argument("runs", nargs="+"); ap.add_argument("--strides", type=int, nargs="+", default=[1, 2, 3])
+    ap.add_argument("--crop", type=float, nargs="+", default=[0.0], help="0 = full clip; e.g. 0.5 = random half-length window with both events")
     ap.add_argument("--seeds", type=int, nargs="+", default=[0, 1, 2]); ap.add_argument("--out", default=None); a = ap.parse_args()
     dev = torch.device("cuda"); res = {}
     for run in a.runs:
         res[run] = {}
         for k in a.strides:
-            b = evaluate(run, k, a.seeds, dev); res[run][k] = b; o = b["overall"]
-            print(f"{run:28s} stride {k}: all {o['score']:.4f} (E {o['entry_acc']:.3f} C {o['collision_acc']:.3f} side {o['side_f1']:.3f} "
+          for cr in a.crop:
+            b = evaluate(run, k, a.seeds, dev, crop=cr); res[run][f"k{k}_crop{cr}"] = b; o = b["overall"]
+            print(f"{run:28s} stride {k} crop {cr}: all {o['score']:.4f} (E {o['entry_acc']:.3f} C {o['collision_acc']:.3f} side {o['side_f1']:.3f} "
                   f"eva {o['evasion_f1']:.3f}) NEXAR {b['source:NEXAR']['score']:.4f} >1000 {b['bin:>1000']['score']:.4f}", flush=True)
     if a.out: C.dump(a.out, res)
 

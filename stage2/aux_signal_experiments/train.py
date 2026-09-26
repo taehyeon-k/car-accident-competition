@@ -113,6 +113,44 @@ def stride_item(base, k):
     return it
 
 
+def binned(probs, norm_pos, valid, B=64):
+    """event distribution over positions -> distribution over B normalised-time bins (common axis for views with different sampling)"""
+    idx = (norm_pos.clamp(0, 1) * (B - 1)).round().long()
+    out = torch.zeros(probs.shape[0], B, device=probs.device).scatter_add_(1, idx, probs * valid)
+    return out / out.sum(1, keepdim=True).clamp_min(1e-8)
+
+
+def consistency_loss(o_ref, b_ref, o_aug, b_aug):
+    """KL(teacher || student) on binned ENTRY / COLLISION distributions + attribute probability agreement; teacher = o_ref (detached)."""
+    loss = 0.0
+    for e in ("entry", "collision"):
+        p = binned(o_ref[f"{e}_logits"].float().softmax(-1).detach(), b_ref["normalized_positions"], b_ref["time_valid"].float())
+        q = binned(o_aug[f"{e}_logits"].float().softmax(-1), b_aug["normalized_positions"], b_aug["time_valid"].float())
+        loss = loss + (p * ((p + 1e-8).log() - (q + 1e-8).log())).sum(1).mean()
+    ps, qs = o_ref["side_logits"].float().softmax(-1).detach(), o_aug["side_logits"].float().log_softmax(-1)
+    loss = loss - (ps * qs).sum(1).mean() + (ps * (ps + 1e-8).log()).sum(1).mean()
+    pe, qe = o_ref["evasion_logits"].float().sigmoid().detach(), o_aug["evasion_logits"].float()
+    loss = loss + torch.nn.functional.binary_cross_entropy_with_logits(qe, pe) - torch.nn.functional.binary_cross_entropy(pe.clamp(1e-6, 1 - 1e-6), pe)
+    return loss
+
+
+def truncated_item(row, rng):
+    """Pre-collision truncation (H7): the clip is cut at a random native frame between ENTRY + 25 % of the gap and COLLISION - 1, so
+    the collision is NOT visible; ENTRY + attributes stay supervised, COLLISION loss is masked. Breaks the 'ENTRY = just before
+    COLLISION' shortcut. Frame indices only."""
+    frames_all, _ = C.dense(row["sample_id"]); e, c = int(row["entry_frame"]), int(row["collision_frame"])
+    ei, ci = int(np.searchsorted(frames_all, e)), int(np.searchsorted(frames_all, c))
+    lo = ei + max(1, (ci - ei) // 4)
+    if ci - 1 <= lo or lo < 4: return None
+    cut = int(rng.integers(lo, ci))
+    it = C.make_item(row, "adaptive", 0, cut)
+    it["abs_idx"] = np.searchsorted(frames_all, it["frame_numbers"].numpy()); it["x_shape"] = len(it["x"]); del it["x"]
+    it["motion"] = torch.cat([it["motion"], torch.from_numpy(segments(residual_per_frame(row["sample_id"]), it["abs_idx"]))], 1)
+    it["collision_index"] = it["x_shape"] - 1; it["phase_entry_index"], it["phase_collision_index"] = it["entry_index"], it["collision_index"]
+    it.update(attr_w=1.0, entry_w=1.0, collision_w=0.0)
+    return it
+
+
 def materialize_any(it):
     out = {**it, "x": torch.from_numpy(np.ascontiguousarray(np.load(it["x_path"], mmap_mode="r")))} if "x_path" in it else materialize(it)
     if it.get("hr_path"): out["hr"] = torch.from_numpy(np.ascontiguousarray(np.load(it["hr_path"], mmap_mode="r")))
@@ -140,6 +178,7 @@ def collate(items, motion, lane):
         b["hr"] = hr
     if any("attr_w" in it for it in items):
         b["attr_w"] = torch.tensor([it.get("attr_w", 1.0) for it in items]); b["entry_w"] = torch.tensor([it.get("entry_w", 1.0) for it in items])
+        b["collision_w"] = torch.tensor([it.get("collision_w", 1.0) for it in items])
     return b
 
 
@@ -184,6 +223,9 @@ def main():
     p.add_argument("--geo", action="store_true", help="append geometry-head features (cache_geo) to the per-position input")
     p.add_argument("--mask-entry-sources", default="", help="comma list of sources whose ENTRY loss is masked (e.g. MMAU; label-consistency test)")
     p.add_argument("--objmotion", action="store_true", help="append object-level independent motion (requires --motion both)")
+    p.add_argument("--truncate-aug", type=float, default=0.0, help="probability of pre-collision truncation per labelled clip (H7)")
+    p.add_argument("--consistency", type=float, default=0.0,
+                   help="weight of cross-frame-rate consistency: each batch is also seen at stride 2/3; teacher = native-rate view")
     p.add_argument("--stride-aug", default="", help="temporal-rate augmentation, e.g. '0.5,0.25,0.25' = P(stride 1,2,3) per clip per epoch")
     p.add_argument("--clip-norm", choices=["none", "x", "m", "xm"], default="none", help="per-clip input normalisation (see model.py)")
     p.add_argument("--balance-sources", action="store_true", help="sample training clips with probability 1/(source count)")
@@ -218,10 +260,11 @@ def main():
         assert a.motion == "both" and not a.geo and not extra, "--objmotion is appended to the 'both' motion input"
         for it in train_items + val_items: add_obj(it, 1)
     views = {}
+    if a.consistency and not a.stride_aug: a.stride_aug = "1,0,0"  # consistency needs the stride views (supervised view stays native)
     if a.stride_aug:
         assert a.motion == "both" and not a.geo and not a.hr and a.lane == "none", "stride augmentation supports the 'both' motion input only"
         probs = [float(x) for x in a.stride_aug.split(",")]
-        views = {k: [stride_item(it, k) for it in train_items] for k in range(2, len(probs) + 1) if probs[k - 1] > 0}
+        views = {k: [stride_item(it, k) for it in train_items] for k in range(2, len(probs) + 1) if probs[k - 1] > 0 or a.consistency}
         if a.objmotion: views = {k: [add_obj(it, k) for it in v] for k, v in views.items()}
     for it in train_items + extra: it["phase_entry_index"], it["phase_collision_index"] = it["entry_index"], it["collision_index"]
     if a.hr:
@@ -264,6 +307,14 @@ def main():
             base = [train_items[i] if ks[i] == 0 else views[ks[i] + 1][i] for i in range(len(train_items))]
         else:
             base = train_items
+        if a.truncate_aug:  # H7: replace a random subset of clips by their pre-collision truncation (COLLISION masked)
+            assert a.motion == "both" and not a.objmotion and a.base_loss == "nt"
+            flip = (torch.rand(len(base), generator=gen) < a.truncate_aug).tolist(); base = list(base)
+            for i, f in enumerate(flip):
+                if f:
+                    tr = truncated_item(train_rows[i], np.random.default_rng(int(torch.randint(1 << 30, (1,), generator=gen))))
+                    if tr is not None: base[i] = tr
+            for it in base: it.setdefault("attr_w", 1.0); it.setdefault("entry_w", 1.0)
         pool = base + [extra[i] for i in pick]
         if a.balance_sources:  # same number of samples per epoch, drawn with probability 1 / (clips of that source)
             from collections import Counter
@@ -276,6 +327,16 @@ def main():
             batch = make_batch(order[s:s + a.batch_size])
             o = model(batch["x"], batch["time_valid"], motion=batch["motion"], hr=batch.get("hr")) if model.uses_motion else model(batch["x"], batch["time_valid"])
             loss, parts = total_loss(o, batch, cfg)
+            if a.consistency:  # same clips at a random lower frame rate; native-rate view (index into train_items) is the teacher
+                idx = order[s:s + a.batch_size]; lab = [i for i in idx if i < len(base)]
+                if lab:
+                    kk = int(torch.randint(2, 4, (1,), generator=gen))
+                    ref_items = [materialize_any(train_items[i]) for i in lab]; aug_items = [materialize_any(views[kk][i]) for i in lab]
+                    b_ref = to_device(collate(ref_items, mode, a.lane), device); b_aug = to_device(collate(aug_items, mode, a.lane), device)
+                    with torch.no_grad():
+                        o_ref = model(b_ref["x"], b_ref["time_valid"], motion=b_ref["motion"], hr=b_ref.get("hr")) if model.uses_motion else model(b_ref["x"], b_ref["time_valid"])
+                    o_aug = model(b_aug["x"], b_aug["time_valid"], motion=b_aug["motion"], hr=b_aug.get("hr")) if model.uses_motion else model(b_aug["x"], b_aug["time_valid"])
+                    parts["consistency"] = consistency_loss(o_ref, b_ref, o_aug, b_aug); loss = loss + a.consistency * parts["consistency"]
             opt.zero_grad(set_to_none=True); loss.backward()
             torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0); opt.step(); sched.step()
             if ema is not None:

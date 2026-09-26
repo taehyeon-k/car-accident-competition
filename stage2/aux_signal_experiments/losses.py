@@ -94,7 +94,8 @@ def weighted_nt(out, batch, cfg):
     sig = cfg.get("sigma", 1.0); we = cfg.get("w_entry", 1.0)
     le = distribution_loss(out["entry_logits"], batch["entry_index"], valid, pos, "soft_index", sig)
     lc = distribution_loss(out["collision_logits"], batch["collision_index"], valid, pos, "soft_index", sig)
-    direct = ((we * ew * le).sum() / ew.sum().clamp_min(1e-6) * ew.mean() + lc.mean()) / (we + 1)
+    cw = batch["collision_w"].float() if "collision_w" in batch else torch.ones_like(ew)
+    direct = (we * (ew * le).mean() + (cw * lc).mean()) / (we + 1)
     side = (F.cross_entropy(out["side_logits"].float(), batch["entry_side"], reduction="none") * aw).sum() / aw.sum().clamp_min(1e-6)
     eva = (F.binary_cross_entropy_with_logits(out["evasion_logits"].float(), batch["evasion"].float(), reduction="none") * aw).sum() / aw.sum().clamp_min(1e-6)
     loss = cfg["w_direct"] * direct + 0.5 * side + 0.5 * eva
