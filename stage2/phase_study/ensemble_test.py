@@ -28,11 +28,11 @@ BETAS = [0.0, 0.5, 1.0, 2.0, 3.0, 4.0, 6.0]
 def root(run): return OLD if (OLD / run).is_dir() else NEW
 
 
-def members_fold(run, k, max_seeds=None):
-    """[(predictions-with-logits by id, (side_prob, evasion_prob) by id)] for every CV seed of run on fold k."""
+def members_fold(run, k, seeds=None):
+    """[(predictions-with-logits by id, (side_prob, evasion_prob) by id)] for the CV seeds of run on fold k."""
     out = []
     paths = sorted((root(run) / run / "cv").glob(f"fold{k}_seed*/predictions.json"))
-    if max_seeds: paths = [p for p in paths if int(p.parent.name.split("_seed")[1]) < max_seeds]
+    if seeds is not None: paths = [p for p in paths if int(p.parent.name.split("_seed")[1]) in seeds]
     for p in paths:
         preds = {x["sample_id"]: x for x in json.loads(p.read_text())}
         if "side_prob_right" in next(iter(preds.values())):
@@ -55,27 +55,36 @@ def line(name, b):
 
 def main():
     ap = argparse.ArgumentParser(); ap.add_argument("fourth", nargs="+", help="4th-family run ids (old or phase_study)")
-    ap.add_argument("--cv-seeds", type=int, default=None, help="use only CV seeds < N of the 4th family (same size)")
-    ap.add_argument("--fixed-seeds", type=int, default=None); ap.add_argument("--no-fixed", action="store_true")
-    ap.add_argument("--out", default=None); a = ap.parse_args()
+    ap.add_argument("--seed-sets", default="0,1", help="space-separated CV seed draws for the 4th family, e.g. '0,1 2,3'")
+    ap.add_argument("--fixed-seeds", default="0,1", help="fixed-split seeds of the 4th family")
+    ap.add_argument("--no-fixed", action="store_true"); ap.add_argument("--out", default=None); a = ap.parse_args()
     dev = torch.device("cuda"); res = {}
+    draws = [set(int(x) for x in d.split(",")) for d in a.seed_sets.split()]
     for f in a.fourth:
-        runs = BASE + [f]
-        # base families keep all their CV seeds (2 each); the 4th family is capped with --cv-seeds for equal size
-        b, chosen, sizes, _ = cv_eval_fourth(runs, f, a.cv_seeds)
-        entry = {"cv": b, "cv_beta": chosen, "cv_members_per_fold": sizes}
-        msg = line(f"CV   +{f}", b) + f" | beta {chosen} | members {sizes[0]}"
+        runs = BASE + [f]; entry = {"draws": []}
+        for d in draws:
+            if any(not list((root(f) / f / "cv").glob(f"fold0_seed{s_}/predictions.json")) for s_ in d): continue
+            b, chosen, sizes, _ = cv_eval_fourth(runs, f, d)
+            entry["draws"].append({"seeds": sorted(d), "cv": b, "beta": chosen, "members": sizes})
+            print(line(f"CV   +{f} seeds {sorted(d)}", b) + f" | beta {chosen} | members {sizes[0]}", flush=True)
+        for key, name in (("overall", "all"), ("source:NEXAR", "NEXAR"), ("bin:>1000", ">1000"), ("source:non-NEXAR", "nonNEX")):
+            v = [x["cv"][key]["score"] for x in entry["draws"]]
+            entry[f"cv_{name}"] = (float(np.mean(v)), float(np.std(v)), len(v))
+        for key in ("entry_acc", "collision_acc", "side_f1", "evasion_f1", "entry_catastrophic", "collision_catastrophic"):
+            entry[f"cv_all_{key}"] = float(np.mean([x["cv"]["overall"][key] for x in entry["draws"]]))
+        print(f"==> +{f}: CV all {entry['cv_all'][0]:.4f}±{entry['cv_all'][1]:.4f} NEXAR {entry['cv_NEXAR'][0]:.4f}±{entry['cv_NEXAR'][1]:.4f} "
+              f">1000 {entry['cv_>1000'][0]:.4f}±{entry['cv_>1000'][1]:.4f} (n draws {entry['cv_all'][2]})", flush=True)
         if not a.no_fixed:
-            fb, n = fixed_eval_fourth(runs, f, dev, a.fixed_seeds); entry.update(fixed=fb, fixed_members=n)
-            msg += "\n" + line(f"FIX  +{f}", fb) + f" | members {n}"
-        print(msg, flush=True); res[f] = entry
+            fb, n = fixed_eval_fourth(runs, f, dev, {int(x) for x in a.fixed_seeds.split(",")}); entry.update(fixed=fb, fixed_members=n)
+            print(line(f"FIX  +{f}", fb) + f" | members {n}", flush=True)
+        res[f] = entry
     if a.out: C.dump(a.out, res)
 
 
-def cv_eval_fourth(runs, fourth, cap):
+def cv_eval_fourth(runs, fourth, seeds):
     folds = {}
     for k in range(5):
-        mem = [m for r in runs[:-1] for m in members_fold(r, k)] + members_fold(fourth, k, cap)
+        mem = [m for r in runs[:-1] for m in members_fold(r, k)] + members_fold(fourth, k, seeds)
         folds[k] = mem
     pooled = {}
     for k, mem in folds.items():
@@ -102,11 +111,11 @@ def cv_eval_fourth(runs, fourth, cap):
     return C.breakdown(final), chosen, [len(folds[k]) for k in folds], final
 
 
-def fixed_eval_fourth(runs, fourth, dev, cap):
+def fixed_eval_fourth(runs, fourth, dev, seeds):
     models = []
     for r in runs:
         for p in sorted((root(r) / r).glob("seed*/checkpoint.pt")):
-            if r == fourth and cap and int(p.parent.name[4:]) >= cap: continue
+            if r == fourth and int(p.parent.name[4:]) not in seeds: continue
             models.append(load_old(p, dev) if root(r) == OLD else load_new(p, dev))
     raw = infer(models, C.rows("val"), dev)
     return C.breakdown([decode(p, None, 0, 0, 1.0, False, True) for p in raw]), len(models)

@@ -1,6 +1,6 @@
 """Train one phase-study arm (LC-v2 recipe: AdamW 1e-3 wd .05, OneCycle, batch 4, 30 epochs, patience 7, batch-1 eval).
 
-Checkpoint selection ALWAYS uses direct decoding (val fpsblind_selection_score), for every arm, so phase arms and their
+Checkpoint selection uses direct decoding (val fpsblind_selection_score) for every arm by default, so phase arms and their
 no-phase controls are selected identically (the old PH_phase runs were selected with the structured decoder).
 Saves predictions with direct-event logits, implied phase log-probs and side/evasion probabilities (for OOF ensembles
 and offline decoders).
@@ -81,6 +81,16 @@ def infer(model, items, device):
     return preds
 
 
+def structured(preds):
+    """Old PH selection decoder: whole-clip structured phase + transition (1/1) on the implied phase log-probs."""
+    from stage2.long_context_v2_experiments.phase_loss import decode_structured
+    out = []
+    for p in preds:
+        i, j = decode_structured(torch.tensor(p["phase_logp"]), w_phase=1, w_tr=1)
+        out.append({**p, "entry_frame": p["frames"][i], "collision_frame": p["frames"][j]})
+    return out
+
+
 def grad_cosines(model, batches, cfg, device):
     """Cosine similarity of per-loss gradients on the shared temporal-pyramid parameters (eval mode: no dropout noise)."""
     params = [p for n, p in model.named_parameters() if n.startswith(SHARED)]
@@ -119,6 +129,8 @@ def main():
     p.add_argument("--batch-size", type=int, default=4)
     p.add_argument("--train-split", default="train")
     p.add_argument("--val-split", default="val")
+    p.add_argument("--selection", choices=["direct", "structured"], default="direct",
+                   help="decoder used for checkpoint selection; 'structured' reproduces the old PH_phase runs")
     p.add_argument("--output", default=None)
     a = p.parse_args()
     random.seed(a.seed); np.random.seed(a.seed); torch.manual_seed(a.seed); torch.cuda.manual_seed_all(a.seed)
@@ -138,7 +150,7 @@ def main():
         bounds = [(it["entry_index"], it["collision_index"]) for it in train_items]
     for it, (e, c) in zip(train_items, bounds): it["phase_entry_index"], it["phase_collision_index"] = e, c
 
-    cfg = dict(vars(a), recipe="LCv2/NT", lr=1e-3, weight_decay=.05, strict_fps_blind=True, selection="direct",
+    cfg = dict(vars(a), recipe="LCv2/NT", lr=1e-3, weight_decay=.05, strict_fps_blind=True,
                n_train=len(train_rows), n_val=len(val_rows), shuffle_mean_abs_norm_shift=shuffle_dist)
     model = PhasePyramid(phase_rep=a.phase_rep, attach=a.attach).to(device)
     params = sum(x.numel() for x in model.parameters())
@@ -171,7 +183,8 @@ def main():
             torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0); opt.step(); sched.step()
             for k, v in {"loss": loss, **parts}.items(): sums[k] = sums.get(k, 0.0) + float(v)
         val_pred = infer(model, val_items, device)
-        score = normalized_metrics(val_pred)["fpsblind_selection_score"]
+        sel = val_pred if a.selection == "direct" else structured(val_pred)
+        score = normalized_metrics(sel)["fpsblind_selection_score"]
         rec = {"epoch": epoch, **{f"train_{k}": v / steps for k, v in sums.items()}, "val_fpsblind_score": score,
                "val_official": C.metrics(val_pred)["score"]}
         if cos_batches: rec["grad_cos"] = grad_cosines(model, cos_batches, cfg, device)

@@ -44,6 +44,7 @@ how to restore a training-ready environment, and what to do next. Older, narrowe
 | `stage2/cache/long_context_v2_cache_dense/` (6.4 GB) | dense native-frame DINO cache (`<id>.npy`, `.frames.npy`, `.motion.npy`) used by all LC-v2 runs and v5 | `car-accident/stage2/long_context_v2_experiments/cache_dense/` |
 | `stage2/runs/2026-09-25/nexar65_experiments/{results,candidate_seed0,candidate_all_seeds}` | NEXAR-specialist heads (checkpoints) and exported candidates | `car-accident/stage2/nexar65_experiments/<same>` |
 | `submissions/2026-09-25/` | `submit_v5_*.zip`, `submit_hybrid_*.zip`, `submit_nexar_specialist_*.zip` (+ smoke JSONs) (§4) | `/workspace/outputs/` |
+| `stage2/runs/2026-09-26/phase_study/results/` | 2026-09-26 phase-supervision study: all 560 runs (checkpoints, configs, histories, predictions with phase log-probs), summary JSONs | `car-accident/stage2/phase_study/results/` |
 | `handoff/2026-09-24/` | git bundle (**refreshed 2026-09-25**; the older bundle is kept in `archive_2026-09-24/`), HANDOFF.md copy, SETUP_REPORT, prompts, patch, previous agent memory notes | — |
 
 Obsolete (do not download): `stage2/cache/{geometry,joint_features_v1,v2}`, `stage2/pretrained/{vjepa*,rfdetr*,sam2*,depth*,dinov3_vitb16}`,
@@ -271,4 +272,22 @@ Reading:
 * **Stage 3 rule**: the competition explicitly states Stage 3 input and output are 10 Hz and the baseline data is only an example,
   unlike the real evaluation data. The current runtime emits one row per decoded frame without resampling and V3 trains at
   `target_hz: 10`, so it already follows the rule. The old "per-frame vs 10 Hz A/B" item is dropped.
+
+## 9. 2026-09-26: Stage 2 phase-supervision study (`reports/stage2_phase_supervision_study.md`)
+
+Spec `stage2/stage2_phase_loss_experiments.md`; code `stage2/phase_study/`; 560 runs, 5-fold CV with 3–8 seeds per arm.
+* Semantic phase supervision is a small, consistent **auxiliary** gain (+0.005 to +0.007 CV over the matched no-phase control,
+  4–5/5 folds, mostly ENTRY). Below the +0.01 bar. Shuffled phase targets hurt, so the effect is semantic.
+* Phase at inference (transition, global structured, local re-rank), a phase-conditioned event head, multi-scale heads,
+  λ = 2, the monotonic term and soft boundaries are all neutral or harmful.
+* **Correction to §6 / the phase-loss report:** the old PH recipe is −0.010 vs control on 8 seeds (old code rerun agrees); its
+  0.709 was two lucky seeds. Selecting checkpoints with the structured decoder costs ≈0.008. v5's PH members are a lucky draw
+  (0.7688; the PH recipe averages 0.7595 ± 0.003 as v5's 4th family).
+* Best recipe: ORD phase λ = 1 + transition 0.75, direct weight 1, direct decoding/selection. As v5's 4th family:
+  0.7636 ± 0.003 vs 0.7568 (NT) and 0.7595 (old PH recipe), but not above v5's specific PH checkpoints.
+* Train one run: `python -m stage2.phase_study.train --run-id X --phase-rep ord --w-phase 1 --w-tr 0.75`; batches with
+  `stage2/phase_study/run.sh RUN "FIXED_SEEDS" "CV_SEEDS" [args]`. Evaluate: `python -m stage2.phase_study.analyze RUNS --control A0_d1`,
+  `python -m stage2.phase_study.ensemble_test RUN --seed-sets "0,1 2,3 4,5 6,7"`.
+* Runs read features lazily from the memory-mapped dense cache (~1 GB RAM/process). P = 10 parallel jobs saturates 16 CPUs;
+  the GPU is not the bottleneck.
 

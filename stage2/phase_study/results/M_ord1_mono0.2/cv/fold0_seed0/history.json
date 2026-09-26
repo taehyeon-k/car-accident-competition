@@ -1,0 +1,171 @@
+[
+ {
+  "epoch": 0,
+  "grad_cos": {
+   "direct~phase": -0.02888778317719698,
+   "direct~transition": 0.23921390064060688,
+   "phase~transition": 0.013994453474879265,
+   "norm_ratio_phase/direct": 2.487034857273102
+  }
+ },
+ {
+  "epoch": 1,
+  "train_loss": 7.206363752910069,
+  "train_direct": 4.951271220615932,
+  "train_phase": 1.4317404985427857,
+  "train_transition": 5.7714676175798685,
+  "train_mono": 0.296707469863551,
+  "val_fpsblind_score": 0.28286864428905756,
+  "val_official": 0.5028686442890575,
+  "grad_cos": {
+   "direct~phase": 0.05484112654812634,
+   "direct~transition": 0.18027916038408875,
+   "phase~transition": 0.4724047817289829,
+   "norm_ratio_phase/direct": 0.9034842178225517
+  }
+ },
+ {
+  "epoch": 2,
+  "train_loss": 5.779984637669155,
+  "train_direct": 4.005236496244158,
+  "train_phase": 1.0607503133160727,
+  "train_transition": 5.18331926890782,
+  "train_mono": 0.24011884331703187,
+  "val_fpsblind_score": 0.3716309469524243,
+  "val_official": 0.6216309469524244,
+  "grad_cos": {
+   "direct~phase": 0.19654781743884087,
+   "direct~transition": 0.3691843170672655,
+   "phase~transition": 0.4421505108475685,
+   "norm_ratio_phase/direct": 0.8832119219005108
+  }
+ },
+ {
+  "epoch": 3,
+  "train_loss": 4.967887800080436,
+  "train_direct": 3.4516288450786043,
+  "train_phase": 0.8483843931130001,
+  "train_transition": 5.121501874923706,
+  "train_mono": 0.17770868593028613,
+  "val_fpsblind_score": 0.49299944233314436,
+  "val_official": 0.6979994423331444,
+  "grad_cos": {
+   "direct~phase": 0.19680581893771887,
+   "direct~transition": 0.31621142383664846,
+   "phase~transition": 0.37444728426635265,
+   "norm_ratio_phase/direct": 0.806390505284071
+  }
+ },
+ {
+  "epoch": 4,
+  "train_loss": 4.173152256011963,
+  "train_direct": 3.075745282854353,
+  "train_phase": 0.5889173194766044,
+  "train_transition": 4.860644102096558,
+  "train_mono": 0.12090797615902764,
+  "val_fpsblind_score": 0.4526114940358166,
+  "val_official": 0.7126114940358166,
+  "grad_cos": {
+   "direct~phase": 0.2556384578347206,
+   "direct~transition": 0.3925320841372013,
+   "phase~transition": 0.41359495325013995,
+   "norm_ratio_phase/direct": 0.8189510516822338
+  }
+ },
+ {
+  "epoch": 5,
+  "train_loss": 3.644894940512521,
+  "train_direct": 2.823260256222316,
+  "train_phase": 0.42355080938764983,
+  "train_transition": 4.916358923912048,
+  "train_mono": 0.08048865702003241,
+  "val_fpsblind_score": 0.46259262249855326,
+  "val_official": 0.7025926224985533,
+  "grad_cos": {
+   "direct~phase": 0.3669578358530998,
+   "direct~transition": 0.3694410058669746,
+   "phase~transition": 0.6281924657523632,
+   "norm_ratio_phase/direct": 0.5881914645433426
+  }
+ },
+ {
+  "epoch": 6,
+  "train_loss": 3.270397216933114,
+  "train_direct": 2.6153107285499573,
+  "train_phase": 0.3102566291178976,
+  "train_transition": 4.773895451000759,
+  "train_mono": 0.061929484643042085,
+  "val_fpsblind_score": 0.4747661689198737,
+  "val_official": 0.7297661689198737,
+  "grad_cos": {
+   "direct~phase": 0.4146045222878456,
+   "direct~transition": 0.36687540262937546,
+   "phase~transition": 0.6711571142077446,
+   "norm_ratio_phase/direct": 0.6308486275374889
+  }
+ },
+ {
+  "epoch": 7,
+  "train_loss": 2.9815550667898996,
+  "train_direct": 2.4394339135714938,
+  "train_phase": 0.25557702401919025,
+  "train_transition": 4.719059981618609,
+  "train_mono": 0.047922415658831596,
+  "val_fpsblind_score": 0.45220054945054944,
+  "val_official": 0.7122005494505494,
+  "grad_cos": {
+   "direct~phase": 0.30571858352050185,
+   "direct~transition": 0.3593807462602854,
+   "phase~transition": 0.7467528954148293,
+   "norm_ratio_phase/direct": 0.6385618075728416
+  }
+ },
+ {
+  "epoch": 8,
+  "train_loss": 2.7672197682516915,
+  "train_direct": 2.333292237349919,
+  "train_phase": 0.1937717979507787,
+  "train_transition": 4.583901463236128,
+  "train_mono": 0.03758875188816871,
+  "val_fpsblind_score": 0.46914479638009043,
+  "val_official": 0.7091447963800904,
+  "grad_cos": {
+   "direct~phase": 0.44552195258438587,
+   "direct~transition": 0.40498646162450314,
+   "phase~transition": 0.6784481257200241,
+   "norm_ratio_phase/direct": 0.6950377002358437
+  }
+ },
+ {
+  "epoch": 9,
+  "train_loss": 2.5844180686133247,
+  "train_direct": 2.232290019307818,
+  "train_phase": 0.1814011113984244,
+  "train_transition": 4.574608887944903,
+  "train_mono": 0.03231651661252337,
+  "val_fpsblind_score": 0.48538461538461536,
+  "val_official": 0.7053846153846153,
+  "grad_cos": {
+   "direct~phase": 0.30734254885464907,
+   "direct~transition": 0.2461767760105431,
+   "phase~transition": 0.7292913198471069,
+   "norm_ratio_phase/direct": 0.3544990010559559
+  }
+ },
+ {
+  "epoch": 10,
+  "train_loss": 2.429171473639352,
+  "train_direct": 2.1499678305217196,
+  "train_phase": 0.14974385201931,
+  "train_transition": 4.3176152672086445,
+  "train_mono": 0.026026116557685393,
+  "val_fpsblind_score": 0.45843448851000734,
+  "val_official": 0.7034344885100073,
+  "grad_cos": {
+   "direct~phase": 0.48120805993676186,
+   "direct~transition": 0.31083829887211323,
+   "phase~transition": 0.764140747487545,
+   "norm_ratio_phase/direct": 0.4117784332484007
+  }
+ }
+]
