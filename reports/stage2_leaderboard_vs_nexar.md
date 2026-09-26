@@ -55,3 +55,18 @@ Paired bootstrap of the model difference (v3 proxy − v1); the leaderboard diff
    variant from `stage2/long_video_experiments`, which changed NEXAR ENTRY 5/15 → 7/15). If the LB moves, the test set has
    long clips; if it is bit-identical, it has none.
 3. More NEXAR validation clips (the 80 labeled NEXAR clips exist; grouped CV over them gives n = 80 instead of 15).
+
+## Update 2026-09-26: new leaderboard results
+
+| Submission (Stage 2) | offline fixed all / NEXAR (15) | CV all / NEXAR (80) | LB S2 |
+|---|---|---|---|
+| v1 E3 ASFormer | 0.689 / 0.522 | — | 0.4410 |
+| v3 P2 4-seed refit (proxy: 279-clip ensemble) | 0.757 / 0.500 | — | 0.4618 |
+| NEXAR specialist (3 heads + NEXAR KDE prior, every clip) | 0.670 / 0.744 | — | 0.437 |
+| length-gated hybrid (>500 frames → 9-head specialist, else P2) | 0.802 / 0.710 | — | 0.4154 |
+| **v5 LC-v2 15-head ensemble + motion fusion** | 0.767 / 0.619 | 0.769 / 0.670 | **0.5314** |
+
+* The hybrid differs from the P2 ensemble only on clips with >500 native frames, and it lost 0.046 vs v3. So the hidden test
+  set does contain long clips, and on them the NEXAR-fitted temporal prior hurts. Selection on the 15 NEXAR val clips overfit.
+* v5 (selected with 5-fold CV, NEXAR n = 80, no position prior) gained +0.070. CV over all clips is the protocol that has
+  predicted the leaderboard direction; the 15-clip NEXAR slice has not.

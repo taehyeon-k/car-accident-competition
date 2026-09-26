@@ -1,9 +1,10 @@
-# Handoff — updated 2026-09-25 (originally 2026-09-24; server destroyed after each)
+# Handoff — updated 2026-09-26 (originally 2026-09-24; server destroyed after each)
 
 **Start command for a new session (unchanged):** "Clone https://github.com/taehyeon-k/car-accident-competition.git into
 /workspace/car-accident, check out branch handoff-2026-09-24, and read HANDOFF.md fully. Follow its section 2 to restore the
 Stage 2 and Stage 3 training environment from GitHub and R2 (r2:car-accident-dataset). Don't delete anything from R2."
-The branch name stays `handoff-2026-09-24`; it now also contains the 2026-09-25 session (see §6 for what that session added).
+The branch name stays `handoff-2026-09-24`; it now also contains the 2026-09-25 session (§6) and the 2026-09-26 leaderboard results +
+Stage 3 10 Hz rule (§8 — **read §8 first**, it overrides older Stage 3 notes below).
 
 Start here on a fresh Vast.ai server. This file says what exists, where it is stored,
 how to restore a training-ready environment, and what to do next. Older, narrower notes:
@@ -53,8 +54,8 @@ Obsolete (do not download): `stage2/cache/{geometry,joint_features_v1,v2}`, `sta
 | Stage | Model | Offline validation | Leaderboard |
 |---|---|---|---|
 | 1 | original `global_g1_threshold_0_50` model (unchanged; `submission/model/stage1/`) | — | **0.953** (v1) |
-| 2 | **P2 temporal pyramid, 4-seed probability ensemble**, refit on all 349 clips (`REFIT_P2_all349`) | 0.757 (train-split version, 70 val clips, batch 1) | v3: **0.4618** (v1 E3 head: 0.441) |
-| 3 | **V3_tcnssm_100ep** (SEA-RAFT → geometry/physics → MotionCNN → TCN+SSM, 100 ep, best ep 91) + steering threshold **5°** | 0.7954 (BATON val) | v3 (5°): **0.7274**; v4 (1.5°): 0.6900; v1 (V2 ep43, 5°): 0.654 |
+| 2 | **v5: LC-v2 15-head ensemble (C0/X_ema/M_motion/PH) + motion fusion**, trained on 279 clips (not refit) | 0.767 fixed / 0.769 CV (NEXAR 0.619 / 0.670) | v5: **0.5314** (v3 P2 refit: 0.4618; v1 E3: 0.441) |
+| 3 | **V3_tcnssm_100ep** (SEA-RAFT → geometry/physics → MotionCNN → TCN+SSM, 100 ep, best ep 91) + steering **5°** + accel **±0.75 m/s²** | 0.7954 (BATON val) | hybrid (accel ±0.75): **0.7313**; v3 (±0.25): 0.7274; v5 (±1.0): 0.6972; v4 (steer 1.5°): 0.6900 |
 
 Stage 2 facts that matter:
 * Offline val overestimates the leaderboard. MM-AU clips (short, ~100 frames) are easy; long clips (>1000 frames, NEXAR)
@@ -63,7 +64,8 @@ Stage 2 facts that matter:
 * Details: `reports/stage2_temporal_pyramid_framecount_experiments.md`, `reports/stage2_iterative_search.md`,
   `stage2/long_video_experiments/REPORT.md`.
 
-Stage 3 facts that matter (see `/workspace/data/dacon_baseline` analysis, R2 `dacon/analysis/`):
+Stage 3 facts that matter — **the 20 fps / frame-rate notes below are superseded by §8** (the competition states Stage 3 input and
+output are 10 Hz, and the baseline samples are not representative of the test set):
 * DACON OPEN sample videos are 1164×874 HEVC, ~1200 frames = 60 s, i.e. **20 fps**; labels sit at
   `frame_index = 2 × sample_index` (sample = 0.1 s). Container timestamps are bogus. Format matches comma2k19 segments.
 * The submission (like DACON's own baseline) emits **one row per decoded frame**. On the 50 OPEN labels: per-frame rows 0.342,
@@ -80,7 +82,7 @@ cd /workspace
 git clone https://github.com/taehyeon-k/car-accident-competition.git car-accident
 cd car-accident && git checkout handoff-2026-09-24
 # The R2 bundle is always the newest state. If the branch is missing on GitHub, or GitHub's HANDOFF.md is older than
-# 'updated 2026-09-25' (or `git log -1` is not the latest handoff commit), update from the bundle:
+# 'updated 2026-09-26' (or `git log -1` is not the latest handoff commit), update from the bundle:
 #   rclone copy r2:car-accident-dataset/handoff/2026-09-24/handoff-2026-09-24.bundle /workspace/
 #   git fetch /workspace/handoff-2026-09-24.bundle +handoff-2026-09-24:handoff-2026-09-24 && git checkout handoff-2026-09-24
 # (a checked-out branch can't be fetched into: use `git checkout --detach` first, or `git pull /workspace/handoff-2026-09-24.bundle handoff-2026-09-24`)
@@ -198,9 +200,9 @@ Stage 2 runtime was verified bit-exact against the training evaluation (frame se
 | v2 `submit_v2_P2ens-trainsplit_V3.zip` | P2 ensemble (279 clips) | V3, 5° | not submitted when written |
 | v3 `submit_v3_P2ens-full349_V3.zip` | P2 ensemble refit (349) | V3, 5° | **S1 0.953197975 / S2 0.461806490 / S3 0.7273634082** (best) |
 | v4 `submit_v4_P2ens-full349_V3_steer1p5.zip` | P2 ensemble refit (349) | V3, **1.5°** | S3 0.6899652932 (only change vs v3; worse by 0.037) |
-| v5 `2026-09-25/submit_v5_LCv2ens4-motion_V3_acc1_steer5.zip` | LC-v2 15-head ensemble (C0/X_ema/M_motion/PH, 279 clips) + motion fusion | V3, 5°, accel ±1.0 m/s² | not recorded (built last, 07:49) — ask the user |
+| v5 `2026-09-25/submit_v5_LCv2ens4-motion_V3_acc1_steer5.zip` | LC-v2 15-head ensemble (C0/X_ema/M_motion/PH, 279 clips) + motion fusion | V3, 5°, accel ±1.0 m/s² | S1 0.953 / **S2 0.5314** (best) / S3 0.6972 |
 | `2026-09-25/submit_nexar_specialist_steer5_accel0p5.zip` | NEXAR specialist (seed-0 candidate: 3 heads + NEXAR temporal prior) on every clip | V3, 5°, accel ±0.5 | S2 **0.437** (< v3 0.4618); S3 not recorded |
-| `2026-09-25/submit_hybrid_stage2_steer5_accel0p75.zip` | length-gated: >500 native frames → all-seed NEXAR specialist (9 heads), else P2 ensemble | V3, 5°, accel ±0.75 | not recorded — ask the user |
+| `2026-09-25/submit_hybrid_stage2_steer5_accel0p75.zip` | length-gated: >500 native frames → all-seed NEXAR specialist (9 heads), else P2 ensemble | V3, 5°, accel ±0.75 | S1 0.953 / S2 0.4154 / **S3 0.7313** (best) |
 
 v5 rebuild: `submission_tools/v5_stage2/build_v5.sh`. The specialist/hybrid packages were built from the zips' own code, which is
 saved (without weights) in `submission_tools/{nexar_specialist,hybrid_stage2}_package/`; the zips in R2 are the complete versions.
@@ -210,15 +212,16 @@ leaderboard vs 5°, so the OPEN-sample threshold fit does not transfer; keep 5°
 Stage 2 leaderboard vs per-source validation: `reports/stage2_leaderboard_vs_nexar.md`.
 Ask the user for any newer leaderboard results before deciding next steps.
 
-## 5. Recommended next steps
+## 5. Recommended next steps (revised 2026-09-26, see §8)
 
-1. **Stage 3 frame rate A/B on the leaderboard**: current per-frame rows vs 10 Hz (`frames[::2]`, rows `sample_index = frame // 2`),
-   both with steering 1.5°. This single question is worth up to ~0.25 on the OPEN sample.
-2. **Stage 3 domain**: DACON clips look like comma2k19 (public, with CAN). Fine-tuning/threshold fitting on comma2k19 would replace
-   the 50-label threshold fit.
-3. **Stage 2 long clips**: evaluate on long-clip slices (NEXAR/AIHub/CCD), not the MM-AU-inflated headline; more long validation
-   clips or grouped CV; then a coarse-to-fine (candidate window → dense re-scoring) design for event selection.
-4. Verify the Stage 2 frame-number convention against DACON's `stage2` OPEN sample (`labels.csv` there has `t_collision` only).
+1. **Stage 2**: build on v5 (LB 0.5314, +0.07 over v3). Cheapest next candidate: the same v5 recipe refit on all 349 clips
+   (v5 members were trained on 279 only; the P2 refit was how v3 was made). Then more/diverse ensemble members, judged by 5-fold CV
+   (the 15-clip NEXAR val slice is not trustworthy — the specialist/hybrid won there and lost on the LB).
+2. **Stage 3 accel thresholds**: LB is non-monotone (±0.25 0.7274, ±0.75 0.7313, ±1.0 0.6972; ±0.5 not isolated). Steering 5°.
+   Any further threshold choice must come from BATON/10 Hz data, not the DACON baseline samples.
+3. **Stage 3 model**: 10 Hz input/output is already what V3 does (trained `target_hz: 10`, one row per decoded frame). Improvements
+   should target BATON-style generalisation, not the baseline clips.
+4. Stage 1 unchanged at 0.953.
 
 ## 6. 2026-09-25 session summary (Stage 2 experiments; no Stage 3 retraining, but the new zips change Stage 3 accel thresholds — see §4)
 
@@ -227,12 +230,11 @@ Ask the user for any newer leaderboard results before deciding next steps.
   128–256 frames of context, not wrong-event selection. No architecture change reliably improves NEXAR. Best: context-crop 0.5 + EMA 4-seed
   ensemble (fixed 0.757, CV 0.714). Found the GroupNorm padding issue: evaluate at batch 1 (= submission runtime).
 * **Phase loss** (`reports/stage2_phase_loss_report.md`): structured phase decoding hurts long clips; the phase model helps as an ensemble member.
-  v5 ensemble: fixed val 0.767 / NEXAR 0.619, CV 0.769 / NEXAR 0.670 (leaderboard not yet recorded).
+  v5 ensemble: fixed val 0.767 / NEXAR 0.619, CV 0.769 / NEXAR 0.670 (leaderboard S2 0.5314, recorded 2026-09-26).
 * **NEXAR specialist** (`stage2/nexar65_experiments/REPORT.md`): 3 heads + NEXAR-fitted temporal KDE prior; NEXAR val 0.71–0.74, but it
   was selected on the same 15 val clips and hurts non-NEXAR clips; its submission scored **S2 0.437 on the leaderboard** (< v3 0.4618). **Length-gated hybrid** (`stage2/length_gated_experiments/REPORT.md`): offline 0.80.
 * NEXAR specialist and length-gated hybrid were done in a parallel Codex session (prompts in `~/.codex/history.jsonl` on that server, not backed up).
-* Takeaway: offline NEXAR gains have not transferred to the leaderboard so far. Get the leaderboard scores of v5 and the hybrid
-  from the user before building on either.
+* Takeaway: offline NEXAR-slice gains did not transfer (specialist 0.437, hybrid 0.4154), but the CV-validated v5 ensemble did (0.5314). See §8.
 
 ## 7. Constraints from the user (keep following)
 
@@ -240,3 +242,31 @@ Ask the user for any newer leaderboard results before deciding next steps.
   (experiments here used a per-process memory cap and required ≥2–3 GiB free).
 * Stage 2 models must stay FPS/duration/timestamp-blind.
 * Use `rclone copy` (not sync) to R2; new prefixes need `--s3-no-check-bucket`.
+* **Stage 3 is 10 Hz in and 10 Hz out** (competition rule). Do not resample, do not use the baseline samples' frame rate, and do not
+  fit thresholds or conventions to the DACON baseline data: it is only an example and the real evaluation data is explicitly unlike it.
+* Commit + back up code/reports (GitHub and R2 bundle) before starting new experiments.
+
+## 8. 2026-09-26: leaderboard results and Stage 3 rule
+
+Leaderboard (from the user):
+
+| Submission | S1 | S2 | S3 | Stage 3 settings |
+|---|---|---|---|---|
+| v3 P2 refit | 0.953 | 0.4618 | 0.7274 | accel ±0.25, steer 5° |
+| v4 | — | — | 0.6900 | accel ±0.25, steer 1.5° |
+| NEXAR specialist | — | 0.437 | not recorded | accel ±0.5, steer 5° |
+| **v5 LC-v2 15-head + motion** | 0.953 | **0.5314** | 0.6972 | accel ±1.0, steer 5° |
+| length-gated hybrid | 0.953 | 0.4154 | **0.7313** | accel ±0.75, steer 5° |
+
+Verified: the Stage 3 package in v3, v5 and hybrid uses the same `best.pt` (V3) and code; v5/hybrid only add `decoder_overrides.json`
+(accel thresholds). So the S3 differences are purely the acceleration threshold.
+
+Reading:
+* **Stage 2**: v5 is the first model with a clear LB gain (+0.070 over v3), and it was chosen by 5-fold CV (NEXAR n = 80), not the
+  15-clip val slice. Both models tuned on the NEXAR val slice (specialist, hybrid) lost against v3; the hybrid only changes >500-frame
+  clips vs the P2 ensemble and dropped 0.046, so the hidden test does contain long clips, and the NEXAR temporal prior hurts on them.
+* **Best combined zip does not exist yet**: v5 Stage 2 + Stage 3 accel ±0.75 would combine the two best stage results.
+* **Stage 3 rule**: the competition explicitly states Stage 3 input and output are 10 Hz and the baseline data is only an example,
+  unlike the real evaluation data. The current runtime emits one row per decoded frame without resampling and V3 trains at
+  `target_hz: 10`, so it already follows the rule. The old "per-frame vs 10 Hz A/B" item is dropped.
+
