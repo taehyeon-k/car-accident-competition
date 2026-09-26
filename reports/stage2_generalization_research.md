@@ -110,3 +110,11 @@ or global motion statistics. Evasion needs a **label audit** (conventions differ
 * **H16 — frame-rate test-time augmentation** (`stage2/generalization/tta_eval.py`: average the ENTRY/COLLISION distributions of the
   native and 1/2-frame-rate views, projected by frame number). CV (3 seeds, clean input): E4 0.7485 → 0.7541 (+0.006), E4_sa 0.7683 → 0.7659
   (−0.002). **Rejected** — within noise, and once the model is trained with stride augmentation the views already agree; not worth 1.5× runtime.
+* **ENTRY error direction on held-out sources** (LOSO_E4_sa, 3 seeds; FPS used offline only). ENTRY hit / late(>0.3 s) / early(<−0.3 s):
+  AIHUB 0.31 / **0.61** / 0.09 (median +0.40 s), CCD 0.59 / 0.25 / 0.16, MMAU 0.78 / 0.16 / 0.05, NEXAR 0.34 / 0.22 / **0.45** (median −0.17 s).
+  In-domain CV the same sources are nearly unbiased (AIHUB late 0.39, NEXAR early 0.23). COLLISION errors stay symmetric everywhere.
+  Opposite biases on AIHUB vs NEXAR ⇒ the held-out ENTRY loss is mainly an **annotation-convention shift** (where each source puts
+  "entry": AIHUB earlier, NEXAR later relative to what the other sources teach), not a missing visual cue. Median ENTRY→COLLISION gaps:
+  AIHUB 1.27 s, CCD 1.10 s, NEXAR 1.11 s, MMAU 0.40 s. Implication for the leaderboard: ENTRY accuracy on an unseen source is bounded by
+  how close its convention is to the training mix; keeping all sources in training (as v8 does) is the robust choice, and an explicit
+  ENTRY definition audit across sources (e.g. re-annotating a small shared subset) is the highest-value next step for ENTRY.
