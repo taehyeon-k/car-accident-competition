@@ -52,6 +52,7 @@ how to restore a training-ready environment, and what to do next. Older, narrowe
 | `stage2/runs/2026-09-26/aux_signal_experiments/{cache_geo,cache_lane_v2,cache_lane}` | geometry-head features / lane pseudo-labels (experiments only, not used by v7) | same under `stage2/aux_signal_experiments/` |
 | `stage2/cache/nexar_unlabelled_670/` (10.7 GB) | the 670 unlabelled NEXAR positives: DINO 7x10 at sampled frames, global + residual motion, `labels_{fold0..4,fixed,all}.json`, `nexar_candidates.csv` | `car-accident/stage2/aux_signal_experiments/cache_nexar_u` |
 | `submissions/2026-09-26/` | **`submit_v7_E4E2XN4full_V3_acc0p5_steer3.zip`** (+ smoke JSON); Codex-built `submit_v6_ES7-auxens_V3_acc0p5_steer5.zip` (+ smoke) | `/workspace/outputs/` |
+| `stage2/runs/2026-09-26/generalization/{results,cache_stride,cache_objmotion,cache_unl,cache_corrupt}` | 12 h generalization session: all LOSO / CV / stride / full-refit runs (v8 `*_sa_full`, v9 `*_sa_ema_full`), frame-rate-view motion (`cache_stride/k2,k3`), object-motion (rejected H4), 1,046-clip unlabelled pool (`cache_unl`, H9), 4x-lowres DINO tokens (`cache_corrupt/lowres`) | `car-accident/stage2/generalization/<same>` |
 | `handoff/2026-09-24/` | git bundle (**refreshed 2026-09-26**; older bundles in `archive_*`), HANDOFF.md copy, SETUP_REPORT, prompts, patch, previous agent memory notes; `uncommitted_snapshot_2026-09-26/` = patch + tarball of a parallel Codex session's uncommitted Stage 3 work and `submission_tools/v6_stage2` (not committed by this session) | — |
 
 Obsolete (do not download): `stage2/cache/{geometry,joint_features_v1,v2}`, `stage2/pretrained/{vjepa*,rfdetr*,sam2*,depth*,dinov3_vitb16}`,
@@ -143,6 +144,10 @@ $C $R/stage2/cache/nexar_unlabelled_670 stage2/aux_signal_experiments/cache_nexa
 # optional (experiments only): cache_geo, cache_lane_v2, cache_lane from the same prefix; cache_hr (14 GB) is NOT backed up —
 # regenerate with python -m stage2.aux_signal_experiments.extract_hr if ever needed (the HR experiment failed).
 # Residual motion can also be regenerated: python -m stage2.aux_signal_experiments.extract_residual --workers 8 (~5 min).
+# 2026-09-26 generalization session (v8/v9 checkpoints live in results/; caches only needed to re-run the robustness studies)
+$C $R/stage2/runs/2026-09-26/generalization/results stage2/generalization/results
+for d in cache_stride cache_objmotion cache_unl cache_corrupt; do $C $R/stage2/runs/2026-09-26/generalization/$d stage2/generalization/$d; done
+# (regenerate instead: python -m stage2.generalization.extract_stride_motion / extract_objmotion / unl_expand / extract_corrupt --kinds lowres)
 ```
 The dense cache is regenerable (~20 min GPU for DINO + motion):
 `python -m stage2.long_context_v2_experiments.extract_dense` then `python -m stage2.long_context_v2_experiments.extract_motion`
