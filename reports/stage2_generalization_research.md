@@ -101,3 +101,9 @@ or global motion statistics. Evasion needs a **label audit** (conventions differ
   to camera resolution by construction; no corruption augmentation needed (JPEG pass skipped).
 * **Cross-domain data expansion** (the 670 unlabelled NEXAR clips with COLLISION-only supervision from public metadata, LOSO folds where NEXAR
   is a training source): AIHUB +0.013, CCD +0.040, MMAU −0.005 → extra data from one domain transfers modestly to other unseen domains.
+* **H14 — label-free test-time attribute thresholds** (`stage2/generalization/attr_threshold.py`). Motivation: on held-out sources evasion is
+  *not* at chance (seed-ensemble AUC AIHUB 0.78 / CCD 0.67 / MMAU 0.79 / NEXAR 0.62 for LOSO_E4; side AUC 0.93–0.99), but the mean
+  predicted p_eva shifts with the source (CCD 0.70 vs prior 0.51; MMAU 0.54 vs prior 0.72). Tested thresholds computed on the unlabelled
+  test set (median, train-prior quantile, logit centring). LOSO evasion macro-F1 mean: fixed 0.623–0.629 → best adaptive 0.634–0.640
+  (+0.01 ⇒ +0.0015 score); side: fixed 0.5 is best (adaptive −0.002 … −0.03). **Rejected** — calibration is not the bottleneck; evasion
+  is limited by ranking quality (AUC ≤ 0.8), i.e. by what the pooled features encode about free space, not by the decision rule.
