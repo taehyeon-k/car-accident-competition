@@ -70,3 +70,19 @@ it is visible in these frozen 7×10 features. ENTRY is limited by label definiti
 Best single family: E2 + stride aug + EMA (LOSO mean +0.040, worst +0.035, 4/4 sources). Decision rule fixed before the result: cross-source
 generalization first (the test set is stated to be unlike the training data). **v9 is the recommended next Stage 2**; v8 is the choice if
 frame-rate shift is believed to be the bigger risk than domain shift. Both packages are built and verified (parity exact, smoke passes).
+
+## Confirmation with 6 seeds (final) — recommendation corrected
+| LOSO | single-model mean / worst (Δ vs E4) | ensemble mean / worst |
+|---|---|---|
+| E4 (6 seeds) | 0.659 / 0.543 | 0.699 / 0.610 |
+| E4 + stride aug + EMA | +0.034 / +0.037, 4/4 sources | 0.715 / 0.585 |
+| E2 + stride aug + EMA | **+0.042 / +0.064, 4/4 sources** | 0.722 / 0.618 |
+| **E4+E2, stride aug, 12 members** | 0.673 / 0.570 | **0.721 / 0.617** |
+| E4+E2, stride aug + EMA, 12 members | 0.697 / 0.593 | 0.712 / 0.600 |
+| mixed EMA / non-EMA, 12 members | 0.685 / 0.578 | 0.714 / 0.607 |
+
+EMA makes **each model** generalize better across sources (confirmed, stronger with 6 seeds), but it **reduces member diversity**: with 3 seeds
+per family the EMA ensemble looked better (0.720 vs 0.711), with 6 seeds per family (12 members, the submission size) the non-EMA ensemble
+is better (0.721 / 0.617 vs 0.712 / 0.600) and mixing does not recover both. **Recommendation corrected: v8 (stride aug) is the best
+ensemble on every ensemble-level measure at submission size** (CV 0.787, frame-rate robustness 0.775 / 0.759 / 0.718, 12-member LOSO
+0.721 / 0.617). v9 remains built as an alternative (better single models; use it if the ensemble were much smaller).

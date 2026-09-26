@@ -5,3 +5,5 @@ Evidence (reports/stage2_generalization_research.md): leave-one-source-out, E4+E
 0.672 / 0.564 (stride aug only) and 0.663 / 0.561 (v7 E4); improves all 4 unseen sources. 5-fold CV of the recipe 0.783 / NEXAR 0.707
 (v8 recipe 0.787 / 0.707). Frame-rate robustness 0.771 / 0.747 / 0.696 at 1/1, 1/2, 1/3 fps (v8 0.775 / 0.759 / 0.718, v7 0.772 / 0.720 / 0.648).
 Stage 3: V3 unchanged, steering 3.0 deg / acceleration +-0.5 (as v7/v8). Stage 1: unchanged.
+NOTE (6-seed confirmation, later the same session): at 12-member ensemble size the non-EMA v8 ensemble is better on leave-one-source-out
+(0.721 / 0.617 vs 0.712 / 0.600) because EMA reduces member diversity. Recommended submission: v8; v9 is the alternative.

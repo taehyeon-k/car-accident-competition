@@ -5,7 +5,8 @@
 Stage 2 and Stage 3 training environment from GitHub and R2 (r2:car-accident-dataset). Don't delete anything from R2."
 The branch name stays `handoff-2026-09-24`; it now also contains the 2026-09-25 session (§6), the 2026-09-26 leaderboard results +
 Stage 3 10 Hz rule (§8 — **read §8 first**, it overrides older Stage 3 notes below), and the 2026-09-26 Stage 2 studies and the
-**v7 submission** (§9, §10 — **read §10 first for Stage 2**).
+**v7 submission** (§9, §10), and the 12 h generalization/robustness research session with the **v8 / v9 submissions** (§11 — **read §11
+first for Stage 2**).
 
 Start here on a fresh Vast.ai server. This file says what exists, where it is stored,
 how to restore a training-ready environment, and what to do next. Older, narrower notes:
@@ -63,6 +64,7 @@ Obsolete (do not download): `stage2/cache/{geometry,joint_features_v1,v2}`, `sta
 | 1 | original `global_g1_threshold_0_50` model (unchanged; `submission/model/stage1/`) | — | **0.953** (v1) |
 | 2 | **v5: LC-v2 15-head ensemble (C0/X_ema/M_motion/PH) + motion fusion**, trained on 279 clips (not refit) | 0.767 fixed / 0.769 CV (NEXAR 0.619 / 0.670) | v5: **0.5314** (v3 P2 refit: 0.4618; v1 E3: 0.441) |
 | 2 (offline best, not yet on LB) | **v7: E4 + E2 + XN4 residual-motion ensemble** (12 heads, full-data refit; §10) | CV of the recipe **0.7995 / NEXAR 0.721** | v7 zip built 2026-09-26, **not submitted yet** — ask the user |
+| 2 (recommended next, §11) | **v8: v7 recipe + temporal-rate augmentation** (recommended) / v9: + EMA (alternative: better single models, less ensemble diversity) | v9: LOSO unseen-source mean 0.698 / worst 0.593 (v7-type 0.663 / 0.561); v8: 0.775 / 0.759 / 0.718 at 1/1, 1/2, 1/3 fps (v7 0.772 / 0.720 / 0.648) | zips built + verified, not submitted |
 | 3 | **V3_tcnssm_100ep** (SEA-RAFT → geometry/physics → MotionCNN → TCN+SSM, 100 ep, best ep 91) + steering **5°** + accel **±0.5 m/s²** | 0.7954 (BATON val) | specialist zip (accel ±0.5): **0.7388**; ±0.75: 0.7313; ±0.25: 0.7274; ±1.0: 0.6972; v4 (steer 1.5°): 0.6900 |
 
 Stage 2 facts that matter:
@@ -220,6 +222,8 @@ Stage 2 runtime was verified bit-exact against the training evaluation (frame se
 | `2026-09-25/submit_hybrid_stage2_steer5_accel0p75.zip` | length-gated: >500 native frames → all-seed NEXAR specialist (9 heads), else P2 ensemble | V3, 5°, accel ±0.75 | S1 0.953 / S2 0.4154 / S3 0.7313 |
 | `2026-09-26/submit_v6_ES7-auxens_V3_acc0p5_steer5.zip` (built by a parallel Codex session) | event-specific 18-head ensemble (v5 families + E4/E2/M1), all trained on 279 clips; CV 0.7884 / NEXAR 0.7103 | V3, 5°, accel ±0.5 | not recorded |
 | **`2026-09-26/submit_v7_E4E2XN4full_V3_acc0p5_steer3.zip`** | **E4 + E2 + XN4, 4 seeds each, full-data refit** (§10); CV of the recipe 0.7995 / NEXAR 0.721 | V3, **3°**, accel ±0.5 | not submitted yet |
+| **`2026-09-26/submit_v8_robust-E4E2XN4sa_V3_acc0p5_steer3.zip`** | v7 recipe + temporal-rate (stride) augmentation (§11, **recommended**) | as v7 | not submitted |
+| `2026-09-26/submit_v9_gen-E4E2XN4saema_V3_acc0p5_steer3.zip` | v7 recipe + stride augmentation + EMA 0.99 (§11, alternative) | as v7 | not submitted |
 
 v5 rebuild: `submission_tools/v5_stage2/build_v5.sh`. v7 rebuild: `submission_tools/v7_stage2/build_v7.sh` (needs the `*_full` checkpoints in
 `stage2/aux_signal_experiments/results/` and the base zip `submit_nexar_specialist_steer5_accel0p5.zip` in `/workspace/outputs/`);
@@ -332,3 +336,29 @@ qa_lane.py, nexar_expand.py, nexar_labels.py, attr_stack.py, m3_late_cue.py).
   Stage 3 V3 with steer 3.0° / accel ±0.5.
 * A parallel Codex session worked on Stage 3 DriveDNA data scaling and built `submission_tools/v6_stage2` + a v6 zip; its uncommitted
   files are snapshotted in R2 `handoff/2026-09-24/uncommitted_snapshot_2026-09-26/` (not committed by this session).
+
+## 11. 2026-09-26 (evening): 12 h Stage 2 generalization / robustness research (`reports/stage2_generalization_research.md`)
+
+User rule for this work: no validation-specific tricks; methods must generalize (sources, distribution shift). Code `stage2/generalization/`
+(LOSO splits + `loso_analyze.py`, `robust_eval.py` frame-rate/crop benchmark, `extract_stride_motion.py`, `extract_objmotion.py`,
+`unl_expand.py` unlabelled pool, `entry_gap.py`, `nexar_context_probe.py`, `jobs_util.py`) + options in `aux_signal_experiments/train.py`
+(`--stride-aug`, `--consistency`, `--unl-consistency`, `--truncate-aug`, `--causal-entry`, `--attr-balance`, `--feat-aug`, `--clip-norm`,
+`--balance-sources`, `--mask-entry-sources`, `--objmotion`, `--stop-epoch`).
+* **New evaluation**: leave-one-source-out (LOSO, fixed stop epoch 9, no held-out selection) and a frame-rate robustness benchmark (clips at
+  1/2, 1/3 fps with motion recomputed). Pooled CV hides a large cross-source gap (LOSO mean ≈ 0.66 vs CV ≈ 0.74) and a large frame-rate
+  weakness (−0.12 at 1/3 fps for v7's recipe).
+* **Works**: temporal-rate (stride) augmentation (robustness +0.045 / +0.068 at 1/2, 1/3 fps, no native cost; 12-member LOSO ensemble
+  0.721 / worst 0.617 = best ensemble); EMA weights make single models generalize better (6 seeds: LOSO +0.034–0.042, worst +0.037–0.064,
+  4/4 sources) but reduce ensemble diversity (12-member EMA ensemble 0.712 / 0.600 < non-EMA) → **v8 recommended, v9 alternative**;
+  per-source attribute class balancing (LOSO +0.010, side F1 ↑ everywhere, in-domain −0.008).
+* **Does not work / diagnosed**: ENTRY is limited by label definition vs visible evidence (ENTRY accuracy falls with the ENTRY→COLLISION gap:
+  ≈0.92 below 0.5 s, 0.12–0.35 above 1.5 s; causal ENTRY heads, truncation, MMAU masking, object motion, geometry, 14×25 tokens all failed).
+  Evasion does not transfer across sources (held-out F1 ≈ chance) → label conventions; needs a label audit. NEXAR's difficulty as an unseen
+  source is appearance/labels, not long context. Per-clip normalisation hurts; consistency regularisation (labelled or 1,046 unlabelled clips)
+  trades native accuracy for invariance without cross-source gain.
+* **Deliverables**: `submission_tools/v8_stage2` (stride aug) and `submission_tools/v9_stage2` (stride aug + EMA), full-data refits
+  (`stage2/generalization/results/*_sa_full`, `*_sa_ema_full`), zips in R2 `submissions/2026-09-26/`, parity exact, smoke tests pass.
+  Stage 3 in both = V3 steer 3° / accel ±0.5 (same as v7), so v7 → v8/v9 isolates the Stage 2 change on the leaderboard.
+* Caches: `stage2/generalization/cache_stride` (k2/k3 motion), `cache_objmotion`, `cache_unl` (1,046 unlabelled clips) — in R2
+  `stage2/runs/2026-09-26/generalization/` (see §0).
+

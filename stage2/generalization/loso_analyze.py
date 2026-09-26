@@ -20,7 +20,11 @@ def load(run):
     """run may be 'A+B': the seed lists of several families are pooled (equal-weight ensemble over all members)."""
     out = {}
     for src in SOURCES:
-        seeds = [json.loads(p.read_text()) for r in run.split("+") for p in sorted((R / r).glob(f"{src}_seed*/predictions.json"))]
+        seeds = []
+        for spec in run.split("+"):  # 'RUN' or 'RUN:0,1,2' (seed subset)
+            r, _, ss = spec.partition(":"); keep = {int(x) for x in ss.split(",")} if ss else None
+            seeds += [json.loads(p.read_text()) for p in sorted((R / r).glob(f"{src}_seed*/predictions.json"))
+                      if keep is None or int(p.parent.name.split("_seed")[1]) in keep]
         if seeds: out[src] = seeds
     return out
 
