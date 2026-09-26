@@ -40,3 +40,5 @@ geometry_cache/
 /stage2/long_context_v2_experiments/results/**/oof_full.json
 # Stage 2 feature cache manifest (the npz files are ignored above; full cache in R2 stage2/cache/fpsblind_192_7x10_349).
 /stage2/artifacts/spotting_features/fpsblind_192_7x10_349/
+# Stage 2 generalization feature caches (backed up to R2 stage2/runs/2026-09-26/generalization/)
+/stage2/generalization/cache_*/
