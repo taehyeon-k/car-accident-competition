@@ -199,6 +199,7 @@ def collate(items, motion, lane):
     if any("attr_w" in it for it in items):
         b["attr_w"] = torch.tensor([it.get("attr_w", 1.0) for it in items]); b["entry_w"] = torch.tensor([it.get("entry_w", 1.0) for it in items])
         b["collision_w"] = torch.tensor([it.get("collision_w", 1.0) for it in items])
+        b["side_w"] = torch.tensor([it.get("side_w", 1.0) for it in items]); b["eva_w"] = torch.tensor([it.get("eva_w", 1.0) for it in items])
     return b
 
 
@@ -241,6 +242,7 @@ def main():
     p.add_argument("--w-lane-tr", type=float, default=0.0)
     p.add_argument("--motion", choices=["none", "global", "residual", "both"], default="none")
     p.add_argument("--geo", action="store_true", help="append geometry-head features (cache_geo) to the per-position input")
+    p.add_argument("--attr-balance", action="store_true", help="H11: per-source class-balanced side / evasion loss weights (label-shift robustness)")
     p.add_argument("--mask-entry-sources", default="", help="comma list of sources whose ENTRY loss is masked (e.g. MMAU; label-consistency test)")
     p.add_argument("--objmotion", action="store_true", help="append object-level independent motion (requires --motion both)")
     p.add_argument("--causal-entry", type=int, default=-1, help="H8: ENTRY from a causal branch with this look-ahead (positions); -1 = off")
@@ -276,6 +278,16 @@ def main():
     mode = "custom" if (a.geo or a.motion in ("residual", "both")) else a.motion  # collate: custom-width input tensor
     extra, extra_name = (extra_items(a.train_split, a.extra_entry_w, a.extra_labels) if a.extra_nexar else ([], None))
     if extra: assert a.motion == "both" and not a.geo and a.lane == "none", "extra NEXAR clips support the 'both' motion input only"
+    if a.attr_balance:  # weight = 1 / (frequency of the clip's class within its source), normalised to mean 1 per source
+        from collections import Counter, defaultdict
+        by_src = defaultdict(list)
+        for it in train_items: by_src[C.source(it)].append(it)
+        for src, its in by_src.items():
+            for key, wk in (("evasion", "eva_w"), ("entry_side", "side_w")):
+                cnt = Counter(it[key] for it in its); n = len(its); k = len(cnt)
+                for it in its: it[wk] = n / (k * cnt[it[key]])
+        for it in train_items: it.setdefault("attr_w", 1.0); it.setdefault("entry_w", 1.0)
+        assert a.base_loss == "nt", "--attr-balance uses the weighted NT loss"
     if a.mask_entry_sources:  # keep these clips for COLLISION + attributes, drop their ENTRY supervision
         masked = set(a.mask_entry_sources.split(","))
         for it in train_items: it["attr_w"] = 1.0; it["entry_w"] = 0.0 if C.source(it) in masked else 1.0
