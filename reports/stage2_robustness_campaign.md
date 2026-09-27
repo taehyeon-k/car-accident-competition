@@ -53,3 +53,11 @@ Consistency regularisers (H5/H9), rejected on native CV, are among the best at 1
   0.758 / 0.755 / 0.716 / 0.726 vs E4_sb + E4_sbu (two ViT-S variants) 0.750 / 0.746 / 0.710 / 0.723 — better at every rate.
   v10 mix + E4_sbB (12): 0.769 / 0.770 / 0.728 / 0.739 (mean 0.751 vs 0.749 for v10 alone).
 * 16:45 — ViT-B features for the unlabelled pool (`unl_vitb.py`) being extracted so ViT-B families can use extras + consistency.
+* 17:10 — E2_sbB (ViT-B, E2 family): 0.743 / 0.726 / 0.705 / 0.691 — weaker than the E4 ViT-B family at low rate.
+* 17:15 — throughput limit: ViT-B + extras + consistency runs take ~11 min each (768-d features exceed the page cache). Queue cut
+  to the final candidates: XSbU_XN4, XSbUB_E4 (ViT-B stacked), LOSO_XSbU_E4; dropped XSbUB_E2, E4_sbu6, E4_sbuc, E4_aux, LOSO_XSbU_E2.
+* 18:37 — **XSbU ensemble** (E4 / E2 / XN4, each: stride mix ⅓ each + dedup stride-augmented MM-AU/CCD extras + unlabelled consistency 0.3):
+  **0.758 / 0.758 / 0.736 / 0.735**, NEXAR @⅓ 0.692 — best at ⅓ rate (v10 mix 0.768 / 0.762 / 0.729 / 0.736, NEXAR @⅓ 0.678;
+  v8 recipe ⅓ 0.710). Expected LB ≈ 0.5929 + 0.75 × (0.736 − 0.710) ≈ 0.612.
+* 18:38 — v11 = XSbU full-data refits (4 seeds × 3 families; stop epochs 10 / 8 / 15) queued; packaging automated
+  (`submission_tools/v11_stage2`, Stage 3 as v10: accel ±0.4, steer 7°).
