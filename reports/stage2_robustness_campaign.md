@@ -61,3 +61,34 @@ Consistency regularisers (H5/H9), rejected on native CV, are among the best at 1
   v8 recipe ⅓ 0.710). Expected LB ≈ 0.5929 + 0.75 × (0.736 − 0.710) ≈ 0.612.
 * 18:38 — v11 = XSbU full-data refits (4 seeds × 3 families; stop epochs 10 / 8 / 15) queued; packaging automated
   (`submission_tools/v11_stage2`, Stage 3 as v10: accel ±0.4, steer 7°).
+* 20:34 — **XSbUB_E4** (XSbU recipe on frozen ViT-B features, incl. ViT-B pool features for extras + consistency): 0.735 / 0.766 /
+  **0.740** / 0.728 (ENTRY @⅓ 0.602) — best single family at ⅓ rate.
+* 20:41 — mixed-backbone ensembles: **XSbU (3 ViT-S families) + XSbUB_E4 (ViT-B) = 0.763 / 0.766 / 0.745 / 0.745**, NEXAR @⅓ 0.691
+  (better than XSbU alone at every rate); v10 mix + XSbUB_E4 = 0.770 / 0.766 / 0.731 / 0.745.
+* 20:43 — v12 = v11 + XSbUB_E4 refits (dual-backbone runtime: ViT-S + frozen ViT-B, per-member feature routing; functional test
+  reproduces training-side predictions exactly; peak GPU 1.3 GB). Build automated.
+
+## Summary (duplicate-clean CV, 3 seeds per family, plain decoding)
+| candidate | native | ½ | ⅓ | ¼ | mean | NEXAR @⅓ | expected LB (0.5929 + 0.75·Δ⅓) |
+|---|---|---|---|---|---|---|---|
+| v8 recipe (LB 0.5929) | 0.764 | 0.750 | 0.710 | — | — | 0.685 | 0.593 |
+| v10 (XC_E4 + XS_E2 + XS_XN4; submitted?) | 0.768 | 0.762 | 0.729 | 0.736 | 0.749 | 0.678 | ≈ 0.607 |
+| v11 (XSbU, 3 ViT-S families) | 0.758 | 0.758 | 0.736 | 0.735 | 0.747 | 0.692 | ≈ 0.612 |
+| **v12 (XSbU + XSbUB_E4, mixed backbones)** | 0.763 | 0.766 | **0.745** | **0.745** | **0.755** | 0.691 | **≈ 0.619** |
+
+## Assessment against the goal (expected LB 0.70)
+**Not reached.** The best candidate forecasts ≈ 0.62 (+0.026 over v8), about a quarter of the +0.107 needed; 0.70 would need ≈ 0.85
+at ⅓ rate vs 0.745 achieved. What moved the robust metric: equal stride mix (+0.013 @⅓, single family), unlabelled
+cross-frame-rate consistency (+0.013 on top; fixes the low-rate ENTRY collapse), metadata-anchored MM-AU/CCD extras (+0.01–0.02),
+and backbone diversity (+0.009 in the ensemble). Single-family gains shrink at the ensemble level (errors overlap). What did not:
+stride offsets, heavier ⅓ weighting, official-convention COLLISION labels, more seeds (+0.003), denser inference sampling, object
+tracks (in-domain), stride-¼ training (dropped for time). The remaining gap is ENTRY at low frame rate (≈ 0.59 @⅓ vs 0.63 native,
+and ≈ 0.45 on AIHUB/NEXAR-like footage) and cross-domain shift (LOSO @⅓ ≈ 0.64 — the closest proxy of the LB level). Closing it
+needs new information (independently labelled clips in the test's style — CCD-like 10 fps footage — or a representation that sees
+small, distant actors), not further regularisation of the same inputs.
+
+## Deliverables
+* `submit_v11_XSbU-E4E2XN4_V3_acc0p4_steer7.zip` — built, parity exact, smoke passes (R2 `submissions/2026-09-27/`).
+* `submit_v12_XSbU-E4E2XN4+XSbUB-E4_V3_acc0p4_steer7.zip` — dual backbone (+343 MB, second backbone pass at inference); see log.
+* Recommendation: submit v12 if the runtime/size budget allows, else v11; both keep v10's Stage 3 (accel ±0.4, steer 7°) so the
+  Stage 2 change is isolated.
