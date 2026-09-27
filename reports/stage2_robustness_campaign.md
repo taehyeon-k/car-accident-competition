@@ -46,3 +46,10 @@ Consistency regularisers (H5/H9), rejected on native CV, are among the best at 1
 * LOSO at ⅓ rate (new scorecard item): LOSO_E4_sa pooled 0.639 (worst CCD 0.51), LOSO_OT_sa 0.646 (+0.008).
 * Source-clean LOSO labels for the extras (`unl_labels.py --loso`, LOSO_E4_sa teachers, held-out source's extras excluded) built;
   LOSO_XSbU_E4 / LOSO_XSbU_E2 queued.
+* 16:30 — **Backbone audit (P6-lite): frozen original DINOv3 ViT-B** (`extract_dense.py --arch vitb16`, `cache_dense_vitb`, 768-d) vs our
+  geometry-adapted ViT-S, same recipe (E4, stride mix ⅓ each): ViT-B 0.733 / 0.735 / 0.709 / 0.704 vs ViT-S 0.747 / 0.727 / 0.702 / 0.709
+  (native/½/⅓/¼). Equal on average; ViT-B better ENTRY at low rate (0.585 vs 0.553), ViT-S better NEXAR (0.677 vs 0.633 @⅓).
+* 16:40 — **Backbone diversity helps ensembles** (`robust_eval` now supports per-member feature caches): E4_sb + E4_sbB (ViT-S + ViT-B)
+  0.758 / 0.755 / 0.716 / 0.726 vs E4_sb + E4_sbu (two ViT-S variants) 0.750 / 0.746 / 0.710 / 0.723 — better at every rate.
+  v10 mix + E4_sbB (12): 0.769 / 0.770 / 0.728 / 0.739 (mean 0.751 vs 0.749 for v10 alone).
+* 16:45 — ViT-B features for the unlabelled pool (`unl_vitb.py`) being extracted so ViT-B families can use extras + consistency.

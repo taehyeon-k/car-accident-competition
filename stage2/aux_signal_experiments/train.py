@@ -188,7 +188,7 @@ def unl_view(sid, k):
     norm = (fr - fr[0]).astype(np.float32) / max(int(fr[-1] - fr[0]), 1)
     both = np.concatenate([segments(motion28(mot), pos), segments(res, pos)], 1)
     return {"sample_id": sid, "source_id": "UNL:" + sid, "frame_numbers": torch.from_numpy(fr.copy()), "normalized_positions": torch.from_numpy(norm),
-            "x_path": str(UNL / f"{sid}.npy"), "x_idx": fr, "x_shape": len(fr), "motion": torch.from_numpy(both),
+            "x_path": str((Path(os.environ["FEATS_UNL_DIR"]) if os.environ.get("FEATS_UNL_DIR") else UNL) / f"{sid}.npy"), "x_idx": fr, "x_shape": len(fr), "motion": torch.from_numpy(both),
             "entry_index": 0, "collision_index": 0, "entry_frame": 0, "collision_frame": 0, "entry_side": 0, "evasion": 0, "num_available_frames": len(kept)}
 
 
@@ -280,6 +280,7 @@ def main():
     p.add_argument("--consistency", type=float, default=0.0,
                    help="weight of cross-frame-rate consistency: each batch is also seen at stride 2/3; teacher = native-rate view")
     p.add_argument("--stride-aug", default="", help="temporal-rate augmentation, e.g. '0.5,0.25,0.25' = P(stride 1,2,3) per clip per epoch")
+    p.add_argument("--feats-unl-dir", default="", help="unlabelled-pool features from another backbone (sets FEATS_UNL_DIR, e.g. cache_unl_vitb)")
     p.add_argument("--feats-dir", default="", help="frame features from another backbone cache (sets FEATS_DIR; same frames, e.g. ViT-B 768-d)")
     p.add_argument("--stride-offsets", action="store_true", help="stride views start at a random offset o in 0..k-1 (frames[o::k])")
     p.add_argument("--clip-norm", choices=["none", "x", "m", "xm"], default="none", help="per-clip input normalisation (see model.py)")
@@ -303,6 +304,7 @@ def main():
     p.add_argument("--batch-size", type=int, default=4)
     p.add_argument("--train-split", default="train"); p.add_argument("--val-split", default="val"); p.add_argument("--output", default=None)
     a = p.parse_args()
+    if a.feats_unl_dir: os.environ["FEATS_UNL_DIR"] = str(Path(a.feats_unl_dir) if Path(a.feats_unl_dir).is_absolute() else C.REPO / a.feats_unl_dir)
     if a.feats_dir: os.environ["FEATS_DIR"] = str(Path(a.feats_dir) if Path(a.feats_dir).is_absolute() else C.REPO / a.feats_dir)
     if a.obj_cache:
         global OBJ; OBJ = Path(a.obj_cache) if Path(a.obj_cache).is_absolute() else C.REPO / a.obj_cache

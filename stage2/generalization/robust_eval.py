@@ -57,16 +57,20 @@ def item(row, k, crop=0.0, corrupt=""):
     return {"sid": sid, "frames": frames, "x": x, "global": torch.from_numpy(g), "both": torch.from_numpy(both),
             "both_obj": torch.from_numpy(np.concatenate([both, segments(ob, pos)], 1)) if ob is not None else None,
             "both_objfeat": torch.from_numpy(np.concatenate([both, segments(obf, pos)], 1)) if obf is not None else None,
-            "n": len(reduced), "n_native": len(frames_all), "row": row}
+            "abs": kept[pos], "n": len(reduced), "n_native": len(frames_all), "row": row}
 
 
 @torch.inference_mode()
 def predict(models, it, dev):
-    v = torch.ones(1, len(it["frames"]), dtype=torch.bool, device=dev); x = it["x"][None].to(dev)
+    v = torch.ones(1, len(it["frames"]), dtype=torch.bool, device=dev); x = it["x"][None].to(dev); xs = {}
     outs = []
-    for m, kind in models:
+    for m, kind, *fd in models:
+        xm = x
+        if fd and fd[0]:  # member trained on another backbone's features: same frames from its own cache
+            if fd[0] not in xs: xs[fd[0]] = torch.from_numpy(np.ascontiguousarray(np.load(Path(fd[0]) / f"{it['sid']}.npy", mmap_mode="r")[it["abs"]]))[None].to(dev)
+            xm = xs[fd[0]]
         mo = it[kind][None].to(dev) if kind else None
-        outs.append(m(x, v, motion=mo) if m.uses_motion else m(x, v))
+        outs.append(m(xm, v, motion=mo) if m.uses_motion else m(xm, v))
     pe = torch.stack([o["entry_logits"].float().softmax(-1) for o in outs]).mean(0).log()
     pc = torch.stack([o["collision_logits"].float().softmax(-1) for o in outs]).mean(0).log()
     side = float(torch.stack([o["side_logits"].float().softmax(-1)[0, 1] for o in outs]).mean())
@@ -105,7 +109,7 @@ def evaluate(run, k, seeds, dev, per_seed=False, crop=0.0, corrupt=""):
             m = load_model(c, dev); cfg = torch.load(c, map_location="cpu", weights_only=False)["config"]
             kind = {"both": "both", "global": "global"}.get(cfg.get("motion", "none"), None)
             if cfg.get("objmotion"): kind = "both_objfeat" if cfg.get("obj_cache") else "both_obj"
-            models.append((m, kind))
+            models.append((m, kind, cfg.get("feats_dir", "")))
         if per_seed: models = models[:1]
         for r in C.rows(str(FOLDS / f"fold{f}_val.jsonl")): preds.append(predict(models, item(r, k, crop, corrupt), dev))
     return C.breakdown(preds)
