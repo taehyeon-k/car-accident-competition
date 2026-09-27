@@ -53,7 +53,8 @@ def item(row, k, crop=0.0, corrupt=""):
     if ob is not None and crop: ob = ob[sl]
     both = np.concatenate([g, r], 1)
     of = C.REPO / f"stage2/objtrack/cache_objfeat/k{k}/{sid}.npy"  # RF-DETR + ByteTrack track features (O1), if extracted
-    obf = np.load(of) if of.exists() and not crop else None
+    obf = np.load(of) if of.exists() else None
+    if obf is not None and crop: obf = obf[sl]
     return {"sid": sid, "frames": frames, "x": x, "global": torch.from_numpy(g), "both": torch.from_numpy(both),
             "both_obj": torch.from_numpy(np.concatenate([both, segments(ob, pos)], 1)) if ob is not None else None,
             "both_objfeat": torch.from_numpy(np.concatenate([both, segments(obf, pos)], 1)) if obf is not None else None,

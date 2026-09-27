@@ -120,6 +120,11 @@ def total_loss(out, batch, cfg):
 
 
 def _aux(loss, parts, out, batch, cfg):
+    if cfg.get("w_gap", 0.0) > 0:  # gap prior: Gaussian NLL of log(1 + COLLISION - ENTRY) in sampled positions (FPS-blind)
+        tgt = torch.log1p((batch["collision_index"] - batch["entry_index"]).clamp_min(0).float())
+        ls = out["gap_logsig"]; nll = ls + 0.5 * ((tgt - out["gap_mu"]) / ls.exp()) ** 2
+        ew = batch["entry_w"].float() if "entry_w" in batch else torch.ones_like(nll)
+        parts["gap"] = (ew * nll).mean(); loss = loss + cfg["w_gap"] * parts["gap"]
     if cfg.get("w_entry_aux", 0.0) > 0:  # P4: broad auxiliary ENTRY target; the decoded ENTRY head keeps its sharp target
         from stage2.spotting_experiments.objective import distribution_loss
         la = distribution_loss(out["entry_aux_logits"], batch["entry_index"], batch["time_valid"], batch["normalized_positions"].float(),

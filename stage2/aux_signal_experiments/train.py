@@ -157,6 +157,25 @@ def consistency_loss(o_ref, b_ref, o_aug, b_aug):
     return loss
 
 
+def crop_item(row, base, rng, lo_frac=0.25, hi_frac=0.75):
+    """Window-crop augmentation: a random window of U(lo, hi) x N native frames that still contains ENTRY..COLLISION, re-sampled
+    adaptively (varies lead-in, clip length and the events' relative position; targets the position prior / long lead-in failure).
+    All labels stay supervised. Frame indices only."""
+    frames_all, _ = C.dense(row["sample_id"]); n = len(frames_all)
+    ei, ci = int(np.searchsorted(frames_all, int(row["entry_frame"]))), int(np.searchsorted(frames_all, int(row["collision_frame"])))
+    L = max(int(round(rng.uniform(lo_frac, hi_frac) * n)), ci - ei + 1, 8)
+    if L >= n: return None
+    lo, hi = max(0, ci - L + 1), min(ei, n - L)
+    if hi < lo: return None
+    start = int(rng.integers(lo, hi + 1))
+    it = C.make_item(row, "adaptive", start, start + L)
+    it["abs_idx"] = start + np.searchsorted(frames_all[start:start + L], it["frame_numbers"].numpy()); it["x_shape"] = len(it["x"]); del it["x"]
+    it["motion"] = torch.cat([it["motion"], torch.from_numpy(segments(residual_per_frame(row["sample_id"]), it["abs_idx"]))], 1)
+    it["phase_entry_index"], it["phase_collision_index"] = it["entry_index"], it["collision_index"]
+    it.update(attr_w=1.0, entry_w=base.get("entry_w", 1.0), collision_w=1.0)
+    return it
+
+
 def truncated_item(row, rng):
     """Pre-collision truncation (H7): the clip is cut at a random native frame between ENTRY + 25 % of the gap and COLLISION - 1, so
     the collision is NOT visible; ENTRY + attributes stay supervised, COLLISION loss is masked. Breaks the 'ENTRY = just before
@@ -273,6 +292,8 @@ def main():
     p.add_argument("--obj-cache", default="", help="object-feature cache dir for --objmotion (k1/k2/k3 layout); default cache_objmotion (H4)")
     p.add_argument("--anchor-attr", action="store_true", help="H15: pool side/evasion at the predicted ENTRY/COLLISION distributions")
     p.add_argument("--causal-entry", type=int, default=-1, help="H8: ENTRY from a causal branch with this look-ahead (positions); -1 = off")
+    p.add_argument("--crop-aug", type=float, default=0.0, help="probability per native-rate clip per epoch of a random window containing ENTRY..COLLISION")
+    p.add_argument("--gap-balance", action="store_true", help="ENTRY loss weight = inverse frequency of the clip's ENTRY->COLLISION gap bin (training labels only)")
     p.add_argument("--truncate-aug", type=float, default=0.0, help="probability of pre-collision truncation per labelled clip (H7)")
     p.add_argument("--unl-consistency", type=float, default=0.0, help="H9: consistency weight on unlabelled clips (native vs stride 2/3 view)")
     p.add_argument("--unl-batch", type=int, default=4)
@@ -290,6 +311,7 @@ def main():
     p.add_argument("--w-entry", type=float, default=1.0, help="ENTRY weight in the NT direct loss (1 = NT)")
     p.add_argument("--sigma-entry", type=float, default=None, help="H17: ENTRY-only target width (convention-shift tolerance); default = --sigma")
     p.add_argument("--sigma", type=float, default=1.0, help="direct-target Gaussian width in sampled positions (1 = NT)")
+    p.add_argument("--w-gap", type=float, default=0.0, help="weight of the gap-prior head (log ENTRY->COLLISION distance in positions)")
     p.add_argument("--w-entry-aux", type=float, default=0.0, help="P4: weight of a broad auxiliary ENTRY head (not decoded)")
     p.add_argument("--sigma-entry-aux", type=float, default=3.0, help="P4: target width of the auxiliary ENTRY head (sampled positions)")
     p.add_argument("--extra-nexar", action="store_true", help="add the metadata/pseudo-labelled unlabelled NEXAR clips (nexar_labels.py)")
@@ -334,6 +356,15 @@ def main():
                 for it in its: it[wk] = n / (k * cnt[it[key]])
         for it in train_items: it.setdefault("attr_w", 1.0); it.setdefault("entry_w", 1.0)
         assert a.base_loss == "nt", "--attr-balance uses the weighted NT loss"
+    if a.gap_balance:  # gap in seconds from the training labels only (FPS used for label weighting, never as a model input)
+        edges = [0, .5, 1, 1.5, 2.5, 1e9]; fps = C.fps_table()
+        gb = [int(np.searchsorted(edges, (it["collision_frame"] - it["entry_frame"]) / fps[it["sample_id"]], side="right") - 1) for it in train_items]
+        from collections import Counter
+        cnt = Counter(gb); k = len(cnt); nn = len(gb)
+        w = np.clip([nn / (k * cnt[b]) for b in gb], 0.3, 4.0); w = w / w.mean()
+        for it, wi in zip(train_items, w): it["entry_w"] = float(wi); it["attr_w"] = 1.0
+        print("gap-balance weights per bin:", {b: round(float(np.mean([wi for g, wi in zip(gb, w) if g == b])), 2) for b in sorted(cnt)}, dict(cnt), flush=True)
+        assert a.base_loss == "nt"
     if a.mask_entry_sources:  # keep these clips for COLLISION + attributes, drop their ENTRY supervision
         masked = set(a.mask_entry_sources.split(","))
         for it in train_items: it["attr_w"] = 1.0; it["entry_w"] = 0.0 if C.source(it) in masked else 1.0
@@ -368,7 +399,7 @@ def main():
     feat_dim = int(C.dense(train_rows[0]["sample_id"])[1].shape[-1])  # 384 (ViT-S) unless FEATS_DIR points at another backbone
     cfg = dict(vars(a), feat_dim=feat_dim, feats_dir=os.environ.get("FEATS_DIR", ""), n_unl=len(unl_ids), hr=a.hr, extra_labels=extra_name, n_extra=len(extra), soft_width=0.0, lr=1e-3, weight_decay=.05, strict_fps_blind=True, selection="direct",
                motion_dim=motion_dim, n_train=len(train_rows), n_val=len(val_rows))
-    model = AuxPyramid(phase_rep=a.phase_rep, risk=a.risk != "none", boundary=a.boundary, lane=a.lane, motion_dim=motion_dim, hr=a.hr, clip_norm=a.clip_norm, causal_entry=a.causal_entry, anchor_attr=a.anchor_attr, entry_aux=a.w_entry_aux > 0, feat_dim=feat_dim).to(device)
+    model = AuxPyramid(phase_rep=a.phase_rep, risk=a.risk != "none", boundary=a.boundary, lane=a.lane, motion_dim=motion_dim, hr=a.hr, clip_norm=a.clip_norm, causal_entry=a.causal_entry, anchor_attr=a.anchor_attr, entry_aux=a.w_entry_aux > 0, feat_dim=feat_dim, gap_head=a.w_gap > 0).to(device)
     params = sum(x.numel() for x in model.parameters())
     import copy
     ema = copy.deepcopy(model).eval() if a.ema else None
@@ -401,6 +432,13 @@ def main():
                 base = [train_items[i] if ks[i] == 0 else views[ks[i] + 1][i] for i in range(len(train_items))]
         else:
             base = train_items
+        if a.crop_aug:  # window crops of native-rate clips (stride views untouched)
+            flip = (torch.rand(len(base), generator=gen) < a.crop_aug).tolist(); base = list(base)
+            for i, f in enumerate(flip):
+                if f and base[i] is train_items[i]:
+                    cr = crop_item(train_rows[i], train_items[i], np.random.default_rng(int(torch.randint(1 << 30, (1,), generator=gen))))
+                    if cr is not None: base[i] = cr
+            for it in base: it.setdefault("attr_w", 1.0); it.setdefault("entry_w", 1.0)
         if a.truncate_aug:  # H7: replace a random subset of clips by their pre-collision truncation (COLLISION masked)
             assert a.motion == "both" and not a.objmotion and a.base_loss == "nt"
             flip = (torch.rand(len(base), generator=gen) < a.truncate_aug).tolist(); base = list(base)

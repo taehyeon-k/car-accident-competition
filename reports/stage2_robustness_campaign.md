@@ -102,3 +102,24 @@ small, distant actors), not further regularisation of the same inputs.
 * 22:00 — **LB reality check: v10 = 0.5590 (forecast 0.607; −0.034 vs v8).** The ⅓-rate rule failed out of sample; v10's
   extras (metadata-labelled MM-AU/CCD) are the prime suspect and are also in v11/v12, so the v11/v12 forecasts above are withdrawn.
   The LOSO gains above include the same extras and are not a forecast either.
+
+## ENTRY gap / localization study (2026-09-27 late; no labelled extras; `stage2/generalization/entry_scorecard.py`)
+Scorecard: ENTRY hit by ENTRY->COLLISION gap and lead-in (pooled native + ⅓ rate), crop-0.25 ENTRY + position slope, long-gap
+(≥1.5 s) median ENTRY bias; duplicate-clean, 3-seed ensembles, plain decoding. Base = E4_sbu (stride mix ⅓ each + unlabelled consistency).
+| arm | native | ⅓ | ENTRY by gap <0.5 / 0.5-1 / 1-1.5 / 1.5-2.5 / >2.5 s | crop25 ENTRY / slope | long-gap bias |
+|---|---|---|---|---|---|---|
+| E4_sa (v8 family) | 0.756 | 0.689 | .91 / .62 / .52 / .30 / .20 | .51 / .56 | +0.40 s |
+| E4_sb | 0.747 | 0.702 | .96 / .66 / .52 / .29 / .23 | .47 / .50 | +0.40 s |
+| E4_sbu | 0.740 | 0.715 | .96 / .65 / .51 / .35 / .20 | .47 / .48 | +0.40 s |
+| + gap-balanced ENTRY loss (G) | 0.734 | 0.713 | .96 / .64 / .51 / .33 / .23 | .46 / .49 | +0.40 s |
+| **+ window-crop aug 0.3 (C)** | 0.737 | 0.708 | .97 / .61 / .54 / .28 / .27 | **.53 / .60** | +0.40 s |
+| + G + C | 0.741 | 0.703 | .98 / .62 / .54 / .24 / .13 | .54 / .49 | +0.50 s |
+| + gap-prior head (P), plain / prior decoding | 0.720 / 0.728 | 0.694 / 0.685 | .97/.63/.49/.28/.13 ; .92/.63/.47/.32/.17 | .46/.42 ; .48/.51 | +0.53 / +0.60 s |
+| earliest-near-max decoding α 0.5 / 0.3 (on E4_sbu) | 0.721 / 0.674 | 0.616 / 0.567 | .71/.42/.36/.34/.07 ; .49/.28/.23/.25/.03 | .64 / .66 | −0.28 / −0.68 s |
+| frozen ViT-B (E4_sbB) / ViT-S+ViT-B | 0.733 / 0.758 | 0.709 / 0.716 | .95/.65/.52/.32/.20 ; .96/.68/.54/.32/.20 | .48/.51 ; .48/.54 | +0.40 s |
+| object tracks (OT_sa) | 0.745 | 0.682 | .91 / .60 / .49 / .29 / .23 | .52 / .51 | +0.33 s |
+* **Truncation / position prior: fixed by window-crop augmentation** (crop ENTRY .47 → .53, slope .48 → .60) at a small native cost.
+* **Long-gap ENTRY is not fixed by any model-side change**: loss reweighting, crops, a learned gap prior, decoding rules, a larger
+  backbone and object tracks all leave a median +0.3–0.5 s late bias on ≥1.5 s gaps. The model fires when the other vehicle becomes
+  salient; the label marks the manoeuvre onset earlier. Labelled duplicate pairs (7, all short-gap) agree on ENTRY within 0.3 s
+  (median 0.07 s), so annotation noise is not demonstrated — but there is no long-gap agreement data.
