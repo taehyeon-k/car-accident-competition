@@ -33,3 +33,8 @@ Consistency regularisers (H5/H9), rejected on native CV, are among the best at 1
 
 ## Log
 (results appended as arms finish)
+* 14:40 — **E4_sbu (stride mix 1/3 each + H9 unlabelled rate-consistency 0.3): 1/3 rate 0.715 / 1/4 0.715 / native 0.740** — best single
+  family at low rate; ENTRY @1/3 0.581 (E4_sa 0.504, E4_sb 0.553): consistency directly fixes the low-rate ENTRY collapse.
+* 14:40 — E4_sbO (official-convention COLLISION): no gain (see above). E4_sbo (stride offsets): 0.692 @1/3, no gain.
+* 14:59 — queue re-prioritised: XSbU (stride mix + MM-AU/CCD extras + unlabelled consistency, 3 families) first, then E4_sbu6
+  (consistency 0.6) and E4_sbuc (unlabelled + labelled consistency); dropped XSb/XCb/E4_s4/E4_sbc (superseded).
