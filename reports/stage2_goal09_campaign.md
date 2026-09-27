@@ -34,3 +34,17 @@ contact frame is barely visible, one tunnel-entrance confusion — ambiguous con
 | **XU_mc** (258 MMAU + 400 CCD) | **0.751** | 0.642 | 0.609 | **0.851** | **0.022** | **+0.013** [+0.000, +0.025] | 4/5 | 0.772 |
 | XU_mca (+ 400 AIHUB, teacher-only) | 0.749 | 0.648 | 0.612 | 0.840 | 0.048 | +0.011 [−0.002, +0.023] | 3/5 | 0.764 |
   COLLISION is where the gain is (+0.029). AIHUB self-training adds nothing.
+
+## X1 in the ensemble (goal_eval: v5 decoding, pooled 5-fold OOF, 3 seeds per family)
+| ensemble (members / fold) | CV | NEXAR | ENTRY | COLLISION | side | evasion |
+|---|---|---|---|---|---|---|
+| v8 recipe E4_sa + E2_sa + XN4_sa (9) | 0.7874 | 0.7071 | 0.659 | 0.877 | 0.940 | 0.726 |
+| all families with extras: XU_mc + E2_sa_xu + XN4_sa_xu (9) | 0.7892 | **0.7374** | 0.633 | 0.897 | 0.940 | 0.751 |
+| E4_sa + E2_sa_xu + XN4_sa_xu (9) | **0.7973** | 0.7346 | 0.659 | 0.891 | 0.951 | 0.747 |
+| all six families (18) | 0.7965 | 0.7371 | 0.656 | 0.897 | 0.948 | 0.738 |
+| reference: v8 recipe, 5+5+3 seeds (15) | 0.7908 | 0.7106 | 0.668 | 0.883 | 0.934 | 0.721 |
+Single families with extras vs their controls: E4 +0.013, E2 +0.012, XN4 +0.003 (XN4 already had extra NEXAR clips).
+The 0.7973 row was picked among three 9-member combinations evaluated on the same CV (mild selection); the unpicked 18-member
+union gives 0.7965, so the gain is not a selection artefact. At equal size the extras add ≈ +0.009 overall and **+0.028–0.030 NEXAR**
+(best NEXAR so far; previous best 0.721 with 24 members). The gain is COLLISION (+0.014–0.020) and evasion; ENTRY is flat or lower.
+Prior overall best 0.7995 used 24 members (8 seeds × 3 families, no stride aug); not yet compared at 24 members.
