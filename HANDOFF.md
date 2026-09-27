@@ -1,5 +1,7 @@
 # Handoff — updated 2026-09-26 (originally 2026-09-24; server destroyed after each)
 
+**Leaderboard update — 2026-09-27 (user-reported): v8 Stage 2 = 0.59293**, new recorded best versus v7 0.5464 (+0.04653). This supersedes historical “v8 not submitted” status below. Exact submitted archive/hash and Stage 3 score were not supplied with this update. v9 remains unscored in the reviewed record. See [updated Stage 2 analysis](stage2/STAGE2_EXPERIMENTS_DATASETS_LEADERBOARD_REVIEW_2026-09-27.md).
+
 **Start command for a new session (unchanged):** "Clone https://github.com/taehyeon-k/car-accident-competition.git into
 /workspace/car-accident, check out branch handoff-2026-09-24, and read HANDOFF.md fully. Follow its section 2 to restore the
 Stage 2 and Stage 3 training environment from GitHub and R2 (r2:car-accident-dataset). Don't delete anything from R2."
@@ -282,7 +284,8 @@ Leaderboard (from the user):
 | Submission | S1 | S2 | S3 | Stage 3 settings |
 |---|---|---|---|---|
 | v3 P2 refit | 0.953 | 0.4618 | 0.7274 | accel ±0.25, steer 5° |
-| **v7 E4+E2+XN4 full refit** (2026-09-26) | — | **0.5464** | 0.7340 | accel ±0.5, steer **3°** |
+| **v7 E4+E2+XN4 full refit** (2026-09-26) | — | 0.5464 | 0.7340 | accel ±0.5, steer **3°** |
+| **v8 = v7 + stride aug** (2026-09-27) | — | **0.5929** | — | Stage 2 best; see `reports/stage2_leaderboard_correlation.md` |
 | v4 | — | — | 0.6900 | accel ±0.25, steer 1.5° |
 | NEXAR specialist | — | 0.437 | **0.7388** | accel ±0.5, steer 5° |
 | **v5 LC-v2 15-head + motion** | 0.953 | **0.5314** | 0.6972 | accel ±1.0, steer 5° |
