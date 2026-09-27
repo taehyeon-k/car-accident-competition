@@ -118,11 +118,11 @@ def add_obj(it, k=1):
     return it
 
 
-def stride_item(base, k):
+def stride_item(base, k, o=0):
     """The same labelled clip seen at 1/k of its frame rate: native frames[::k], adaptive re-sampling of the reduced sequence,
     DINO tokens of the retained frames (lazy, via abs_idx), motion recomputed on retained frames (extract_stride_motion.py)."""
     from .nexar_labels import motion28
-    sid = base["sample_id"]; frames_all, _ = C.dense(sid); d = np.load(STRIDE / f"k{k}" / f"{sid}.npz")
+    sid = base["sample_id"]; frames_all, _ = C.dense(sid); d = np.load(STRIDE / (f"k{k}" if o == 0 else f"k{k}o{o}") / f"{sid}.npz")
     kept = d["kept"]; reduced = frames_all[kept]; pos = C.select_adaptive(reduced); fr = reduced[pos]
     g = segments(motion28(d["motion"]), pos); r = segments(d["residual"], pos)
     norm = (fr - fr[0]).astype(np.float32) / max(int(fr[-1] - fr[0]), 1)
@@ -278,6 +278,7 @@ def main():
     p.add_argument("--consistency", type=float, default=0.0,
                    help="weight of cross-frame-rate consistency: each batch is also seen at stride 2/3; teacher = native-rate view")
     p.add_argument("--stride-aug", default="", help="temporal-rate augmentation, e.g. '0.5,0.25,0.25' = P(stride 1,2,3) per clip per epoch")
+    p.add_argument("--stride-offsets", action="store_true", help="stride views start at a random offset o in 0..k-1 (frames[o::k])")
     p.add_argument("--clip-norm", choices=["none", "x", "m", "xm"], default="none", help="per-clip input normalisation (see model.py)")
     p.add_argument("--balance-sources", action="store_true", help="sample training clips with probability 1/(source count)")
     p.add_argument("--hr", action="store_true", help="add 14x25 high-resolution frozen tokens (cache_hr) to the input")
@@ -345,6 +346,8 @@ def main():
         assert a.motion == "both" and not a.geo and not a.hr and a.lane == "none", "stride augmentation supports the 'both' motion input only"
         probs = [float(x) for x in a.stride_aug.split(",")]
         views = {k: [stride_item(it, k) for it in train_items] for k in range(2, len(probs) + 1) if probs[k - 1] > 0 or a.consistency}
+        if a.stride_offsets:  # every start offset of each stride: views_off[k][o][i]; one offset drawn per clip per epoch
+            views_off = {k: [[stride_item(it, k, o) for it in train_items] for o in range(k)] for k in views}
         if a.objmotion: views = {k: [add_obj(it, k) for it in v] for k, v in views.items()}
     for it in train_items + [e for e in extra if "_views" not in e]: it["phase_entry_index"], it["phase_collision_index"] = it["entry_index"], it["collision_index"]
     if a.hr:
@@ -384,7 +387,11 @@ def main():
         pick = torch.randperm(len(extra), generator=gen)[:n_extra].tolist() if extra else []
         if views:  # temporal-rate augmentation: each labelled clip at stride 1/2/3 with the given probabilities
             ks = torch.multinomial(torch.tensor(probs), len(train_items), replacement=True, generator=gen).tolist()
-            base = [train_items[i] if ks[i] == 0 else views[ks[i] + 1][i] for i in range(len(train_items))]
+            if a.stride_offsets:
+                offs = [int(torch.randint(ks[i] + 1, (1,), generator=gen)) for i in range(len(train_items))]
+                base = [train_items[i] if ks[i] == 0 else views_off[ks[i] + 1][offs[i]][i] for i in range(len(train_items))]
+            else:
+                base = [train_items[i] if ks[i] == 0 else views[ks[i] + 1][i] for i in range(len(train_items))]
         else:
             base = train_items
         if a.truncate_aug:  # H7: replace a random subset of clips by their pre-collision truncation (COLLISION masked)

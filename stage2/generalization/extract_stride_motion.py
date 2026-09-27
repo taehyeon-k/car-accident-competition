@@ -23,11 +23,11 @@ OUT = C.REPO / "stage2/generalization/cache_stride"
 
 
 def clip(args):
-    sid, frames_dir, k = args
-    target = OUT / f"k{k}" / f"{sid}.npz"
+    sid, frames_dir, k, o = args if len(args) == 4 else (*args, 0)
+    target = OUT / (f"k{k}" if o == 0 else f"k{k}o{o}") / f"{sid}.npz"  # offset o: native frames[o::k]
     if target.exists(): return sid
     cv2.setNumThreads(1)
-    pairs = indexed_frames(frames_dir)[::k]
+    pairs = indexed_frames(frames_dir)[o::k]
     win = cv2.createHanningWindow((W, H), cv2.CV_32F)
     n = len(pairs); mot = np.zeros((n, 14), np.float32); res = np.zeros((n, RDIM), np.float32)
     prev = prev_r = None
@@ -54,8 +54,10 @@ def clip(args):
 
 def main():
     ap = argparse.ArgumentParser(); ap.add_argument("--strides", type=int, nargs="+", default=[2, 3]); ap.add_argument("--workers", type=int, default=3)
+    ap.add_argument("--offsets", action="store_true", help="also extract every non-zero start offset o = 1..k-1 (frames[o::k])")
     a = ap.parse_args()
-    jobs = [(r["sample_id"], r["frames_dir"], k) for k in a.strides for r in sorted(C.rows("all"), key=lambda r: -int(r["num_frames"]))]
+    jobs = [(r["sample_id"], r["frames_dir"], k, o) for k in a.strides for o in (range(k) if a.offsets else [0])
+            for r in sorted(C.rows("all"), key=lambda r: -int(r["num_frames"]))]
     with ProcessPoolExecutor(a.workers) as ex:
         for n, sid in enumerate(ex.map(clip, jobs), 1):
             if n % 50 == 0: print(n, len(jobs), sid, flush=True)

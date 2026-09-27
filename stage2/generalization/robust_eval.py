@@ -51,8 +51,11 @@ def item(row, k, crop=0.0, corrupt=""):
     ob = np.load(C.REPO / f"stage2/generalization/cache_objmotion/k{k}/{sid}.npy") if (C.REPO / f"stage2/generalization/cache_objmotion/k{k}/{sid}.npy").exists() else None
     if ob is not None and crop: ob = ob[sl]
     both = np.concatenate([g, r], 1)
+    of = C.REPO / f"stage2/objtrack/cache_objfeat/k{k}/{sid}.npy"  # RF-DETR + ByteTrack track features (O1), if extracted
+    obf = np.load(of) if of.exists() and not crop else None
     return {"sid": sid, "frames": frames, "x": x, "global": torch.from_numpy(g), "both": torch.from_numpy(both),
             "both_obj": torch.from_numpy(np.concatenate([both, segments(ob, pos)], 1)) if ob is not None else None,
+            "both_objfeat": torch.from_numpy(np.concatenate([both, segments(obf, pos)], 1)) if obf is not None else None,
             "n": len(reduced), "n_native": len(frames_all), "row": row}
 
 
@@ -83,7 +86,7 @@ def evaluate(run, k, seeds, dev, per_seed=False, crop=0.0, corrupt=""):
         for c in cks:
             m = load_model(c, dev); cfg = torch.load(c, map_location="cpu", weights_only=False)["config"]
             kind = {"both": "both", "global": "global"}.get(cfg.get("motion", "none"), None)
-            if cfg.get("objmotion"): kind = "both_obj"
+            if cfg.get("objmotion"): kind = "both_objfeat" if cfg.get("obj_cache") else "both_obj"
             models.append((m, kind))
         if per_seed: models = models[:1]
         for r in C.rows(str(FOLDS / f"fold{f}_val.jsonl")): preds.append(predict(models, item(r, k, crop, corrupt), dev))
