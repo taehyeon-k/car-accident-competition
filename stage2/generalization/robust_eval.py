@@ -6,6 +6,7 @@ Usage: python -m stage2.generalization.robust_eval RUN [RUN ...] --strides 1 2 3
 from __future__ import annotations
 
 import argparse
+import zlib
 from pathlib import Path
 
 import numpy as np
@@ -36,7 +37,7 @@ def item(row, k, crop=0.0, corrupt=""):
     if crop:  # random window of crop*N retained frames that still contains ENTRY..COLLISION (seeded per clip)
         fr_k = frames_all[kept]; n = len(fr_k); L = max(int(round(crop * n)), 8)
         e = int(np.abs(fr_k - int(row["entry_frame"])).argmin()); c = int(np.abs(fr_k - int(row["collision_frame"])).argmin())
-        L = max(L, c - e + 1); rng = np.random.default_rng(abs(hash(sid)) % (2 ** 32))
+        L = max(L, c - e + 1); rng = np.random.default_rng(zlib.crc32(sid.encode()))  # process-stable seed (was hash(sid))
         lo, hi = max(0, c - L + 1), min(e, n - L)
         start = int(rng.integers(lo, hi + 1)) if hi >= lo else max(0, min(e, n - L))
         sl = slice(start, start + L); kept, mot, res = kept[sl], mot[sl].copy(), res[sl].copy(); mot[0] = 0; res[0] = 0
@@ -52,7 +53,7 @@ def item(row, k, crop=0.0, corrupt=""):
     both = np.concatenate([g, r], 1)
     return {"sid": sid, "frames": frames, "x": x, "global": torch.from_numpy(g), "both": torch.from_numpy(both),
             "both_obj": torch.from_numpy(np.concatenate([both, segments(ob, pos)], 1)) if ob is not None else None,
-            "n": len(reduced), "row": row}
+            "n": len(reduced), "n_native": len(frames_all), "row": row}
 
 
 @torch.inference_mode()
@@ -69,7 +70,7 @@ def predict(models, it, dev):
     ei, ci = constrained_anchors(pe, pc); r = it["row"]; fr = it["frames"]
     return {"sample_id": it["sid"], "source_id": r["source_id"], "entry_frame": int(fr[int(ei[0])]), "collision_frame": int(fr[int(ci[0])]),
             "entry_side": int(side >= .5), "evasion_space": int(eva >= .5), "entry_gt": int(r["entry_frame"]), "collision_gt": int(r["collision_frame"]),
-            "entry_side_gt": int(r["entry_side"] == "RIGHT"), "evasion_gt": int(r["evasion_space"]), "num_available_frames": it["n"]}
+            "entry_side_gt": int(r["entry_side"] == "RIGHT"), "evasion_gt": int(r["evasion_space"]), "num_available_frames": it["n_native"]}  # errors are native frames -> native span
 
 
 def evaluate(run, k, seeds, dev, per_seed=False, crop=0.0, corrupt=""):

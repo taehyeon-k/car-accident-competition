@@ -85,19 +85,24 @@ def extra_items(train_split, entry_w, name=None):
     return items, name
 
 
-def unl_extra(train_split, sources, entry_w, name=None):
+def unl_extra(train_split, sources, entry_w, name=None, dedup=False, strides=(1,)):
     """Metadata-anchored unlabelled AIHUB/CCD/MMAU clips (stage2/generalization/unl_labels.py), 'both' motion input, attributes masked.
     entry_w: {source: ENTRY loss weight} (0 = COLLISION-only)."""
     import re
     if name is None:
         m = re.search(r"fold(\d)_train", str(train_split)); name = f"fold{m.group(1)}" if m else "all"
     labels = json.loads((C.REPO / f"stage2/generalization/cache_unl_labels/labels_{name}.json").read_text()); items = []
+    drop = set(json.loads((C.REPO / "stage2/generalization/results/dup_lists.json").read_text())["expansion_dups"]) if dedup else set()
     for sid, lab in sorted(labels.items()):
-        if lab["source"] not in sources: continue
-        it = unl_view(sid, 1); fr = it["frame_numbers"].numpy()
-        it.update(entry_index=int(np.abs(fr - lab["entry_frame"]).argmin()), collision_index=int(np.abs(fr - lab["collision_frame"]).argmin()),
-                  entry_frame=lab["entry_frame"], collision_frame=lab["collision_frame"], attr_w=0.0, entry_w=entry_w[lab["source"]])
-        items.append(it)
+        if lab["source"] not in sources or sid in drop: continue
+        views = []
+        for k in strides:  # stride-k view: adaptive sampling of native frames[::k]; labels snapped to the nearest retained sample
+            it = unl_view(sid, k if (k == 1 or (UNL / f"{sid}.k{k}.npz").exists()) else 1); fr = it["frame_numbers"].numpy()
+            it.update(entry_index=int(np.abs(fr - lab["entry_frame"]).argmin()), collision_index=int(np.abs(fr - lab["collision_frame"]).argmin()),
+                      entry_frame=lab["entry_frame"], collision_frame=lab["collision_frame"], attr_w=0.0, entry_w=entry_w[lab["source"]])
+            it["phase_entry_index"], it["phase_collision_index"] = it["entry_index"], it["collision_index"]
+            views.append(it)
+        items.append(views[0] if len(views) == 1 else {"_views": views})
     return items
 
 
@@ -286,6 +291,8 @@ def main():
     p.add_argument("--extra-entry-w", type=float, default=0.5, help="loss weight of pseudo-labelled ENTRY on the extra clips")
     p.add_argument("--extra-unl", default="", help="comma list of sources (MMAU,CCD,AIHUB) of metadata-anchored unlabelled clips to add")
     p.add_argument("--unl-entry-w", default="MMAU:0.5,CCD:0.5,AIHUB:0.5", help="per-source ENTRY loss weight for --extra-unl")
+    p.add_argument("--unl-dedup", action="store_true", help="drop expansion clips that near-duplicate a labelled clip (dup_audit.py)")
+    p.add_argument("--unl-stride", action="store_true", help="stride-augment the --extra-unl clips with the --stride-aug probabilities")
     p.add_argument("--epochs", type=int, default=30); p.add_argument("--patience", type=int, default=7)
     p.add_argument("--batch-size", type=int, default=4)
     p.add_argument("--train-split", default="train"); p.add_argument("--val-split", default="val"); p.add_argument("--output", default=None)
@@ -304,7 +311,8 @@ def main():
     extra, extra_name = (extra_items(a.train_split, a.extra_entry_w, a.extra_labels) if a.extra_nexar else ([], None))
     if a.extra_unl:
         ew = {k: float(v) for k, v in (x.split(":") for x in a.unl_entry_w.split(","))}
-        xu = unl_extra(a.train_split, set(a.extra_unl.split(",")), ew, a.extra_labels); extra = extra + xu
+        ks = tuple(range(1, len(a.stride_aug.split(",")) + 1)) if (a.unl_stride and a.stride_aug) else (1,)
+        xu = unl_extra(a.train_split, set(a.extra_unl.split(",")), ew, a.extra_labels, dedup=a.unl_dedup, strides=ks); extra = extra + xu
         print(f"extra unlabelled clips: {len(xu)}", flush=True)
     if extra: assert a.motion == "both" and not a.geo and a.lane == "none", "extra NEXAR clips support the 'both' motion input only"
     if a.attr_balance:  # weight = 1 / (frequency of the clip's class within its source), normalised to mean 1 per source
@@ -336,7 +344,7 @@ def main():
         probs = [float(x) for x in a.stride_aug.split(",")]
         views = {k: [stride_item(it, k) for it in train_items] for k in range(2, len(probs) + 1) if probs[k - 1] > 0 or a.consistency}
         if a.objmotion: views = {k: [add_obj(it, k) for it in v] for k, v in views.items()}
-    for it in train_items + extra: it["phase_entry_index"], it["phase_collision_index"] = it["entry_index"], it["collision_index"]
+    for it in train_items + [e for e in extra if "_views" not in e]: it["phase_entry_index"], it["phase_collision_index"] = it["entry_index"], it["collision_index"]
     if a.hr:
         assert not extra, "HR tokens are not extracted for the extra NEXAR clips"
         assert a.motion == "both", "--hr is combined with the residual-motion input (E4-style) only"
@@ -392,7 +400,11 @@ def main():
                 it = base[i]
                 if f and "x_path" not in it and it.get("x_shape") == len(train_items[i]["frame_numbers"]) and it is train_items[i]:
                     base[i] = {**it, "x_path": str(CC / ("lowres", "jpeg")[kinds[i]] / f"{it['sample_id']}.npy")}
-        pool = base + [extra[i] for i in pick]
+        if any("_views" in e for e in extra[:1] + extra[-1:]):  # multi-view (stride-augmented) extras present
+            kx = torch.multinomial(torch.tensor(probs), max(len(pick), 1), replacement=True, generator=gen).tolist()
+            pool = base + [extra[i]["_views"][kx[j]] if "_views" in extra[i] else extra[i] for j, i in enumerate(pick)]
+        else:
+            pool = base + [extra[i] for i in pick]
         if a.balance_sources:  # same number of samples per epoch, drawn with probability 1 / (clips of that source)
             from collections import Counter
             srcs = [C.source(it) for it in pool]; cnt = Counter(srcs)

@@ -48,3 +48,17 @@ The 0.7973 row was picked among three 9-member combinations evaluated on the sam
 union gives 0.7965, so the gain is not a selection artefact. At equal size the extras add ≈ +0.009 overall and **+0.028–0.030 NEXAR**
 (best NEXAR so far; previous best 0.721 with 24 members). The gain is COLLISION (+0.014–0.020) and evasion; ENTRY is flat or lower.
 Prior overall best 0.7995 used 24 members (8 seeds × 3 families, no stride aug); not yet compared at 24 members.
+
+## Corrections (2026-09-27, after the independent review `stage2/STAGE2_EXPERIMENTS_DATASETS_LEADERBOARD_REVIEW_2026-09-27.md`)
+* **Seed mismatch.** `analyze.py` compared 3-seed arms with the 6-seed E4_sa mean (0.7387); seeds 0–2 alone give 0.7421. Matched
+  (`stage2/generalization/matched_cv.py`, seeds 0–2, source-stratified paired clip bootstrap): XU_mc **+0.0091** [−0.004, +0.024]
+  (not +0.013), OT_sa −0.0075 [−0.019, +0.005] (not −0.004), H17 σ_E=2 −0.0123 [−0.026, +0.001]. E2_sa_xu +0.012 is unaffected
+  (E2_sa had 3 seeds). The ensemble table above was already matched (explicit seeds 0–2 everywhere).
+* **Oracle diagnostic.** `objtrack/diagnose.py` picks the opponent with GT COLLISION; its ≤ 0.38 hit rate does not show that no
+  physical ENTRY cue exists. Only the learned box-statistics result is evidence (against repeating that representation).
+* **Near-duplicates** (`stage2/generalization/dup_audit.py`, visually verified): 81 of 1,058 expansion clips duplicate a labelled
+  clip (52 AIHUB, 19 MMAU, 10 CCD; 29 were in XU_mc's pool), and 19 labelled clips have a duplicate in another CV fold (AIHUB 9,
+  CCD 5, MMAU 5; e.g. the same yellow-taxi crash as ccd_000721 and mmau_003028). Duplicate-clean re-scoring (65 validation clips
+  dropped, `clean_eval.py`): v8 recipe 0.7743 / NEXAR 0.7071; all-xu 0.7759 / 0.7374; E4 + E2_xu + XN4_xu 0.7815 / 0.7303. The
+  overall gain shrinks ~60 %; the NEXAR gain (+0.023–0.030; NEXAR has no duplicates) stands. XU_mc single-model clean: +0.0075.
+  All earlier CV numbers in every report contain the 19 cross-fold duplicates.

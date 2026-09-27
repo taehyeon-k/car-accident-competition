@@ -28,8 +28,8 @@ a fitted law; the next submission tests it.
 1. **Frame rate ≈ 10 fps.** Evidence: the v7 → v8 gain is explained exactly by the 10 fps view and not by any native metric; every
    DACON sample video (Stage 1 and Stage 2) is 1280×720 at 10 fps, 50 frames (Stage 2 sample: collision at frames 30–41, CCD-like);
    Stage 3 is stated to be 10 Hz. Our training sources are 15 fps (AIHUB) and 30 fps (MMAU, NEXAR); only CCD is 10 fps.
-2. **Long clips exist.** The hybrid changed only clips with > 500 frames and lost 0.046, so a substantial part of the test set has
-   > 500 frames (at 10 fps: > 50 s).
+2. ~~Long clips exist.~~ **Weak.** The hybrid's short-clip branch was a 279-clip P2 proxy while the scored v3 was a 349-clip refit, so
+   "only long clips changed" is not a clean comparison (correction from the independent review).
 3. **A large, roughly constant domain/label shift (≈ 0.18)** on top of the frame rate: larger than any held-out source in LOSO
    (ensemble ≈ 0.08 below CV). The test is unlike every training source, as the organisers state.
 4. Consequence already seen: models tuned on the 15 NEXAR val clips lost (specialist, hybrid); CV-selected models won (v5); the
@@ -52,3 +52,18 @@ their native rate (stride augmentation is applied to the labelled clips only), w
 * Train toward 10 fps: stride-augment the extra clips too, and consider sampling each clip at its ~10 fps rate more often
   (30 fps sources: stride 3; AIHUB: stride 1–2; CCD: native).
 * Everything must stay FPS-blind at inference (frame counts only): the model must be robust to the test frame rate, not told it.
+
+## Update: v5 and v6 added (4 leaderboard points; `stage2/generalization/v56_view.py`, CV proxies seeds 0–1, plain decoding)
+| recipe | LB | native CV | CV at 1/3 frame rate | ~10 fps view |
+|---|---|---|---|---|
+| v6 (event-specific 18 heads) | 0.5277 | 0.771 | 0.634 | 0.726 |
+| v5 (LC-v2 15 heads) | 0.5314 | 0.742 | 0.636 | 0.703 |
+| v7 | 0.5464 | 0.772 | 0.648 | 0.730 |
+| v8 | 0.5929 | 0.775 | 0.718 | 0.777 |
+| Pearson vs LB | | 0.51 | **0.99** | 0.94 |
+| rank order correct? | | no (v5 < v6) | **yes** | no (v5/v6 swapped, LB gap 0.004) |
+**Plain CV at 1/3 of the native frame rate ranks all four submissions correctly** (native CV does not). Caveats: four related
+submissions, and 1/3-rate was picked after looking at several views (native, 1/2, 1/3, 10 fps view), so r = 0.99 is optimistic.
+Working selection rule from now on: **1/3-rate CV first, 10 fps view second, native CV third**, on duplicate-clean clips.
+Interpretation: the hidden clips behave like our clips at ~1/3 of their native rate (e.g. ~10 fps footage vs our 30 fps sources);
+the exact cadence is still not observable.
