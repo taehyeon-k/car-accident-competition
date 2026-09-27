@@ -83,7 +83,7 @@ class PhaseRefine(nn.Module):
 
 
 class LCPyramid(nn.Module):
-    def __init__(self, hidden=128, token_dim=16, dropout=0.35, levels=4, pool="avg", phase=0, coarse="none", motion=False,
+    def __init__(self, hidden=128, token_dim=16, dropout=0.35, levels=4, pool="avg", phase=0, coarse="none", motion=False, feat_dim=384,
                  phase_refine=0, decoder="direct"):
         super().__init__()
         self.decoder = decoder
@@ -91,8 +91,8 @@ class LCPyramid(nn.Module):
         self.uses_motion = motion
         if motion:
             self.motion_proj = nn.Sequential(nn.LayerNorm(28), nn.Linear(28, hidden), nn.GELU(), nn.Dropout(dropout), nn.Linear(hidden, hidden))
-        self.norm = nn.LayerNorm(384)
-        self.token = nn.Linear(384, token_dim)
+        self.norm = nn.LayerNorm(feat_dim)
+        self.token = nn.Linear(feat_dim, token_dim)
         self.frame = nn.Sequential(nn.Dropout(dropout), nn.Linear(70 * token_dim, hidden), nn.GELU())
         self.blocks = nn.ModuleList(ResidualDW(hidden, dropout) for _ in range(levels))
         self.pool = pool

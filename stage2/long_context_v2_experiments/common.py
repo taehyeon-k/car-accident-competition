@@ -7,6 +7,7 @@ metrics (same convention as spotting_experiments.train.official_metrics).
 from __future__ import annotations
 
 import json
+import os
 from functools import lru_cache
 from pathlib import Path
 
@@ -44,7 +45,8 @@ def frame_bin(n):
 @lru_cache(maxsize=400)
 def dense(sample_id):
     frames = np.load(DENSE / f"{sample_id}.frames.npy")
-    feats = np.load(DENSE / f"{sample_id}.npy", mmap_mode="r")
+    fd = Path(os.environ["FEATS_DIR"]) if os.environ.get("FEATS_DIR") else DENSE  # alternative backbone features (same frames)
+    feats = np.load(fd / f"{sample_id}.npy", mmap_mode="r")
     return frames, feats
 
 

@@ -24,12 +24,12 @@ def main():
     p.add_argument("--manifest", default="/workspace/data/stage2/manifests/all.jsonl")
     p.add_argument("--backbone-checkpoint", default="/workspace/outputs/geometry_pretrain/runs/phase1_partial_noanchor/backbone_best.pth")
     p.add_argument("--output", default="stage2/long_context_v2_experiments/cache_dense")
-    p.add_argument("--batch-size", type=int, default=48)
+    p.add_argument("--arch", default="vits16"); p.add_argument("--batch-size", type=int, default=48)
     p.add_argument("--workers", type=int, default=12)
     args = p.parse_args()
     out = Path(args.output); out.mkdir(parents=True, exist_ok=True)
     device = torch.device("cuda")
-    model = DinoBackbone("vits16", args.backbone_checkpoint).to(device).eval()
+    model = DinoBackbone(args.arch, args.backbone_checkpoint).to(device).eval()
     rows = sorted(read_jsonl(args.manifest), key=lambda r: -int(r["num_frames"]))
     for k, row in enumerate(rows):
         target = out / f"{row['sample_id']}.npy"

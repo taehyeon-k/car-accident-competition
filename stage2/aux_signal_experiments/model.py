@@ -110,7 +110,7 @@ def build(cfg):
     return AuxPyramid(phase_rep=cfg.get("phase_rep", "none"), risk=cfg.get("risk", "none") != "none",
                       boundary=cfg.get("boundary", "none"), lane=cfg.get("lane", "none"), motion_dim=cfg.get("motion_dim", 0),
                       hr=cfg.get("hr", False), clip_norm=cfg.get("clip_norm", "none"), causal_entry=cfg.get("causal_entry", -1),
-                      anchor_attr=cfg.get("anchor_attr", False), entry_aux=cfg.get("w_entry_aux", 0.0) > 0)
+                      anchor_attr=cfg.get("anchor_attr", False), entry_aux=cfg.get("w_entry_aux", 0.0) > 0, feat_dim=cfg.get("feat_dim", 384))
 
 
 def load(path, device):

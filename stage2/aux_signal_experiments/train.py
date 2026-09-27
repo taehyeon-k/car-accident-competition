@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import random
 import time
 from pathlib import Path
@@ -279,6 +280,7 @@ def main():
     p.add_argument("--consistency", type=float, default=0.0,
                    help="weight of cross-frame-rate consistency: each batch is also seen at stride 2/3; teacher = native-rate view")
     p.add_argument("--stride-aug", default="", help="temporal-rate augmentation, e.g. '0.5,0.25,0.25' = P(stride 1,2,3) per clip per epoch")
+    p.add_argument("--feats-dir", default="", help="frame features from another backbone cache (sets FEATS_DIR; same frames, e.g. ViT-B 768-d)")
     p.add_argument("--stride-offsets", action="store_true", help="stride views start at a random offset o in 0..k-1 (frames[o::k])")
     p.add_argument("--clip-norm", choices=["none", "x", "m", "xm"], default="none", help="per-clip input normalisation (see model.py)")
     p.add_argument("--balance-sources", action="store_true", help="sample training clips with probability 1/(source count)")
@@ -301,6 +303,7 @@ def main():
     p.add_argument("--batch-size", type=int, default=4)
     p.add_argument("--train-split", default="train"); p.add_argument("--val-split", default="val"); p.add_argument("--output", default=None)
     a = p.parse_args()
+    if a.feats_dir: os.environ["FEATS_DIR"] = str(Path(a.feats_dir) if Path(a.feats_dir).is_absolute() else C.REPO / a.feats_dir)
     if a.obj_cache:
         global OBJ; OBJ = Path(a.obj_cache) if Path(a.obj_cache).is_absolute() else C.REPO / a.obj_cache
     random.seed(a.seed); np.random.seed(a.seed); torch.manual_seed(a.seed); torch.cuda.manual_seed_all(a.seed)
@@ -360,9 +363,10 @@ def main():
     motion_dim = 0 if (a.motion == "none" and not a.geo) else int(train_items[0]["motion"].shape[1])
     if a.objmotion: mode = "custom"
     if a.hr and motion_dim == 0: mode = "custom"
-    cfg = dict(vars(a), n_unl=len(unl_ids), hr=a.hr, extra_labels=extra_name, n_extra=len(extra), soft_width=0.0, lr=1e-3, weight_decay=.05, strict_fps_blind=True, selection="direct",
+    feat_dim = int(C.dense(train_rows[0]["sample_id"])[1].shape[-1])  # 384 (ViT-S) unless FEATS_DIR points at another backbone
+    cfg = dict(vars(a), feat_dim=feat_dim, feats_dir=os.environ.get("FEATS_DIR", ""), n_unl=len(unl_ids), hr=a.hr, extra_labels=extra_name, n_extra=len(extra), soft_width=0.0, lr=1e-3, weight_decay=.05, strict_fps_blind=True, selection="direct",
                motion_dim=motion_dim, n_train=len(train_rows), n_val=len(val_rows))
-    model = AuxPyramid(phase_rep=a.phase_rep, risk=a.risk != "none", boundary=a.boundary, lane=a.lane, motion_dim=motion_dim, hr=a.hr, clip_norm=a.clip_norm, causal_entry=a.causal_entry, anchor_attr=a.anchor_attr, entry_aux=a.w_entry_aux > 0).to(device)
+    model = AuxPyramid(phase_rep=a.phase_rep, risk=a.risk != "none", boundary=a.boundary, lane=a.lane, motion_dim=motion_dim, hr=a.hr, clip_norm=a.clip_norm, causal_entry=a.causal_entry, anchor_attr=a.anchor_attr, entry_aux=a.w_entry_aux > 0, feat_dim=feat_dim).to(device)
     params = sum(x.numel() for x in model.parameters())
     import copy
     ema = copy.deepcopy(model).eval() if a.ema else None
