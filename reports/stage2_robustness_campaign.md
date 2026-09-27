@@ -38,3 +38,11 @@ Consistency regularisers (H5/H9), rejected on native CV, are among the best at 1
 * 14:40 — E4_sbO (official-convention COLLISION): no gain (see above). E4_sbo (stride offsets): 0.692 @1/3, no gain.
 * 14:59 — queue re-prioritised: XSbU (stride mix + MM-AU/CCD extras + unlabelled consistency, 3 families) first, then E4_sbu6
   (consistency 0.6) and E4_sbuc (unlabelled + labelled consistency); dropped XSb/XCb/E4_s4/E4_sbc (superseded).
+* 15:30 — ensemble mixes (3 seeds/family, clean): v10 mix XC_E4+XS_E2+XS_XN4 = 0.768 / 0.762 / **0.729** / 0.736 (native/½/⅓/¼);
+  E4_sbu+XS_E2+XS_XN4 0.764 / 0.759 / 0.724 / 0.731; E4_sbu+XC_E4+XS_E2+XS_XN4 (12) 0.765 / 0.765 / 0.725 / 0.735. Single-family
+  low-rate gains do not add at the ensemble level (errors overlap); ensembles plateau near 0.73 at ⅓ rate.
+* 15:35 — more members: E4_sa+E2_sa 6 seeds vs 3: native +0.006, ⅓ rate +0.003 (small).
+* 15:40 — denser inference sampling (every retained frame up to 320 positions, no retraining): ⅓ rate +0.004, native −0.007. Dropped.
+* LOSO at ⅓ rate (new scorecard item): LOSO_E4_sa pooled 0.639 (worst CCD 0.51), LOSO_OT_sa 0.646 (+0.008).
+* Source-clean LOSO labels for the extras (`unl_labels.py --loso`, LOSO_E4_sa teachers, held-out source's extras excluded) built;
+  LOSO_XSbU_E4 / LOSO_XSbU_E2 queued.

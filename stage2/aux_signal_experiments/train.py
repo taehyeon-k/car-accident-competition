@@ -90,7 +90,8 @@ def unl_extra(train_split, sources, entry_w, name=None, dedup=False, strides=(1,
     entry_w: {source: ENTRY loss weight} (0 = COLLISION-only)."""
     import re
     if name is None:
-        m = re.search(r"fold(\d)_train", str(train_split)); name = f"fold{m.group(1)}" if m else "all"
+        m = re.search(r"fold(\d)_train", str(train_split)); lo = re.search(r"loso/(\w+)_train", str(train_split))
+        name = f"fold{m.group(1)}" if m else (f"loso_{lo.group(1)}" if lo else "all")
     labels = json.loads((C.REPO / f"stage2/generalization/cache_unl_labels/labels_{name}.json").read_text()); items = []
     drop = set(json.loads((C.REPO / "stage2/generalization/results/dup_lists.json").read_text())["expansion_dups"]) if dedup else set()
     for sid, lab in sorted(labels.items()):

@@ -58,18 +58,24 @@ def offsets(train_rows, mm, ccd):
             e_mm.append(int(r["entry_frame"]) - int(m["metadata_accident_start"]))
         elif s == "CCD":
             v = ccd[r["sample_id"].split("_")[1]]; c_ccd.append(int(r["collision_frame"]) - int(v["ccd_first_accident_frame_0based"]))
-    return int(np.median(c_mm)), int(np.median(e_mm)), int(np.median(c_ccd))
+    med = lambda v: int(np.median(v)) if v else None  # None = source absent from this split's labelled training part (LOSO held-out)
+    return med(c_mm), med(e_mm), med(c_ccd)
 
 
 @torch.inference_mode()
 def main():
     ap = argparse.ArgumentParser(); ap.add_argument("--aihub", action="store_true")
     ap.add_argument("--full", nargs="*", default=None, help="'all' split: teacher = these full-data runs (dirs with checkpoint.pt)")
+    ap.add_argument("--loso", action="store_true", help="build labels_loso_<SRC>.json: teacher = LOSO_E4_sa/<SRC>_seed0-2, offsets from LOSO train rows")
     a = ap.parse_args()
     dev = torch.device("cuda"); mm, ccd, unus = metadata(); OUT.mkdir(exist_ok=True)
     sids = sorted(p.name[:-len(".motion.npy")] for p in UNL.glob("*.motion.npy"))
     splits = {f"fold{k}": (C.rows(str(FOLDS / f"fold{k}_train.jsonl")), sorted(GEN.glob(f"E4_sa/cv/fold{k}_seed[012]/checkpoint.pt"))) for k in range(5)}
     if a.full is not None: splits = {"all": (C.rows("all"), [Path(p) / "checkpoint.pt" for p in a.full])}
+    if a.loso:
+        L = C.REPO / "stage2/generalization/loso"
+        splits = {f"loso_{s}": (C.rows(str(L / f"{s}_train.jsonl")), sorted(GEN.glob(f"LOSO_E4_sa/{s}_seed[012]/checkpoint.pt")))
+                  for s in ("AIHUB", "CCD", "MMAU", "NEXAR")}
     for name, (train_rows, cks) in splits.items():
         assert cks, name
         c_mm, e_mm, c_ccd = offsets(train_rows, mm, ccd)
@@ -78,6 +84,7 @@ def main():
             an = anchors(sid, mm, ccd)
             if an is None or (an[0] == "AIHUB" and not a.aihub): continue
             src, cmeta, emeta = an
+            if (src == "MMAU" and c_mm is None) or (src == "CCD" and c_ccd is None): continue  # source-clean: held-out source's extras excluded
             fps = 30.0 if src == "MMAU" else float(unus[sid]["fps"])
             it = unl_view(sid, 1); fr = it["frame_numbers"].numpy()
             x = torch.from_numpy(np.ascontiguousarray(np.load(it["x_path"], mmap_mode="r")[it["x_idx"]]))[None].to(dev)
