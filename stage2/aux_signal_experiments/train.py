@@ -85,6 +85,22 @@ def extra_items(train_split, entry_w, name=None):
     return items, name
 
 
+def unl_extra(train_split, sources, entry_w, name=None):
+    """Metadata-anchored unlabelled AIHUB/CCD/MMAU clips (stage2/generalization/unl_labels.py), 'both' motion input, attributes masked.
+    entry_w: {source: ENTRY loss weight} (0 = COLLISION-only)."""
+    import re
+    if name is None:
+        m = re.search(r"fold(\d)_train", str(train_split)); name = f"fold{m.group(1)}" if m else "all"
+    labels = json.loads((C.REPO / f"stage2/generalization/cache_unl_labels/labels_{name}.json").read_text()); items = []
+    for sid, lab in sorted(labels.items()):
+        if lab["source"] not in sources: continue
+        it = unl_view(sid, 1); fr = it["frame_numbers"].numpy()
+        it.update(entry_index=int(np.abs(fr - lab["entry_frame"]).argmin()), collision_index=int(np.abs(fr - lab["collision_frame"]).argmin()),
+                  entry_frame=lab["entry_frame"], collision_frame=lab["collision_frame"], attr_w=0.0, entry_w=entry_w[lab["source"]])
+        items.append(it)
+    return items
+
+
 STRIDE = C.REPO / "stage2/generalization/cache_stride"
 OBJ = C.REPO / "stage2/generalization/cache_objmotion"
 
@@ -247,6 +263,7 @@ def main():
     p.add_argument("--attr-balance", action="store_true", help="H11: per-source class-balanced side / evasion loss weights (label-shift robustness)")
     p.add_argument("--mask-entry-sources", default="", help="comma list of sources whose ENTRY loss is masked (e.g. MMAU; label-consistency test)")
     p.add_argument("--objmotion", action="store_true", help="append object-level independent motion (requires --motion both)")
+    p.add_argument("--obj-cache", default="", help="object-feature cache dir for --objmotion (k1/k2/k3 layout); default cache_objmotion (H4)")
     p.add_argument("--anchor-attr", action="store_true", help="H15: pool side/evasion at the predicted ENTRY/COLLISION distributions")
     p.add_argument("--causal-entry", type=int, default=-1, help="H8: ENTRY from a causal branch with this look-ahead (positions); -1 = off")
     p.add_argument("--truncate-aug", type=float, default=0.0, help="probability of pre-collision truncation per labelled clip (H7)")
@@ -267,10 +284,14 @@ def main():
     p.add_argument("--extra-labels", default=None, help="label set name for --extra-nexar (default: from --train-split: foldK / fixed)")
     p.add_argument("--stop-epoch", type=int, default=0, help="full-data refit: no selection, save the weights after this epoch")
     p.add_argument("--extra-entry-w", type=float, default=0.5, help="loss weight of pseudo-labelled ENTRY on the extra clips")
+    p.add_argument("--extra-unl", default="", help="comma list of sources (MMAU,CCD,AIHUB) of metadata-anchored unlabelled clips to add")
+    p.add_argument("--unl-entry-w", default="MMAU:0.5,CCD:0.5,AIHUB:0.5", help="per-source ENTRY loss weight for --extra-unl")
     p.add_argument("--epochs", type=int, default=30); p.add_argument("--patience", type=int, default=7)
     p.add_argument("--batch-size", type=int, default=4)
     p.add_argument("--train-split", default="train"); p.add_argument("--val-split", default="val"); p.add_argument("--output", default=None)
     a = p.parse_args()
+    if a.obj_cache:
+        global OBJ; OBJ = Path(a.obj_cache) if Path(a.obj_cache).is_absolute() else C.REPO / a.obj_cache
     random.seed(a.seed); np.random.seed(a.seed); torch.manual_seed(a.seed); torch.cuda.manual_seed_all(a.seed)
     torch.set_num_threads(2); device = torch.device("cuda")
     out = Path(a.output) if a.output else RESULTS / a.run_id / f"seed{a.seed}"
@@ -281,6 +302,10 @@ def main():
     val_items = [attach_inputs(lazy_item(r), a.motion, a.lane, a.geo) for r in val_rows]
     mode = "custom" if (a.geo or a.motion in ("residual", "both")) else a.motion  # collate: custom-width input tensor
     extra, extra_name = (extra_items(a.train_split, a.extra_entry_w, a.extra_labels) if a.extra_nexar else ([], None))
+    if a.extra_unl:
+        ew = {k: float(v) for k, v in (x.split(":") for x in a.unl_entry_w.split(","))}
+        xu = unl_extra(a.train_split, set(a.extra_unl.split(",")), ew, a.extra_labels); extra = extra + xu
+        print(f"extra unlabelled clips: {len(xu)}", flush=True)
     if extra: assert a.motion == "both" and not a.geo and a.lane == "none", "extra NEXAR clips support the 'both' motion input only"
     if a.attr_balance:  # weight = 1 / (frequency of the clip's class within its source), normalised to mean 1 per source
         from collections import Counter, defaultdict
