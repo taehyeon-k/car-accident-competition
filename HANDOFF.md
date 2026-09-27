@@ -371,13 +371,11 @@ User rule for this work: no validation-specific tricks; methods must generalize 
 * Later rejected (see report): H14 test-time attribute thresholds, H15 event-anchored attribute pooling, H16 frame-rate TTA. On held-out
   sources, ENTRY is late on AIHUB (61 % > 0.3 s late) but early on NEXAR (45 % early). The sources label ENTRY differently, so the next
   ENTRY step is a cross-source label audit.
-* **H17 — ENTRY-only wider targets (`--sigma-entry 2`), PARTIAL, confirmation running (2026-09-26 23:18 queue restart).** Seeds 0–2 LOSO
-  vs E4_sa: mean +0.013, worst +0.023, 4/4 sources (seed-ensemble 0.693 / 0.582 → 0.716 / 0.621); σ_E=3 +0.011, CCD −0.012.
-  **Not yet replicated.** Paired Δ on the 9 finished confirmation runs (seeds 3–5): AIHUB +0.006 / −0.003 / +0.035, CCD −0.019 / +0.025,
-  MMAU −0.002 / −0.002, NEXAR −0.026 / −0.026. Average ≈ −0.001, and NEXAR reverses. Pending: the last 3 LOSO runs + 3-seed CV
-  (`E4_sa_se2`). Do not adopt σ_E=2 until this finishes. After it, the queue runs the extra v8-vs-v9 CV seeds (`E2_sa`, `E4_sa_ema`,
-  `E2_sa_ema`). Queue: `python -u stage2/aux_signal_experiments/queue.py >> stage2/generalization/queue.out`. It is resumable (skips
-  jobs whose `checkpoint.pt` exists).
+* **H17 — ENTRY-only wider targets (`--sigma-entry 2`), final 2026-09-27: not adopted.** LOSO 6 seeds: mean +0.008, worst +0.006, 4/4
+  sources (ensemble 0.703 / 0.606 → 0.718 / 0.619). In-domain CV −0.020 (0.768 → 0.749; ENTRY −0.03, side / evasion −0.015), 1/2 and
+  1/3 fps −0.015 / −0.011, NEXAR CV +0.007. The in-domain loss outweighs the gain; at most a leaderboard A/B candidate.
+* **v8 vs v9, 6 CV seeds × E4+E2 (12 members)**: v8 0.772 / 0.748 / 0.706 at 1/1, 1/2, 1/3 fps vs v9 0.763 / 0.740 / 0.696. v8 is better
+  everywhere, which confirms the §11 recommendation. **Before submitting v8, rebuild it with steer 5°** (v7 on the LB showed that 3° loses 0.005).
 * Caches: `stage2/generalization/cache_stride` (k2/k3 motion), `cache_objmotion`, `cache_unl` (1,046 unlabelled clips), `cache_corrupt/lowres` —
   in R2 `stage2/runs/2026-09-26/generalization/`; results (all LOSO / CV runs) in the same prefix under `results/`.
 

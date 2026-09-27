@@ -126,3 +126,12 @@ or global motion statistics. Evasion needs a **label audit** (conventions differ
   LOSO 3 seeds vs E4_sa (same seeds): σ_E=2 AIHUB +0.002 / CCD +0.007 / MMAU +0.019 / NEXAR +0.023 (mean +0.013, worst +0.023, 4/4;
   seed-ensemble mean 0.693 → 0.716, worst 0.582 → 0.621); σ_E=3 mean +0.011, worst +0.023, 3/4 (CCD −0.012). Confirmation queued
   (seeds 3–5 LOSO + 3-seed CV).
+* **H17 confirmation (2026-09-27, final).** LOSO 6 seeds, σ_E=2 vs E4_sa: AIHUB +0.008 / CCD +0.008 / MMAU +0.013 / NEXAR +0.006
+  (mean +0.008, worst +0.006, 4/4; seed-ensemble 0.703 / 0.606 → 0.718 / 0.619). Seeds 0–2 +0.013, seeds 3–5 +0.004 (NEXAR −0.010), so
+  the first estimate was inflated. **In-domain CV (3 seeds, `robust_eval`) goes down**: native 0.7683 → 0.7488 (−0.020; ENTRY
+  0.645 → 0.613, side −0.014, evasion −0.015), 1/2 fps −0.015, 1/3 fps −0.011. NEXAR CV +0.007 (>1000-frame clips +0.007).
+  **Not adopted into the default recipe**: the in-domain loss (−0.020) is larger than the cross-source gain (+0.008). It is a
+  leaderboard A/B candidate at most (small gain on unseen sources and long clips). Results `results/robust_h17.json`.
+* **v8 vs v9 at submission size, CV with 6 seeds (E4+E2, 12 members, `robust_eval`)**: stride aug 0.7723 / 0.7481 / 0.7059 at
+  1/1, 1/2, 1/3 fps (NEXAR 0.681) vs stride aug + EMA 0.7631 / 0.7401 / 0.6964 (NEXAR 0.674). v8 is ahead at every frame rate, which agrees
+  with the 12-member LOSO result. **v8 stays the recommended Stage 2.** Results `results/robust_cv6_sa_vs_saema.json`.
