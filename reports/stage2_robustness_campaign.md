@@ -92,3 +92,8 @@ small, distant actors), not further regularisation of the same inputs.
 * `submit_v12_XSbU-E4E2XN4+XSbUB-E4_V3_acc0p4_steer7.zip` — dual backbone (+343 MB, second backbone pass at inference); see log.
 * Recommendation: submit v12 if the runtime/size budget allows, else v11; both keep v10's Stage 3 (accel ±0.4, steer 7°) so the
   Stage 2 change is isolated.
+* 21:14 — **source-clean LOSO** (held-out source's labels, extras and consistency clips all excluded): LOSO_XSbU_E4 vs LOSO_E4_sa,
+  native mean/worst 0.694/0.599 vs 0.683/0.582; **⅓ rate 0.663/0.561 vs 0.628/0.514 (+0.035 / +0.048)** — the robust recipe
+  also transfers better under combined domain + frame-rate shift (the closest proxy of the LB level).
+* 21:13 — v12 built: 16 members + both backbones (zip 556 MB), parity argmax agreement 1.0 (max logit diff 0.004, bf16 ViT-B),
+  smoke passes; Stage 2 inference ≈ 1.3× v11.
