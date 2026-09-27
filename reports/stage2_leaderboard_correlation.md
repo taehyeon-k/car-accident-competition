@@ -67,3 +67,11 @@ submissions, and 1/3-rate was picked after looking at several views (native, 1/2
 Working selection rule from now on: **1/3-rate CV first, 10 fps view second, native CV third**, on duplicate-clean clips.
 Interpretation: the hidden clips behave like our clips at ~1/3 of their native rate (e.g. ~10 fps footage vs our 30 fps sources);
 the exact cadence is still not observable.
+
+## Update 2026-09-27 evening: v10 = 0.5590 — the ⅓-rate rule failed out of sample
+v10 (v8 families + metadata-labelled MM-AU/CCD extras) scored **0.5590**, −0.034 vs v8, although duplicate-clean CV said +0.004 native,
++0.019 at ⅓ rate (forecast 0.607) and ≈ −0.002 in the 10 fps view. Per source (native): AIHUB −0.015, CCD −0.008, MMAU −0.009,
+NEXAR +0.035, ENTRY −0.03…−0.05 on the three non-NEXAR sources; the ⅓-rate gain came from AIHUB and CCD at 3.3 fps (unrealistic:
+the DACON CCD samples are native 10 fps). No offline metric predicted the drop's size. Prime suspect: the pseudo-labelled extras
+(teacher ENTRY / metadata COLLISION conventions, or same-source similarity inflating CV). **v11 / v12 contain the same extras, so
+their forecasts are withdrawn.** Five LB points now: v5 0.5314, v6 0.5277, v7 0.5464, v8 0.5929, v10 0.5590.
