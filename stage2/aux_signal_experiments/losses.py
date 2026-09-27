@@ -120,6 +120,12 @@ def total_loss(out, batch, cfg):
 
 
 def _aux(loss, parts, out, batch, cfg):
+    if cfg.get("w_entry_aux", 0.0) > 0:  # P4: broad auxiliary ENTRY target; the decoded ENTRY head keeps its sharp target
+        from stage2.spotting_experiments.objective import distribution_loss
+        la = distribution_loss(out["entry_aux_logits"], batch["entry_index"], batch["time_valid"], batch["normalized_positions"].float(),
+                               "soft_index", cfg.get("sigma_entry_aux", 3.0))
+        ew = batch["entry_w"].float() if "entry_w" in batch else torch.ones_like(la)
+        parts["entry_aux"] = (ew * la).mean(); loss = loss + cfg["w_entry_aux"] * parts["entry_aux"]
     if cfg.get("risk", "none") != "none":
         parts["risk"] = risk_loss(out, batch, cfg["risk"]); loss = loss + cfg["w_risk"] * parts["risk"]
     if cfg.get("boundary", "none") != "none":

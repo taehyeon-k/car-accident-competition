@@ -285,6 +285,8 @@ def main():
     p.add_argument("--w-entry", type=float, default=1.0, help="ENTRY weight in the NT direct loss (1 = NT)")
     p.add_argument("--sigma-entry", type=float, default=None, help="H17: ENTRY-only target width (convention-shift tolerance); default = --sigma")
     p.add_argument("--sigma", type=float, default=1.0, help="direct-target Gaussian width in sampled positions (1 = NT)")
+    p.add_argument("--w-entry-aux", type=float, default=0.0, help="P4: weight of a broad auxiliary ENTRY head (not decoded)")
+    p.add_argument("--sigma-entry-aux", type=float, default=3.0, help="P4: target width of the auxiliary ENTRY head (sampled positions)")
     p.add_argument("--extra-nexar", action="store_true", help="add the metadata/pseudo-labelled unlabelled NEXAR clips (nexar_labels.py)")
     p.add_argument("--extra-labels", default=None, help="label set name for --extra-nexar (default: from --train-split: foldK / fixed)")
     p.add_argument("--stop-epoch", type=int, default=0, help="full-data refit: no selection, save the weights after this epoch")
@@ -356,7 +358,7 @@ def main():
     if a.hr and motion_dim == 0: mode = "custom"
     cfg = dict(vars(a), n_unl=len(unl_ids), hr=a.hr, extra_labels=extra_name, n_extra=len(extra), soft_width=0.0, lr=1e-3, weight_decay=.05, strict_fps_blind=True, selection="direct",
                motion_dim=motion_dim, n_train=len(train_rows), n_val=len(val_rows))
-    model = AuxPyramid(phase_rep=a.phase_rep, risk=a.risk != "none", boundary=a.boundary, lane=a.lane, motion_dim=motion_dim, hr=a.hr, clip_norm=a.clip_norm, causal_entry=a.causal_entry, anchor_attr=a.anchor_attr).to(device)
+    model = AuxPyramid(phase_rep=a.phase_rep, risk=a.risk != "none", boundary=a.boundary, lane=a.lane, motion_dim=motion_dim, hr=a.hr, clip_norm=a.clip_norm, causal_entry=a.causal_entry, anchor_attr=a.anchor_attr, entry_aux=a.w_entry_aux > 0).to(device)
     params = sum(x.numel() for x in model.parameters())
     import copy
     ema = copy.deepcopy(model).eval() if a.ema else None

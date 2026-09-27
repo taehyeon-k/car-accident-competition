@@ -39,7 +39,7 @@ class CausalEntry(nn.Module):
 
 class AuxPyramid(PhasePyramid):
     def __init__(self, phase_rep="none", risk=False, boundary="none", lane="none", motion_dim=0, hr=False, clip_norm="none",
-                 causal_entry=-1, anchor_attr=False, **kw):
+                 causal_entry=-1, anchor_attr=False, entry_aux=False, **kw):
         super().__init__(phase_rep=phase_rep, attach="final", motion=False, **kw)
         H = self.event.in_features
         self.risk = nn.Sequential(nn.Linear(H, 32), nn.GELU(), nn.Linear(32, 1)) if risk else None
@@ -55,6 +55,7 @@ class AuxPyramid(PhasePyramid):
         # "m" = divide motion inputs by their per-clip median magnitude; "xm" = both
         self.clip_norm = clip_norm
         self.causal_entry = CausalEntry(H, lookahead=causal_entry) if causal_entry >= 0 else None
+        self.entry_aux = nn.Linear(H, 1) if entry_aux else None  # P4: broad-target auxiliary ENTRY head (training only, never decoded)
         self.anchor_attr = anchor_attr  # H15: side / evasion pooled at the model's own (detached) ENTRY / COLLISION distributions
         if hr:  # 14x25 high-resolution tokens: per-token LayerNorm + 384->4 projection, flattened (1400) into the input projection
             self.hr_norm = nn.LayerNorm(384); self.hr_tok = nn.Linear(384, 4); motion_dim = motion_dim + 350 * 4
@@ -99,6 +100,8 @@ class AuxPyramid(PhasePyramid):
             else: b = self.bnd(hd.transpose(1, 2)).transpose(1, 2)
             out["bnd_entry_logits"], out["bnd_collision_logits"] = b[..., 0], b[..., 1]
         if self.lane is not None: out["lane_logits"] = self.lane(hd)
+        if self.entry_aux is not None:
+            out["entry_aux_logits"] = self.entry_aux(h).squeeze(-1).masked_fill(~valid, torch.finfo(h.dtype).min / 4)
         if not return_hidden: out.pop("hidden")
         return out
 
@@ -107,7 +110,7 @@ def build(cfg):
     return AuxPyramid(phase_rep=cfg.get("phase_rep", "none"), risk=cfg.get("risk", "none") != "none",
                       boundary=cfg.get("boundary", "none"), lane=cfg.get("lane", "none"), motion_dim=cfg.get("motion_dim", 0),
                       hr=cfg.get("hr", False), clip_norm=cfg.get("clip_norm", "none"), causal_entry=cfg.get("causal_entry", -1),
-                      anchor_attr=cfg.get("anchor_attr", False))
+                      anchor_attr=cfg.get("anchor_attr", False), entry_aux=cfg.get("w_entry_aux", 0.0) > 0)
 
 
 def load(path, device):
