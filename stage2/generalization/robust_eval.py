@@ -93,7 +93,7 @@ def evaluate_loso(run, k, seeds, dev):
                 cfg = torch.load(c, map_location="cpu", weights_only=False)["config"]
                 kind = {"both": "both", "global": "global"}.get(cfg.get("motion", "none"), None)
                 if cfg.get("objmotion"): kind = "both_objfeat" if cfg.get("obj_cache") else "both_obj"
-                models.append((load_model(c, dev), kind))
+                models.append((load_model(c, dev), kind, cfg.get("feats_dir", "")))
         for r in C.rows(str(C.REPO / f"stage2/generalization/loso/{src}_val.jsonl")): preds.append(predict(models, item(r, k), dev))
     return C.breakdown(preds)
 

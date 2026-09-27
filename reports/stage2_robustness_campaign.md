@@ -97,3 +97,8 @@ small, distant actors), not further regularisation of the same inputs.
   also transfers better under combined domain + frame-rate shift (the closest proxy of the LB level).
 * 21:13 — v12 built: 16 members + both backbones (zip 556 MB), parity argmax agreement 1.0 (max logit diff 0.004, bf16 ViT-B),
   smoke passes; Stage 2 inference ≈ 1.3× v11.
+* 22:15 — source-clean LOSO (mean / worst source), native and ⅓ rate: E4_sa 0.683/0.582, 0.628/0.514; XSbU_E4 0.694/0.599,
+  0.663/0.561; XSbUB_E4 (ViT-B) 0.705/0.613, 0.664/0.592; **XSbU_E4 + XSbUB_E4 0.712/0.626, 0.674/0.597**.
+* 22:00 — **LB reality check: v10 = 0.5590 (forecast 0.607; −0.034 vs v8).** The ⅓-rate rule failed out of sample; v10's
+  extras (metadata-labelled MM-AU/CCD) are the prime suspect and are also in v11/v12, so the v11/v12 forecasts above are withdrawn.
+  The LOSO gains above include the same extras and are not a forecast either.
