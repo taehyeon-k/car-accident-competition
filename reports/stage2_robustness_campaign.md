@@ -123,3 +123,19 @@ Scorecard: ENTRY hit by ENTRY->COLLISION gap and lead-in (pooled native + ⅓ ra
   backbone and object tracks all leave a median +0.3–0.5 s late bias on ≥1.5 s gaps. The model fires when the other vehicle becomes
   salient; the label marks the manoeuvre onset earlier. Labelled duplicate pairs (7, all short-gap) agree on ENTRY within 0.3 s
   (median 0.07 s), so annotation noise is not demonstrated — but there is no long-gap agreement data.
+
+### Option 3 — high-resolution object-appearance input (`stage2/objtrack/obj_crops.py`, `objapp_features.py`)
+Per native frame the 3 most prominent detected vehicles (area x centrality; RF-DETR + ByteTrack; no labels) are cropped (box +25 %,
+224 x 224) and encoded with the geometry DINOv3-S; per slot: presence, box geometry, growth / lateral approach vs the same track,
+32-d PCA of the crop embedding (label-free PCA) → 120-d per frame (k1/k2/k3), fed through `--objmotion`. Coverage: ≥ 1 vehicle slot at
+GT ENTRY on 99 % of clips (a clip-level track selection covered far fewer — fragmented tracks).
+| arm (3 seeds) | native | ⅓ | ENTRY <0.5 / 0.5-1 / 1-1.5 / 1.5-2.5 / >2.5 s | crop25 ENTRY / slope | long-gap bias |
+|---|---|---|---|---|---|---|
+| E4_sb (control) | 0.747 | 0.702 | .96 / .66 / .52 / .29 / .23 | .47 / .50 | +0.40 s |
+| **E4_sbOA (+ object appearance)** | 0.737 | 0.694 | .90 / .57 / .51 / **.40** / .10 | .51 / .57 | **+0.30 s** |
+| E4_sb + E4_sbu (6) | 0.750 | 0.710 | .95 / .67 / .53 / .30 / .23 | .47 / .51 | +0.40 s |
+| **E4_sb + E4_sbOA (6)** | **0.758** | 0.706 | .94 / .61 / .53 / **.40** / .20 | .49 / .53 | **+0.30 s** |
+**First intervention that moves long-gap ENTRY**: 1.5-2.5 s bin .29 → .40, late bias −0.1 s; alone it costs short-gap ENTRY, in an
+ensemble with a plain family it keeps the long-gap gain and raises native ENTRY (.616 → .634). >2.5 s bin has 30 clip-views (noisy).
+Deployment would need RF-DETR + ByteTrack + crop encoding in the Stage 2 runtime. (Note: arm name E4_sbO was already the
+official-label arm; the object arm is E4_sbOA.)
