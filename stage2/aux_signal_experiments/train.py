@@ -476,7 +476,7 @@ def main():
         if a.objmotion: views = {k: [add_obj(it, k) for it in v] for k, v in views.items()}
     if a.kd_dir:  # teacher targets of this fold's training clips, per input view (native k1, stride views k2 / k3)
         import re as _re
-        kdf = C.REPO / a.kd_dir / f"fold{_re.search(r'fold(\d)_train', str(a.train_split)).group(1)}"
+        _m = _re.search(r'fold(\d)_train', str(a.train_split)); kdf = C.REPO / a.kd_dir / (f"fold{_m.group(1)}" if _m else "all")  # full refit: all/
         for it in train_items: it["kd_path"] = str(kdf / "k1" / f"{it['sample_id']}.npy")
         for k_, vs in views.items():
             for it in vs: it["kd_path"] = str(kdf / f"k{k_}" / f"{it['sample_id']}.npy")
