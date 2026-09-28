@@ -1,0 +1,26 @@
+## long-gap rescues by E4_sa+E2_sa+XN4_sa+D4Ro+D5H (B0, B1 miss)
+  aihub_bb_1_211030_vehicle_208_55965 gap 1.53s | E4_sa+E2_sa+XN4_sa+D4Ro+D5H err +0.20s | B0 +0.93s | B1 +0.33s
+## actor-selection failures that D5H misses
+  aihub_bb_1_190227_vehicle_126_194 gap 1.47s err -1.60s | margin 0.21 | actor at ENTRY True | pred==GT-collision actor False
+  aihub_bb_1_210402_vehicle_46_338 gap 0.93s err +0.33s | margin 1.78 | actor at ENTRY True | pred==GT-collision actor True
+  aihub_bb_1_220521_vehicle_143_027 gap 1.47s err +0.60s | margin 0.15 | actor at ENTRY True | pred==GT-collision actor False
+  nexar_00025 gap 0.73s err -9.07s | margin 2.20 | actor at ENTRY True | pred==GT-collision actor True
+  nexar_00225 gap 1.37s err -3.93s | margin 1.28 | actor at ENTRY True | pred==GT-collision actor True
+  nexar_00373 gap 0.90s err -0.39s | margin 1.06 | actor at ENTRY True | pred==GT-collision actor True
+  aihub_bb_1_130207_vehicle_108_085 gap 1.13s err -0.40s | margin 0.45 | actor at ENTRY True | pred==GT-collision actor True
+  aihub_bb_1_150730_vehicle_123_199 gap 0.80s err -0.33s | margin 0.10 | actor at ENTRY True | pred==GT-collision actor True
+  (29 such clips)
+## ENTRY pulled toward COLLISION (long-gap clips >= 1.5 s: misses predicted in the later half of the ENTRY..COLLISION span or later)
+  E4_sa+E2_sa+XN4_sa@s0      17/61 = 0.28  e.g. aihub_bb_1_130420_vehicle_194_070 err +1.13s gap 2.07s
+  ODS@s0                     17/61 = 0.28  e.g. ccd_000475 err +0.90s gap 1.80s
+  E4_sa+E2_sa+XN4_sa+D4Ro+D5H 18/61 = 0.30  e.g. aihub_bb_1_130420_vehicle_194_070 err +1.13s gap 2.07s
+  D5H                        18/61 = 0.30  e.g. ccd_000475 err +0.90s gap 1.80s
+  D4Ro@s0                    18/61 = 0.30  e.g. aihub_bb_1_130420_vehicle_194_070 err +1.13s gap 2.07s
+  D5                         15/61 = 0.25  e.g. ccd_000475 err +0.90s gap 1.80s
+  D4Ro+D5H                   18/61 = 0.30  e.g. aihub_bb_1_130420_vehicle_194_070 err +1.13s gap 2.07s
+## dynamic-label shifts (D2, last epoch, native view)
+  fold 0: nexar_00324 -1, mmau_002436 -1, nexar_00031 -1
+  fold 1: aihub_bb_1_190227_vehicle_126_194 -1, aihub_bb_1_191112_vehicle_125_056 -1, mmau_005359 -1
+  fold 2: aihub_bb_1_170731_vehicle_240_53229 -1, mmau_005535 -1, aihub_bb_1_181004_vehicle_192_029 -1
+  fold 3: ccd_000246 -1, nexar_00025 -1, aihub_bb_1_210621_vehicle_245_21554 +1
+  fold 4: aihub_bb_1_190216_vehicle_123_306 -1, ccd_000923 -1, ccd_001050 -1

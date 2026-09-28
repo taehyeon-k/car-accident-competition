@@ -28,6 +28,7 @@ from .clean_eval import EXCL
 RES = C.REPO / "stage2/generalization/results/entry_suite"
 CONDS = {"k1": (1, 0.0), "k2": (2, 0.0), "k3": (3, 0.0), "crop50": (1, 0.5), "crop25": (1, 0.25)}
 GAPS = [(0, .5), (.5, 1), (1, 1.5), (1.5, 2.5), (2.5, 99)]
+PHYS = 0.0  # --phys w: lightweight physical decoder weight (0 = plain decoding)
 
 
 def members(run, fold, seeds, dev):
@@ -39,42 +40,76 @@ def members(run, fold, seeds, dev):
             cfg = torch.load(c, map_location="cpu", weights_only=False)["config"]
             kind = {"both": "both", "global": "global"}.get(cfg.get("motion", "none"), None)
             if cfg.get("objmotion"): kind = "both_objfeat" if cfg.get("obj_cache") else "both_obj"
-            out.append((load_model(c, dev), kind, cfg.get("feats_dir", ""), s))
+            out.append((load_model(c, dev), kind, cfg.get("feats_dir", ""), s, eval_cache(cfg)))
     return out
+
+
+def eval_cache(cfg):
+    """evaluation object cache of a member: actor caches <layout>[/fold{f}]/train -> .../eval; otherwise OBJ_CACHE (None)"""
+    oc = cfg.get("obj_cache") or ""
+    if "cache_actorfeat" not in oc: return None
+    parts = oc.rstrip("/").split("/"); parts[-1] = "eval"
+    if parts[-2].startswith("fold"): parts[-2] = "fold{fold}"
+    return "/".join(parts)
 
 
 @torch.inference_mode()
 def member_probs(ms, it, dev, entry_key):
     v = torch.ones(1, len(it["frames"]), dtype=torch.bool, device=dev); x = it["x"][None].to(dev); xs = {}; out = []
-    for m, kind, fd, s in ms:
+    for m, kind, fd, s, oc in ms:
+        if oc and kind == "both_objfeat": kind = oc   # member-specific object cache (item computed per cache in run_arm)
         xm = x
         if fd:
             if fd not in xs: xs[fd] = torch.from_numpy(np.ascontiguousarray(np.load(f"{fd}/{it['sid']}.npy", mmap_mode="r")[it["abs"]]))[None].to(dev)
             xm = xs[fd]
-        o = m(xm, v, motion=it[kind][None].to(dev)) if kind else m(xm, v)
+        mo = (it["_oc"][kind]["both_objfeat"] if kind not in it else it[kind]) if kind else None
+        o = m(xm, v, motion=mo[None].to(dev)) if kind else m(xm, v)
         ek = entry_key if entry_key in o else "entry_logits"
         out.append((s, o[ek][0].float().softmax(-1), o["collision_logits"][0].float().softmax(-1),
-                    float(o["side_logits"][0].float().softmax(-1)[1]), float(o["evasion_logits"].float().sigmoid().reshape(-1)[0])))
+                    float(o["side_logits"][0].float().softmax(-1)[1]), float(o["evasion_logits"].float().sigmoid().reshape(-1)[0]),
+                    o["obj_state_logits"][0].float().softmax(-1) if "obj_state_logits" in o else None))
     return out
 
 
 def decode(parts, it, r):
     pe = torch.stack([p[1] for p in parts]).mean(0); pc = torch.stack([p[2] for p in parts]).mean(0)
-    ei, ci = constrained_anchors(pe.log()[None], pc.log()[None]); fr = it["frames"]
+    le = pe.log()
+    if PHYS and all(len(p) > 5 and p[5] is not None for p in parts):  # Stage2_experiments lightweight physical decoder (no gap / position prior)
+        st = torch.stack([p[5] for p in parts]).mean(0); T = len(pe); m = 3
+        ps = pe.clone(); ps[1:-1] = (pe[:-2] + 2 * pe[1:-1] + pe[2:]) / 4                      # no isolated one-position spikes
+        csum = lambda x: torch.cat([x.new_zeros(1), x.cumsum(0)])
+        cb, ca = csum(st[:, 0]), csum(st[:, 2]); t = torch.arange(T, device=pe.device)
+        lo, hi = (t - m).clamp_min(0), (t + m).clamp_max(T - 1)
+        before = torch.where(t > 0, (cb[t] - cb[lo]) / (t - lo).clamp_min(1), torch.full_like(pe, .5))
+        after = torch.where(t < T - 1, (ca[hi + 1] - ca[t + 1]) / (hi - t).clamp_min(1), torch.full_like(pe, .5))
+        le = ps.clamp_min(1e-12).log() + PHYS * (before + after - 1)                            # AFTER persists, BEFORE precedes
+    ei, ci = constrained_anchors(le[None], pc.log()[None]); fr = it["frames"]
     return {"sample_id": r["sample_id"], "source_id": r["source_id"], "entry_frame": int(fr[int(ei[0])]), "collision_frame": int(fr[int(ci[0])]),
             "entry_side": int(np.mean([p[3] for p in parts]) >= .5), "evasion_space": int(np.mean([p[4] for p in parts]) >= .5),
             "entry_gt": int(r["entry_frame"]), "collision_gt": int(r["collision_frame"]), "entry_side_gt": int(r["entry_side"] == "RIGHT"),
-            "evasion_gt": int(r["evasion_space"]), "num_available_frames": it["n_native"], "_lo": int(fr[0]), "_hi": int(fr[-1]), "_n": len(fr)}
+            "evasion_gt": int(r["evasion_space"]), "num_available_frames": it["n_native"], "_lo": int(fr[0]), "_hi": int(fr[-1]), "_n": len(fr),
+            "_npk": n_peaks(pe.cpu().numpy())}
+
+
+def n_peaks(p, rel=0.25):
+    """ENTRY distribution modes: local maxima >= rel x the global maximum, merged when closer than 3 positions (multi-peak diagnostic)"""
+    m = p.max(); pk = [t for t in range(len(p)) if p[t] >= rel * m and (t == 0 or p[t] >= p[t - 1]) and (t == len(p) - 1 or p[t] > p[t + 1])]
+    out = []
+    for t in pk:
+        if not out or t - out[-1] >= 3: out.append(t)
+    return len(out)
 
 
 def run_arm(run, seeds, dev, entry_key="entry_logits"):
     P = {c: {"ens": [], **{f"s{s}": [] for s in seeds}} for c in CONDS}
+    from . import robust_eval
     for f in range(5):
-        ms = members(run, f, seeds, dev)
+        ms = members(run, f, seeds, dev); robust_eval.FOLD_HINT = f
         for r in C.rows(str(FOLDS / f"fold{f}_val.jsonl")):
             if r["sample_id"] in EXCL: continue
             for cond, (k, cr) in CONDS.items():
-                it = item(r, k, cr); parts = member_probs(ms, it, dev, entry_key)
+                it = item(r, k, cr); it["_oc"] = {m_[4]: item(r, k, cr, oc=m_[4]) for m_ in ms if m_[4]}
+                parts = member_probs(ms, it, dev, entry_key)
                 P[cond]["ens"].append(decode(parts, it, r))
                 for s in seeds:
                     sp = [p for p in parts if p[0] == s]
@@ -136,7 +171,9 @@ def prior_baselines(P_ref, fps):
 def main():
     ap = argparse.ArgumentParser(); ap.add_argument("runs", nargs="+"); ap.add_argument("--seeds", type=int, nargs="+", default=[0, 1, 2])
     ap.add_argument("--entry-key", default="entry_logits"); ap.add_argument("--tag", default=""); ap.add_argument("--priors", action="store_true")
+    ap.add_argument("--phys", type=float, default=0.0, help="lightweight physical decoder weight on the object-state persistence terms")
     a = ap.parse_args(); dev = torch.device("cuda"); fps = C.fps_table(); RES.mkdir(parents=True, exist_ok=True)
+    global PHYS; PHYS = a.phys
     for run in a.runs:
         key = run + (f"@{a.tag}" if a.tag else "")
         P = run_arm(run, a.seeds, dev, a.entry_key)
@@ -172,7 +209,7 @@ def gapood(run, seeds, dev):
                 cfg = torch.load(c, map_location="cpu", weights_only=False)["config"]
                 kind = {"both": "both", "global": "global"}.get(cfg.get("motion", "none"), None)
                 if cfg.get("objmotion"): kind = "both_objfeat" if cfg.get("obj_cache") else "both_obj"
-                ms.append((load_model(c, dev), kind, cfg.get("feats_dir", ""), s))
+                ms.append((load_model(c, dev), kind, cfg.get("feats_dir", ""), s, eval_cache(cfg)))
         tr = C.rows(str(G / f"{sp}_train.jsonl"))
         gfrac = float(np.median([(int(r["collision_frame"]) - int(r["entry_frame"])) / max(int(r["num_frames"]) - 1, 1) for r in tr]))
         P = {k: {"ens": [], "prior": [], **{f"s{s}": [] for s in seeds}} for k in ("k1", "k3")}

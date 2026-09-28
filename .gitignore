@@ -50,3 +50,5 @@ geometry_cache/
 /stage2/objtrack/cache_corridor/
 /stage2/objtrack/cache_objlane_*/
 /stage2/objtrack/cache_objcrop6/
+# Stage2_experiments actor caches (tracks-derived actors, crops, features; ~GBs, reproducible)
+/stage2/actor/cache_*/

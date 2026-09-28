@@ -164,6 +164,25 @@ def consistency_loss(o_ref, b_ref, o_aug, b_aug):
     return loss
 
 
+def dyn_assign(o, batch, r, lam, late, stats=None):
+    """Stage2_experiments D2 — conservative local dynamic ENTRY target. Per labelled clip, t* = argmin over |t - e| <= r (valid, and
+    strictly before COLLISION) of  lam * |t - e| * (late if t > e else 1) - log p_entry(t),  with p_entry the model's own detached ENTRY
+    distribution. Sampled positions only (FPS-blind). A later move pays `late` x the displacement cost (no drift toward COLLISION)."""
+    lp = o["entry_logits"].detach().float().masked_fill(~batch["time_valid"], -1e4).log_softmax(-1)
+    e0, c = batch["entry_index"].long(), batch["collision_index"].long(); n = batch["time_valid"].sum(1)
+    ew = batch["entry_w"] if "entry_w" in batch else torch.ones_like(e0, dtype=torch.float32)
+    new = e0.clone()
+    for b in range(len(e0)):
+        e = int(e0[b])
+        if float(ew[b]) <= 0: continue
+        cand = [t for t in range(max(0, e - r), min(e + r, int(c[b]) - 1, int(n[b]) - 1) + 1)]
+        if not cand: continue
+        cost = [lam * abs(t - e) * (late if t > e else 1.0) - float(lp[b, t]) for t in cand]
+        new[b] = cand[int(np.argmin(cost))]
+    if stats is not None: stats.extend((new - e0).tolist())
+    return new
+
+
 def crop_item(row, base, rng, lo_frac=0.25, hi_frac=0.75):
     """Window-crop augmentation: a random window of U(lo, hi) x N native frames that still contains ENTRY..COLLISION, re-sampled
     adaptively (varies lead-in, clip length and the events' relative position; targets the position prior / long lead-in failure).
@@ -372,14 +391,19 @@ def main():
     p.add_argument("--unl-stride", action="store_true", help="stride-augment the --extra-unl clips with the --stride-aug probabilities")
     p.add_argument("--epochs", type=int, default=30); p.add_argument("--patience", type=int, default=7)
     p.add_argument("--batch-size", type=int, default=4)
+    p.add_argument("--entry-hazard", choices=["none", "replace", "residual"], default="none", help="D4: single-transition hazard ENTRY head")
+    p.add_argument("--w-haz", type=float, default=0.0, help="D4: weight of the hazard-alone ENTRY distribution loss")
+    p.add_argument("--dyn-label", default="", help="D2: 'r,lam,late,warmup' local dynamic ENTRY target (positions, cost/position, late factor, epochs)")
+    p.add_argument("--obj-cache-val", default="", help="object/actor cache for the validation clips (actor from a predicted COLLISION)")
     p.add_argument("--pos-grl", type=float, default=0.0, help="Exp F: ENTRY-position probe with gradient reversal of this weight (<0: detached control probe)")
     p.add_argument("--train-split", default="train"); p.add_argument("--val-split", default="val"); p.add_argument("--output", default=None)
     a = p.parse_args()
     CONS.update(entry_w=a.cons_entry_w, collision_w=a.cons_coll_w, entry_bins=a.cons_entry_bins)
     if a.feats_unl_dir: os.environ["FEATS_UNL_DIR"] = str(Path(a.feats_unl_dir) if Path(a.feats_unl_dir).is_absolute() else C.REPO / a.feats_unl_dir)
     if a.feats_dir: os.environ["FEATS_DIR"] = str(Path(a.feats_dir) if Path(a.feats_dir).is_absolute() else C.REPO / a.feats_dir)
+    global OBJ
     if a.obj_cache:
-        global OBJ; OBJ = Path(a.obj_cache) if Path(a.obj_cache).is_absolute() else C.REPO / a.obj_cache
+        OBJ = Path(a.obj_cache) if Path(a.obj_cache).is_absolute() else C.REPO / a.obj_cache
     random.seed(a.seed); np.random.seed(a.seed); torch.manual_seed(a.seed); torch.cuda.manual_seed_all(a.seed)
     torch.set_num_threads(2); device = torch.device("cuda")
     out = Path(a.output) if a.output else RESULTS / a.run_id / f"seed{a.seed}"
@@ -421,7 +445,11 @@ def main():
         assert a.base_loss == "nt", "--mask-entry-sources uses the weighted NT loss"
     if a.objmotion:
         assert a.motion == "both" and not a.geo and not extra, "--objmotion is appended to the 'both' motion input"
-        for it in train_items + val_items: add_obj(it, 1)
+        for it in train_items: add_obj(it, 1)
+        OBJ_TRAIN = OBJ
+        if a.obj_cache_val: OBJ = Path(a.obj_cache_val) if Path(a.obj_cache_val).is_absolute() else C.REPO / a.obj_cache_val
+        for it in val_items: add_obj(it, 1)
+        OBJ = OBJ_TRAIN
     unl_ids = sorted(p_.name[:-len(".k3.npz")] for p_ in UNL.glob("*.k3.npz")) if a.unl_consistency else []
     if a.unl_exclude:
         prefix = {"AIHUB": "aihub_", "CCD": "ccd_", "MMAU": "mmauu_", "NEXAR": "nexaru_"}[a.unl_exclude]
@@ -451,7 +479,7 @@ def main():
                motion_dim=motion_dim, n_train=len(train_rows), n_val=len(val_rows))
     model = AuxPyramid(phase_rep=a.phase_rep, risk=a.risk != "none", boundary=a.boundary, lane=a.lane, motion_dim=motion_dim, hr=a.hr, clip_norm=a.clip_norm, causal_entry=a.causal_entry, anchor_attr=a.anchor_attr, entry_aux=a.w_entry_aux > 0, feat_dim=feat_dim, gap_head=a.w_gap > 0,
                        entry_bnd=a.entry_bnd, entry_bnd_alpha=a.entry_bnd_alpha, hard_state=a.w_hard_state > 0, obj_branch=a.obj_branch, obj_k=a.obj_k, obj_d=a.obj_d, obj_alpha=a.obj_alpha, obj_state=a.w_obj_state > 0,
-                       obj_lane_drop=a.obj_lane_drop, obj_rgate=a.obj_rgate, pos_grl=a.pos_grl).to(device)
+                       obj_lane_drop=a.obj_lane_drop, obj_rgate=a.obj_rgate, pos_grl=a.pos_grl, entry_hazard=a.entry_hazard).to(device)
     params = sum(x.numel() for x in model.parameters())
     import copy
     ema = copy.deepcopy(model).eval() if a.ema else None
@@ -472,8 +500,9 @@ def main():
         return to_device(b, device)
 
     history, best, best_epoch, stale, best_state = [], -1.0, 0, 0, None; wall = time.perf_counter()
+    dyn = [float(x) for x in a.dyn_label.split(",")] if a.dyn_label else None; dyn_last = {}
     for epoch in range(1, a.epochs + 1):
-        model.train(); sums = {}
+        model.train(); sums = {}; dstats = []
         pick = torch.randperm(len(extra), generator=gen)[:n_extra].tolist() if extra else []
         if views:  # temporal-rate augmentation: each labelled clip at stride 1/2/3 with the given probabilities
             ks = torch.multinomial(torch.tensor(probs), len(train_items), replacement=True, generator=gen).tolist()
@@ -536,6 +565,11 @@ def main():
                 xb = xb * keep + std * xb.std(-1, keepdim=True) * torch.randn_like(xb)
                 batch["x"] = xb
             o = model(batch["x"], batch["time_valid"], motion=batch["motion"], hr=batch.get("hr")) if model.uses_motion else model(batch["x"], batch["time_valid"])
+            if dyn and epoch > dyn[3]:  # D2: replace the ENTRY target by the local dynamic assignment (targets only)
+                before = len(dstats); batch = dict(batch); ne = dyn_assign(o, batch, int(dyn[0]), dyn[1], dyn[2], dstats)
+                batch["entry_index"] = ne; batch["phase_entry_index"] = ne
+                for j, i in enumerate(order[s:s + a.batch_size]):
+                    dyn_last[f"{pool[i]['sample_id']}|{int(pool[i].get('x_shape') or len(pool[i]['frame_numbers']))}"] = dstats[before + j]
             loss, parts = total_loss(o, batch, cfg)
             if a.consistency:  # same clips at a random lower frame rate; native-rate view (index into train_items) is the teacher
                 idx = order[s:s + a.batch_size]; lab = [i for i in idx if i < len(base)]
@@ -561,6 +595,9 @@ def main():
                     for t_, s_ in zip(ema.parameters(), model.parameters()): t_.lerp_(s_, 1 - a.ema)
                     for t_, s_ in zip(ema.buffers(), model.buffers()): t_.copy_(s_)
             for k, v in {"loss": loss, **parts}.items(): sums[k] = sums.get(k, 0.0) + float(v)
+        if dstats:
+            ds = np.array(dstats); sums["dyn_shift_mean"] = float(ds.mean()) * steps; sums["dyn_frac_shift"] = float((ds != 0).mean()) * steps
+            sums["dyn_frac_late"] = float((ds > 0).mean()) * steps
         if a.stop_epoch and epoch != a.stop_epoch:  # fixed-epoch mode: per-epoch validation is logging only -> skip it
             history.append({"epoch": epoch, **{f"train_{k}": v / steps for k, v in sums.items()}}); continue
         val_pred = infer(m_eval, val_items, device, mode, a.lane)
@@ -583,6 +620,7 @@ def main():
                "runtime": {"wall_seconds": time.perf_counter() - wall, "parameter_count": params, "head_ms_per_video": head_ms}}
     torch.save({"model": best_state, "config": cfg}, out / "checkpoint.pt")
     C.dump(out / "history.json", history); C.dump(out / "metrics.json", summary); C.dump(out / "predictions.json", preds)
+    if dyn: C.dump(out / "dyn_label_last_epoch.json", dyn_last)
     print("RESULT", a.run_id, a.seed, out.name, C.short_table(summary["breakdown"]), f"| best_ep {best_epoch}", flush=True)
 
 

@@ -47,7 +47,7 @@ class CausalEntry(nn.Module):
 
 class AuxPyramid(PhasePyramid):
     def __init__(self, phase_rep="none", risk=False, boundary="none", lane="none", motion_dim=0, hr=False, clip_norm="none",
-                 causal_entry=-1, anchor_attr=False, entry_aux=False, gap_head=False, entry_bnd="none", entry_bnd_alpha=1.0, hard_state=False, obj_branch="none", obj_k=3, obj_d=0, obj_alpha=1.0, obj_state=False, obj_lane_drop=0.0, obj_rgate=False, pos_grl=0.0, **kw):
+                 causal_entry=-1, anchor_attr=False, entry_aux=False, gap_head=False, entry_bnd="none", entry_bnd_alpha=1.0, hard_state=False, obj_branch="none", obj_k=3, obj_d=0, obj_alpha=1.0, obj_state=False, obj_lane_drop=0.0, obj_rgate=False, pos_grl=0.0, entry_hazard="none", **kw):
         super().__init__(phase_rep=phase_rep, attach="final", motion=False, **kw)
         H = self.event.in_features
         # Exp 2: object/lane ENTRY branch. The per-object features ride at the END of the motion input (segments: [max, mean] of K x D);
@@ -90,6 +90,16 @@ class AuxPyramid(PhasePyramid):
         # Exp F: temporal-position probe on the ENTRY-pooled representation (pos_grl > 0: gradient reversal with that weight;
         # pos_grl < 0: control probe on detached features, no effect on the model)
         self.pos_grl = pos_grl; self.pos_probe = nn.Sequential(nn.Linear(H, 32), nn.GELU(), nn.Linear(32, 5)) if pos_grl else None
+        # Stage2_experiments D4: single-transition hazard ENTRY head. h_t = sigmoid(a_t), P(E=t) = h_t prod_{j<t} (1 - h_j); a_t from the
+        # attention-pooled object/actor representation (32) + a projection of the fused hidden state (32). No position input.
+        # "replace": ENTRY = hazard distribution; "residual": ENTRY logits + beta * log P_hazard (beta = sigmoid(g), g init 0)
+        self.entry_hazard = entry_hazard
+        if entry_hazard != "none":
+            assert obj_branch != "none", "the hazard head is conditioned on the object/actor branch"
+            self.hz_h = nn.Sequential(nn.LayerNorm(H), nn.Linear(H, 32), nn.GELU())
+            self.hz_out = nn.Sequential(nn.Dropout(0.35), nn.Linear(64, 32), nn.GELU(), nn.Linear(32, 1))
+            nn.init.constant_(self.hz_out[-1].bias, -3.0)  # low initial hazard
+            if entry_hazard == "residual": self.hz_gate = nn.Parameter(torch.tensor(0.0))
         self.anchor_attr = anchor_attr  # H15: side / evasion pooled at the model's own (detached) ENTRY / COLLISION distributions
         if hr:  # 14x25 high-resolution tokens: per-token LayerNorm + 384->4 projection, flattened (1400) into the input projection
             self.hr_norm = nn.LayerNorm(384); self.hr_tok = nn.Linear(384, 4); motion_dim = motion_dim + 350 * 4
@@ -155,10 +165,10 @@ class AuxPyramid(PhasePyramid):
             z = self.ob_in(torch.cat([mx, mean], -1))                                    # [B, T, K, 32]
             hz = self.ob_t[:3](z.permute(0, 2, 3, 1).reshape(B * K, 32, T))                              # [B*K, 32, T]
             sc = self.ob_t[3](hz).reshape(B, K, T).transpose(1, 2)                                          # [B, T, K]
-            if self.ob_state is not None:  # attention-pooled (by the per-object onset scores) object representation per position
+            if self.ob_state is not None or self.entry_hazard != "none":  # attention-pooled (by the per-object onset scores) object representation
                 att = sc.masked_fill(~present, -1e4).softmax(-1) * present.any(-1, keepdim=True)
                 pooled = torch.einsum("btk,btkc->btc", att, hz.reshape(B, K, 32, T).permute(0, 3, 1, 2))
-                out["obj_state_logits"] = self.ob_state(pooled)
+                if self.ob_state is not None: out["obj_state_logits"] = self.ob_state(pooled)
             ob = torch.logsumexp(sc.masked_fill(~present, -1e4), -1).masked_fill(~present.any(-1), 0.0)  # no vehicle -> neutral
             neg = torch.finfo(torch.float32).min / 4; ob = ob.masked_fill(~valid, neg)
             out["entry_obj_logits"] = ob; out.setdefault("entry_v8_logits", out["entry_logits"])
@@ -169,6 +179,13 @@ class AuxPyramid(PhasePyramid):
                 g_in = torch.cat([rel, (ob.clamp(-10, 10) / 10)[..., None]], -1)
                 alpha = self.obj_alpha * torch.sigmoid(self.ob_rgate(g_in).squeeze(-1))
             out["entry_logits"] = (out["entry_logits"].float() + alpha * ob.clamp_min(-1e4)).masked_fill(~valid, neg)
+            if self.entry_hazard != "none":
+                a_t = self.hz_out(torch.cat([pooled.float(), self.hz_h(h.float())], -1)).squeeze(-1).float()
+                lsp, lsn = F.logsigmoid(a_t), F.logsigmoid(-a_t).masked_fill(~valid, 0.0)
+                logp = (lsp + torch.cumsum(lsn, 1) - lsn).masked_fill(~valid, neg)   # log h_t + sum_{j<t} log(1 - h_j)
+                out["entry_haz_logits"] = logp
+                if self.entry_hazard == "replace": out["entry_logits"] = logp
+                else: out["entry_logits"] = (out["entry_logits"] + torch.sigmoid(self.hz_gate) * logp.clamp_min(-1e4)).masked_fill(~valid, neg)
         if self.hard_state is not None:
             l0 = out["level0"] * valid[..., None]; d = l0 - torch.cat([l0[:, :1], l0[:, :-1]], 1)
             out["hard_state_logits"] = self.hard_state(self.drop(torch.cat([l0, d], -1))).float()
@@ -197,7 +214,8 @@ def build(cfg):
                       entry_bnd=cfg.get("entry_bnd", "none"), entry_bnd_alpha=cfg.get("entry_bnd_alpha", 1.0),
                       hard_state=cfg.get("w_hard_state", 0.0) > 0, obj_branch=cfg.get("obj_branch", "none"), obj_k=cfg.get("obj_k", 3),
                       obj_d=cfg.get("obj_d", 0), obj_alpha=cfg.get("obj_alpha", 1.0), obj_state=cfg.get("w_obj_state", 0.0) > 0,
-                      obj_lane_drop=cfg.get("obj_lane_drop", 0.0), obj_rgate=cfg.get("obj_rgate", False), pos_grl=cfg.get("pos_grl", 0.0))
+                      obj_lane_drop=cfg.get("obj_lane_drop", 0.0), obj_rgate=cfg.get("obj_rgate", False), pos_grl=cfg.get("pos_grl", 0.0),
+                      entry_hazard=cfg.get("entry_hazard", "none"))
 
 
 def load(path, device):

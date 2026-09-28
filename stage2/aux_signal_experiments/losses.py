@@ -149,6 +149,11 @@ def _aux(loss, parts, out, batch, cfg):
         lo = distribution_loss(out["entry_obj_logits"], batch["entry_index"], batch["time_valid"], batch["normalized_positions"].float(), "soft_index", 1.0)
         ew = batch["entry_w"].float() if "entry_w" in batch else torch.ones_like(lo)
         parts["entry_obj"] = (ew * lo).mean(); loss = loss + cfg["w_obj_branch"] * parts["entry_obj"]
+    if cfg.get("w_haz", 0.0) > 0 and "entry_haz_logits" in out:  # D4: the hazard distribution is also a detector on its own
+        from stage2.spotting_experiments.objective import distribution_loss
+        lh = distribution_loss(out["entry_haz_logits"], batch["entry_index"], batch["time_valid"], batch["normalized_positions"].float(), "soft_index", 1.0)
+        ew = batch["entry_w"].float() if "entry_w" in batch else torch.ones_like(lh)
+        parts["entry_haz"] = (ew * lh).mean(); loss = loss + cfg["w_haz"] * parts["entry_haz"]
     if cfg.get("w_obj_rank", 0.0) > 0 or cfg.get("w_obj_state", 0.0) > 0:  # Exp D: onset supervision on the object/lane branch itself
         ob = _hard_boundary(out, batch, cfg, key="entry_obj_logits", state_key="obj_state_logits")
         parts["obj_rank"] = ob["hb_rank"]; loss = loss + cfg.get("w_obj_rank", 0.0) * ob["hb_rank"]

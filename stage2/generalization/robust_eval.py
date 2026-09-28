@@ -25,10 +25,13 @@ import os
 FOLDS = Path(os.environ["ROBUST_FOLDS"]) if os.environ.get("ROBUST_FOLDS") else C.REPO / "stage2/long_context_v2_experiments/folds"  # score against another label convention
 
 
+FOLD_HINT = 0  # set by the evaluators per CV fold ('{fold}' in OBJ_CACHE = per-fold feature caches)
+
+
 def root(run): return next(r for r in ROOTS if (r / run.split("+")[0]).is_dir())
 
 
-def item(row, k, crop=0.0, corrupt=""):
+def item(row, k, crop=0.0, corrupt="", oc=None):
     sid = row["sample_id"]; frames_all, feats = C.dense(sid)
     if k == 1:
         kept = np.arange(len(frames_all)); mot = np.load(C.DENSE / f"{sid}.motion.npy")
@@ -52,8 +55,10 @@ def item(row, k, crop=0.0, corrupt=""):
     ob = np.load(C.REPO / f"stage2/generalization/cache_objmotion/k{k}/{sid}.npy") if (C.REPO / f"stage2/generalization/cache_objmotion/k{k}/{sid}.npy").exists() else None
     if ob is not None and crop: ob = ob[sl]
     both = np.concatenate([g, r], 1)
-    oc = os.environ.get("OBJ_CACHE", "stage2/objtrack/cache_objfeat")
+    oc = (oc or os.environ.get("OBJ_CACHE", "stage2/objtrack/cache_objfeat")).replace("{fold}", str(FOLD_HINT))
     of = C.REPO / f"{oc}/k{k}/{sid}.npy"  # RF-DETR + ByteTrack track features (O1), if extracted
+    if crop and (C.REPO / f"{oc}/k{k}c{int(round(crop * 100))}/{sid}.npy").exists():  # condition-specific cache (actor from that window's COLLISION estimate)
+        of = C.REPO / f"{oc}/k{k}c{int(round(crop * 100))}/{sid}.npy"
     obf = np.load(of) if of.exists() else None
     if obf is not None and crop: obf = obf[sl]
     return {"sid": sid, "frames": frames, "x": x, "global": torch.from_numpy(g), "both": torch.from_numpy(both),

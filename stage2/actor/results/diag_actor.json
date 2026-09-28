@@ -1,0 +1,9090 @@
+[
+ {
+  "sid": "aihub_bb_1_000606_vehicle_142_131",
+  "source": "AIHUB",
+  "gap_s": 0.7333333333333333,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 0.042603254318237305,
+   "oracle_in_chain": true,
+   "chain_len": 2
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 0.9176006317138672,
+   "oracle_in_chain": false,
+   "chain_len": 2
+  },
+  "pred_eq_gt": false,
+  "cp": {
+   "est": 44,
+   "how": "depth_rise",
+   "hit": false,
+   "err_s": -1.0
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": false,
+  "ODS_hit": false
+ },
+ {
+  "sid": "aihub_bb_1_070110_vehicle_46_380",
+  "source": "AIHUB",
+  "gap_s": 0.7333333333333333,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 5.191132545471191,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 5.191132545471191,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 59,
+   "how": "cross",
+   "hit": false,
+   "err_s": -0.4
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": false,
+  "ODS_hit": false
+ },
+ {
+  "sid": "aihub_bb_1_100826_vehicle_233_35549",
+  "source": "AIHUB",
+  "gap_s": 3.2,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 2.202068567276001,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 2.278815984725952,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 83,
+   "how": "cross",
+   "hit": false,
+   "err_s": 1.2
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": false,
+  "ODS_hit": false
+ },
+ {
+  "sid": "aihub_bb_1_110129_vehicle_211_28584",
+  "source": "AIHUB",
+  "gap_s": 1.5333333333333334,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 0.75,
+   "margin": 5.0,
+   "oracle_in_chain": null,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 0.75,
+   "margin": 5.0,
+   "oracle_in_chain": null,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 61,
+   "how": "depth_rise",
+   "hit": true,
+   "err_s": 0.0
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": false,
+  "ODS_hit": true
+ },
+ {
+  "sid": "aihub_bb_1_111027_vehicle_149_132",
+  "source": "AIHUB",
+  "gap_s": 0.3333333333333333,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 3.3902339935302734,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 3.3902339935302734,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 89,
+   "how": "cross",
+   "hit": true,
+   "err_s": -0.13333333333333333
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": true,
+  "ODS_hit": true
+ },
+ {
+  "sid": "aihub_bb_1_120524_vehicle_157_002",
+  "source": "AIHUB",
+  "gap_s": 1.3333333333333333,
+  "gt": {
+   "found": true,
+   "at_entry": false,
+   "det_at_entry": false,
+   "continuity": 0.09523809523809523,
+   "margin": 0.04295778274536133,
+   "oracle_in_chain": null,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": false,
+   "det_at_entry": false,
+   "continuity": 0.09523809523809523,
+   "margin": 0.04295778274536133,
+   "oracle_in_chain": null,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": null,
+   "how": "none",
+   "hit": false,
+   "err_s": null
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": false,
+  "ODS_hit": true
+ },
+ {
+  "sid": "aihub_bb_1_130207_vehicle_108_085",
+  "source": "AIHUB",
+  "gap_s": 1.1333333333333333,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 0.4509298801422119,
+   "oracle_in_chain": false,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 0.452481746673584,
+   "oracle_in_chain": false,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 51,
+   "how": "cross",
+   "hit": true,
+   "err_s": -0.26666666666666666
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": false,
+  "ODS_hit": false
+ },
+ {
+  "sid": "aihub_bb_1_130420_vehicle_194_070",
+  "source": "AIHUB",
+  "gap_s": 2.066666666666667,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 1.8536524772644043,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 1.8536524772644043,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 98,
+   "how": "cross",
+   "hit": false,
+   "err_s": 0.6666666666666666
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": false,
+  "ODS_hit": false
+ },
+ {
+  "sid": "aihub_bb_1_141102_vehicle_126_317",
+  "source": "AIHUB",
+  "gap_s": 1.2666666666666666,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 0.5,
+   "margin": 0.24974572658538818,
+   "oracle_in_chain": null,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": false,
+   "det_at_entry": false,
+   "continuity": 0.0,
+   "margin": 5.0,
+   "oracle_in_chain": null,
+   "chain_len": 1
+  },
+  "pred_eq_gt": false,
+  "cp": {
+   "est": 47,
+   "how": "cross",
+   "hit": false,
+   "err_s": -1.8666666666666667
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": false,
+  "ODS_hit": false
+ },
+ {
+  "sid": "aihub_bb_1_150124_vehicle_45_229",
+  "source": "AIHUB",
+  "gap_s": 1.2666666666666666,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 0.95,
+   "margin": 3.3284494876861572,
+   "oracle_in_chain": true,
+   "chain_len": 2
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 1.0302613973617554,
+   "oracle_in_chain": true,
+   "chain_len": 3
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 54,
+   "how": "cross",
+   "hit": true,
+   "err_s": 0.06666666666666667
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": true,
+  "ODS_hit": true
+ },
+ {
+  "sid": "aihub_bb_1_150221_vehicle_187_026",
+  "source": "AIHUB",
+  "gap_s": 1.4666666666666666,
+  "gt": {
+   "found": true,
+   "at_entry": false,
+   "det_at_entry": false,
+   "continuity": 0.5217391304347826,
+   "margin": 3.2124128341674805,
+   "oracle_in_chain": null,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": false,
+   "det_at_entry": false,
+   "continuity": 0.5217391304347826,
+   "margin": 2.7756965160369873,
+   "oracle_in_chain": null,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 66,
+   "how": "depth_rise",
+   "hit": false,
+   "err_s": 1.0666666666666667
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": true,
+  "ODS_hit": true
+ },
+ {
+  "sid": "aihub_bb_1_150304_vehicle_27_098",
+  "source": "AIHUB",
+  "gap_s": 1.0666666666666667,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 0.27737879753112793,
+   "oracle_in_chain": true,
+   "chain_len": 2
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 0.27737879753112793,
+   "oracle_in_chain": true,
+   "chain_len": 2
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 61,
+   "how": "cross",
+   "hit": true,
+   "err_s": 0.0
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": true,
+  "ODS_hit": false
+ },
+ {
+  "sid": "aihub_bb_1_150730_vehicle_123_199",
+  "source": "AIHUB",
+  "gap_s": 0.8,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 0.5310876369476318,
+   "oracle_in_chain": false,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 0.10062551498413086,
+   "oracle_in_chain": false,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 62,
+   "how": "cross",
+   "hit": false,
+   "err_s": -0.8
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": false,
+  "ODS_hit": false
+ },
+ {
+  "sid": "aihub_bb_1_160716_vehicle_247_51894",
+  "source": "AIHUB",
+  "gap_s": 1.0,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 0.796696662902832,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 0.796696662902832,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 40,
+   "how": "cross",
+   "hit": false,
+   "err_s": -1.1333333333333333
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": false,
+  "ODS_hit": false
+ },
+ {
+  "sid": "aihub_bb_1_160820_vehicle_112_285",
+  "source": "AIHUB",
+  "gap_s": 1.0,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 5.196817874908447,
+   "oracle_in_chain": true,
+   "chain_len": 3
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 5.302603244781494,
+   "oracle_in_chain": true,
+   "chain_len": 3
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 119,
+   "how": "cross",
+   "hit": true,
+   "err_s": -0.06666666666666667
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": true,
+  "ODS_hit": true
+ },
+ {
+  "sid": "aihub_bb_1_160928_vehicle_47_158",
+  "source": "AIHUB",
+  "gap_s": 0.9333333333333333,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 0.8,
+   "margin": 2.391160488128662,
+   "oracle_in_chain": false,
+   "chain_len": 2
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 0.8,
+   "margin": 2.4160714149475098,
+   "oracle_in_chain": false,
+   "chain_len": 2
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 53,
+   "how": "cross",
+   "hit": false,
+   "err_s": -0.4666666666666667
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": true,
+  "ODS_hit": true
+ },
+ {
+  "sid": "aihub_bb_1_161016_vehicle_45_203",
+  "source": "AIHUB",
+  "gap_s": 1.7333333333333334,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 1.1984848976135254,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 1.3276586532592773,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 102,
+   "how": "cross",
+   "hit": true,
+   "err_s": -0.06666666666666667
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": false,
+  "ODS_hit": true
+ },
+ {
+  "sid": "aihub_bb_1_161221_vehicle_119_068",
+  "source": "AIHUB",
+  "gap_s": 2.533333333333333,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 1.1254887580871582,
+   "oracle_in_chain": true,
+   "chain_len": 2
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 1.0078577995300293,
+   "oracle_in_chain": true,
+   "chain_len": 2
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 137,
+   "how": "cross",
+   "hit": false,
+   "err_s": 1.9333333333333333
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": false,
+  "ODS_hit": false
+ },
+ {
+  "sid": "aihub_bb_1_170124_vehicle_212_54681",
+  "source": "AIHUB",
+  "gap_s": 1.2,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 0.7894736842105263,
+   "margin": 2.854264497756958,
+   "oracle_in_chain": false,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 0.7894736842105263,
+   "margin": 2.7464330196380615,
+   "oracle_in_chain": false,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 99,
+   "how": "cross",
+   "hit": true,
+   "err_s": 0.13333333333333333
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": true,
+  "ODS_hit": true
+ },
+ {
+  "sid": "aihub_bb_1_170423_vehicle_252_53585",
+  "source": "AIHUB",
+  "gap_s": 1.0,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 0.033006906509399414,
+   "oracle_in_chain": false,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 0.033006906509399414,
+   "oracle_in_chain": false,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 47,
+   "how": "depth_rise",
+   "hit": false,
+   "err_s": -2.8666666666666667
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": true,
+  "ODS_hit": true
+ },
+ {
+  "sid": "aihub_bb_1_170619_vehicle_111_058",
+  "source": "AIHUB",
+  "gap_s": 1.2666666666666666,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 0.95,
+   "margin": 0.6342616081237793,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 0.95,
+   "margin": 0.6342616081237793,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 60,
+   "how": "cross",
+   "hit": true,
+   "err_s": 0.13333333333333333
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": false,
+  "ODS_hit": false
+ },
+ {
+  "sid": "aihub_bb_1_171111_vehicle_149_034",
+  "source": "AIHUB",
+  "gap_s": 2.1333333333333333,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 2.007610321044922,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 2.007610321044922,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 41,
+   "how": "cross",
+   "hit": true,
+   "err_s": -0.2
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": true,
+  "ODS_hit": true
+ },
+ {
+  "sid": "aihub_bb_1_180325_vehicle_210_46122",
+  "source": "AIHUB",
+  "gap_s": 1.8666666666666667,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 2.2155604362487793,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 1.8682870864868164,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 38,
+   "how": "cross",
+   "hit": false,
+   "err_s": -0.5333333333333333
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": true,
+  "ODS_hit": true
+ },
+ {
+  "sid": "aihub_bb_1_180505_vehicle_110_161",
+  "source": "AIHUB",
+  "gap_s": 0.8666666666666667,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 1.8632926940917969,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 2.1077826023101807,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 80,
+   "how": "cross",
+   "hit": false,
+   "err_s": -0.8666666666666667
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": false,
+  "ODS_hit": false
+ },
+ {
+  "sid": "aihub_bb_1_180827_vehicle_126_097",
+  "source": "AIHUB",
+  "gap_s": 0.8666666666666667,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 1.6624586582183838,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 1.6394176483154297,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 22,
+   "how": "depth_rise",
+   "hit": false,
+   "err_s": -3.6666666666666665
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": true,
+  "ODS_hit": true
+ },
+ {
+  "sid": "aihub_bb_1_180925_vehicle_229_53797",
+  "source": "AIHUB",
+  "gap_s": 0.5333333333333333,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 0.8888888888888888,
+   "margin": 2.8785130977630615,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 0.8888888888888888,
+   "margin": 3.0633842945098877,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 47,
+   "how": "cross",
+   "hit": true,
+   "err_s": -0.06666666666666667
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": true,
+  "ODS_hit": true
+ },
+ {
+  "sid": "aihub_bb_1_180928_vehicle_246_51527",
+  "source": "AIHUB",
+  "gap_s": 1.2,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 3.9142351150512695,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 4.06060791015625,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 95,
+   "how": "cross",
+   "hit": true,
+   "err_s": 0.13333333333333333
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": false,
+  "ODS_hit": false
+ },
+ {
+  "sid": "aihub_bb_1_181004_vehicle_192_029",
+  "source": "AIHUB",
+  "gap_s": 1.8,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 3.7730519771575928,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 2.8563127517700195,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 40,
+   "how": "cross",
+   "hit": false,
+   "err_s": -1.3333333333333333
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": false,
+  "ODS_hit": false
+ },
+ {
+  "sid": "aihub_bb_1_181103_vehicle_240_27006",
+  "source": "AIHUB",
+  "gap_s": 4.133333333333334,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 0.23274993896484375,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 0.3437025547027588,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 47,
+   "how": "depth_rise",
+   "hit": false,
+   "err_s": -1.8
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": false,
+  "ODS_hit": true
+ },
+ {
+  "sid": "aihub_bb_1_190123_vehicle_142_013",
+  "source": "AIHUB",
+  "gap_s": 0.6,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 2.260990619659424,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 1.9431750774383545,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 22,
+   "how": "cross",
+   "hit": false,
+   "err_s": -3.066666666666667
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": true,
+  "ODS_hit": true
+ },
+ {
+  "sid": "aihub_bb_1_190216_vehicle_123_306",
+  "source": "AIHUB",
+  "gap_s": 1.7333333333333334,
+  "gt": {
+   "found": true,
+   "at_entry": false,
+   "det_at_entry": false,
+   "continuity": 0.25925925925925924,
+   "margin": 1.1302156448364258,
+   "oracle_in_chain": null,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": false,
+   "det_at_entry": false,
+   "continuity": 0.25925925925925924,
+   "margin": 5.0,
+   "oracle_in_chain": null,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 117,
+   "how": "cross",
+   "hit": false,
+   "err_s": 1.5333333333333334
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": true,
+  "ODS_hit": true
+ },
+ {
+  "sid": "aihub_bb_1_190227_vehicle_126_194",
+  "source": "AIHUB",
+  "gap_s": 1.4666666666666666,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 0.12013363838195801,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 0.20743751525878906,
+   "oracle_in_chain": false,
+   "chain_len": 1
+  },
+  "pred_eq_gt": false,
+  "cp": {
+   "est": 50,
+   "how": "depth_rise",
+   "hit": false,
+   "err_s": 0.8666666666666667
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": true,
+  "ODS_hit": true
+ },
+ {
+  "sid": "aihub_bb_1_191102_vehicle_38_083",
+  "source": "AIHUB",
+  "gap_s": 0.8,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 1.2192625999450684,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 1.7494533061981201,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 48,
+   "how": "cross",
+   "hit": false,
+   "err_s": -0.8666666666666667
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": false,
+  "ODS_hit": false
+ },
+ {
+  "sid": "aihub_bb_1_191112_vehicle_125_056",
+  "source": "AIHUB",
+  "gap_s": 0.5333333333333333,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 0.0546567440032959,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 2.452111005783081,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 25,
+   "how": "cross",
+   "hit": false,
+   "err_s": -3.066666666666667
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": true,
+  "ODS_hit": true
+ },
+ {
+  "sid": "aihub_bb_1_200127_vehicle_157_031",
+  "source": "AIHUB",
+  "gap_s": 1.4,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 2.529304265975952,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 2.529304265975952,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 56,
+   "how": "cross",
+   "hit": true,
+   "err_s": 0.0
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": false,
+  "ODS_hit": true
+ },
+ {
+  "sid": "aihub_bb_1_200207_vehicle_114_059",
+  "source": "AIHUB",
+  "gap_s": 1.3333333333333333,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 0.8571428571428571,
+   "margin": 0.7448447942733765,
+   "oracle_in_chain": true,
+   "chain_len": 6
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 0.8571428571428571,
+   "margin": 0.7448447942733765,
+   "oracle_in_chain": true,
+   "chain_len": 6
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 71,
+   "how": "cross",
+   "hit": false,
+   "err_s": 0.8
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": true,
+  "ODS_hit": true
+ },
+ {
+  "sid": "aihub_bb_1_200303_vehicle_311_091",
+  "source": "AIHUB",
+  "gap_s": 1.2,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 2.872490167617798,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 2.872490167617798,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 59,
+   "how": "cross",
+   "hit": true,
+   "err_s": 0.2
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": true,
+  "ODS_hit": false
+ },
+ {
+  "sid": "aihub_bb_1_200401_vehicle_195_003",
+  "source": "AIHUB",
+  "gap_s": 0.9333333333333333,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 0.9333333333333333,
+   "margin": 0.26146507263183594,
+   "oracle_in_chain": false,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 0.9333333333333333,
+   "margin": 2.425029993057251,
+   "oracle_in_chain": false,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 67,
+   "how": "cross",
+   "hit": false,
+   "err_s": 0.8666666666666667
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": true,
+  "ODS_hit": true
+ },
+ {
+  "sid": "aihub_bb_1_200421_vehicle_116_257",
+  "source": "AIHUB",
+  "gap_s": 1.5333333333333334,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 0.875,
+   "margin": 1.7131267786026,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 0.875,
+   "margin": 1.3412998914718628,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 66,
+   "how": "cross",
+   "hit": true,
+   "err_s": 0.06666666666666667
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": false,
+  "ODS_hit": false
+ },
+ {
+  "sid": "aihub_bb_1_200427_vehicle_258_45117",
+  "source": "AIHUB",
+  "gap_s": 0.4666666666666667,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 2.038032293319702,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 2.038032293319702,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 25,
+   "how": "cross",
+   "hit": false,
+   "err_s": -2.8666666666666667
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": true,
+  "ODS_hit": true
+ },
+ {
+  "sid": "aihub_bb_1_200520_vehicle_213_22252",
+  "source": "AIHUB",
+  "gap_s": 1.2666666666666666,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 0.6243118047714233,
+   "oracle_in_chain": false,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 0.6017845869064331,
+   "oracle_in_chain": false,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 39,
+   "how": "depth_rise",
+   "hit": true,
+   "err_s": -0.26666666666666666
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": true,
+  "ODS_hit": true
+ },
+ {
+  "sid": "aihub_bb_1_200626_vehicle_130_265",
+  "source": "AIHUB",
+  "gap_s": 1.8,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 0.4184983968734741,
+   "oracle_in_chain": null,
+   "chain_len": 2
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 0.8214285714285714,
+   "margin": 0.27081298828125,
+   "oracle_in_chain": null,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 83,
+   "how": "cross",
+   "hit": false,
+   "err_s": -0.3333333333333333
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": false,
+  "ODS_hit": false
+ },
+ {
+  "sid": "aihub_bb_1_200731_vehicle_259_28258",
+  "source": "AIHUB",
+  "gap_s": 0.9333333333333333,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 1.9601020812988281,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 2.0362462997436523,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 58,
+   "how": "cross",
+   "hit": false,
+   "err_s": -0.3333333333333333
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": true,
+  "ODS_hit": true
+ },
+ {
+  "sid": "aihub_bb_1_201024_vehicle_149_092",
+  "source": "AIHUB",
+  "gap_s": 0.6666666666666666,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 0.6333539485931396,
+   "oracle_in_chain": false,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 0.8850605487823486,
+   "oracle_in_chain": false,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 70,
+   "how": "cross",
+   "hit": false,
+   "err_s": 0.3333333333333333
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": true,
+  "ODS_hit": true
+ },
+ {
+  "sid": "aihub_bb_1_201116_vehicle_199_036",
+  "source": "AIHUB",
+  "gap_s": 1.4,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 1.3825037479400635,
+   "oracle_in_chain": true,
+   "chain_len": 2
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 1.340973138809204,
+   "oracle_in_chain": true,
+   "chain_len": 2
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 14,
+   "how": "cross",
+   "hit": false,
+   "err_s": -0.8666666666666667
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": false,
+  "ODS_hit": false
+ },
+ {
+  "sid": "aihub_bb_1_210402_vehicle_46_338",
+  "source": "AIHUB",
+  "gap_s": 0.9333333333333333,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 1.777841567993164,
+   "oracle_in_chain": false,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 1.777841567993164,
+   "oracle_in_chain": false,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 71,
+   "how": "cross",
+   "hit": false,
+   "err_s": 0.6
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": false,
+  "ODS_hit": false
+ },
+ {
+  "sid": "aihub_bb_1_210621_vehicle_245_21554",
+  "source": "AIHUB",
+  "gap_s": 1.5333333333333334,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 2.94775652885437,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 2.9398250579833984,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 57,
+   "how": "cross",
+   "hit": false,
+   "err_s": 0.4666666666666667
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": true,
+  "ODS_hit": false
+ },
+ {
+  "sid": "aihub_bb_1_210729_vehicle_44_252",
+  "source": "AIHUB",
+  "gap_s": 1.7333333333333334,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 0.9259259259259259,
+   "margin": 4.363313674926758,
+   "oracle_in_chain": true,
+   "chain_len": 2
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 0.9259259259259259,
+   "margin": 4.237799644470215,
+   "oracle_in_chain": true,
+   "chain_len": 2
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 73,
+   "how": "cross",
+   "hit": false,
+   "err_s": 1.6
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": false,
+  "ODS_hit": false
+ },
+ {
+  "sid": "aihub_bb_1_210818_vehicle_315_043",
+  "source": "AIHUB",
+  "gap_s": 3.0,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 2.219036817550659,
+   "oracle_in_chain": false,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 1.7849106788635254,
+   "oracle_in_chain": false,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 73,
+   "how": "cross",
+   "hit": false,
+   "err_s": 2.2
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": false,
+  "ODS_hit": true
+ },
+ {
+  "sid": "aihub_bb_1_210821_vehicle_127_036",
+  "source": "AIHUB",
+  "gap_s": 1.0666666666666667,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 0.8823529411764706,
+   "margin": 1.8184629678726196,
+   "oracle_in_chain": false,
+   "chain_len": 2
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 0.8823529411764706,
+   "margin": 1.8184629678726196,
+   "oracle_in_chain": false,
+   "chain_len": 2
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 47,
+   "how": "cross",
+   "hit": false,
+   "err_s": -0.9333333333333333
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": false,
+  "ODS_hit": false
+ },
+ {
+  "sid": "aihub_bb_1_210822_vehicle_204_45267",
+  "source": "AIHUB",
+  "gap_s": 2.2,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 2.860649585723877,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 2.744652032852173,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 68,
+   "how": "cross",
+   "hit": false,
+   "err_s": 1.4
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": false,
+  "ODS_hit": false
+ },
+ {
+  "sid": "aihub_bb_1_210929_vehicle_127_178",
+  "source": "AIHUB",
+  "gap_s": 1.0,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 2.95379638671875,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 2.95379638671875,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 57,
+   "how": "cross",
+   "hit": true,
+   "err_s": 0.0
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": false,
+  "ODS_hit": true
+ },
+ {
+  "sid": "aihub_bb_1_211026_vehicle_144_301",
+  "source": "AIHUB",
+  "gap_s": 1.9333333333333333,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 0.18730664253234863,
+   "oracle_in_chain": true,
+   "chain_len": 2
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 0.40404391288757324,
+   "oracle_in_chain": true,
+   "chain_len": 2
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 47,
+   "how": "cross",
+   "hit": false,
+   "err_s": 0.3333333333333333
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": true,
+  "ODS_hit": true
+ },
+ {
+  "sid": "aihub_bb_1_211030_vehicle_208_55965",
+  "source": "AIHUB",
+  "gap_s": 1.5333333333333334,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 3.156728982925415,
+   "oracle_in_chain": null,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 3.3333580493927,
+   "oracle_in_chain": null,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 39,
+   "how": "cross",
+   "hit": false,
+   "err_s": 0.9333333333333333
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": false,
+  "ODS_hit": true
+ },
+ {
+  "sid": "aihub_bb_1_220214_vehicle_44_214",
+  "source": "AIHUB",
+  "gap_s": 1.8,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 0.7374858856201172,
+   "oracle_in_chain": true,
+   "chain_len": 2
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 1.647019863128662,
+   "oracle_in_chain": true,
+   "chain_len": 2
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 110,
+   "how": "cross",
+   "hit": true,
+   "err_s": 0.13333333333333333
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": true,
+  "ODS_hit": true
+ },
+ {
+  "sid": "aihub_bb_1_220504_vehicle_130_188",
+  "source": "AIHUB",
+  "gap_s": 1.7333333333333334,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 1.5660452842712402,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 1.5660452842712402,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 42,
+   "how": "cross",
+   "hit": true,
+   "err_s": -0.26666666666666666
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": false,
+  "ODS_hit": false
+ },
+ {
+  "sid": "aihub_bb_1_220506_vehicle_193_201",
+  "source": "AIHUB",
+  "gap_s": 1.4,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 0.5172193050384521,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": false,
+   "det_at_entry": false,
+   "continuity": 0.0,
+   "margin": 0.6634471416473389,
+   "oracle_in_chain": false,
+   "chain_len": 1
+  },
+  "pred_eq_gt": false,
+  "cp": {
+   "est": 23,
+   "how": "depth_rise",
+   "hit": false,
+   "err_s": -1.6666666666666667
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": false,
+  "ODS_hit": true
+ },
+ {
+  "sid": "aihub_bb_1_220521_vehicle_143_027",
+  "source": "AIHUB",
+  "gap_s": 1.4666666666666666,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 1.1771886348724365,
+   "oracle_in_chain": false,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 0.14698457717895508,
+   "oracle_in_chain": false,
+   "chain_len": 1
+  },
+  "pred_eq_gt": false,
+  "cp": {
+   "est": 28,
+   "how": "cross",
+   "hit": false,
+   "err_s": -1.2666666666666666
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": false,
+  "ODS_hit": false
+ },
+ {
+  "sid": "ccd_000001",
+  "source": "CCD",
+  "gap_s": 1.0,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 0.5454545454545454,
+   "margin": 5.0,
+   "oracle_in_chain": null,
+   "chain_len": 2
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 0.5454545454545454,
+   "margin": 5.0,
+   "oracle_in_chain": null,
+   "chain_len": 2
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 24,
+   "how": "cross",
+   "hit": true,
+   "err_s": 0.1
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": true,
+  "ODS_hit": true
+ },
+ {
+  "sid": "ccd_000003",
+  "source": "CCD",
+  "gap_s": 1.4,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 0.8,
+   "margin": 1.0528314113616943,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 0.8,
+   "margin": 1.0368967056274414,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 19,
+   "how": "cross",
+   "hit": true,
+   "err_s": 0.1
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": false,
+  "ODS_hit": false
+ },
+ {
+  "sid": "ccd_000005",
+  "source": "CCD",
+  "gap_s": 1.8,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 1.2180488109588623,
+   "oracle_in_chain": false,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 1.2701914310455322,
+   "oracle_in_chain": false,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 8,
+   "how": "cross",
+   "hit": false,
+   "err_s": -0.5
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": false,
+  "ODS_hit": true
+ },
+ {
+  "sid": "ccd_000016",
+  "source": "CCD",
+  "gap_s": 0.8,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 0.8888888888888888,
+   "margin": 0.8129593133926392,
+   "oracle_in_chain": null,
+   "chain_len": 2
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 0.8888888888888888,
+   "margin": 0.8129593133926392,
+   "oracle_in_chain": null,
+   "chain_len": 2
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 38,
+   "how": "cross",
+   "hit": false,
+   "err_s": 0.4
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": true,
+  "ODS_hit": true
+ },
+ {
+  "sid": "ccd_000018",
+  "source": "CCD",
+  "gap_s": 0.8,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 1.5126585960388184,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 1.7722985744476318,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 40,
+   "how": "cross",
+   "hit": false,
+   "err_s": 0.6
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": true,
+  "ODS_hit": true
+ },
+ {
+  "sid": "ccd_000027",
+  "source": "CCD",
+  "gap_s": 1.3,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 0.6428571428571429,
+   "margin": 5.0,
+   "oracle_in_chain": null,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 0.6428571428571429,
+   "margin": 2.9933876991271973,
+   "oracle_in_chain": null,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 18,
+   "how": "cross",
+   "hit": false,
+   "err_s": -0.4
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": true,
+  "ODS_hit": true
+ },
+ {
+  "sid": "ccd_000028",
+  "source": "CCD",
+  "gap_s": 1.0,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 0.9090909090909091,
+   "margin": 0.41008472442626953,
+   "oracle_in_chain": false,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 0.9090909090909091,
+   "margin": 0.41008472442626953,
+   "oracle_in_chain": false,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 32,
+   "how": "depth_rise",
+   "hit": false,
+   "err_s": 0.4
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": true,
+  "ODS_hit": true
+ },
+ {
+  "sid": "ccd_000039",
+  "source": "CCD",
+  "gap_s": 2.9,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 0.4908473491668701,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 0.636012077331543,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 7,
+   "how": "depth_rise",
+   "hit": false,
+   "err_s": 0.5
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": false,
+  "ODS_hit": false
+ },
+ {
+  "sid": "ccd_000053",
+  "source": "CCD",
+  "gap_s": 1.0,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 7.099462509155273,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 6.989182472229004,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 20,
+   "how": "cross",
+   "hit": false,
+   "err_s": -0.4
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": true,
+  "ODS_hit": false
+ },
+ {
+  "sid": "ccd_000061",
+  "source": "CCD",
+  "gap_s": 1.4,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 2.8331971168518066,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 2.50606369972229,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 15,
+   "how": "cross",
+   "hit": false,
+   "err_s": -0.4
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": true,
+  "ODS_hit": true
+ },
+ {
+  "sid": "ccd_000062",
+  "source": "CCD",
+  "gap_s": 1.1,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 0.5893449783325195,
+   "oracle_in_chain": true,
+   "chain_len": 2
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 0.75,
+   "margin": 1.6727328300476074,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 31,
+   "how": "cross",
+   "hit": false,
+   "err_s": -0.5
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": false,
+  "ODS_hit": false
+ },
+ {
+  "sid": "ccd_000116",
+  "source": "CCD",
+  "gap_s": 1.4,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 0.8666666666666667,
+   "margin": 5.0,
+   "oracle_in_chain": true,
+   "chain_len": 3
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 0.8666666666666667,
+   "margin": 5.0,
+   "oracle_in_chain": true,
+   "chain_len": 3
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 28,
+   "how": "cross",
+   "hit": false,
+   "err_s": 0.5
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": true,
+  "ODS_hit": true
+ },
+ {
+  "sid": "ccd_000136",
+  "source": "CCD",
+  "gap_s": 2.8,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 3.4471330642700195,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 1.2016652822494507,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 21,
+   "how": "cross",
+   "hit": false,
+   "err_s": 1.2
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": false,
+  "ODS_hit": false
+ },
+ {
+  "sid": "ccd_000150",
+  "source": "CCD",
+  "gap_s": 1.0,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 0.3015439510345459,
+   "oracle_in_chain": false,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 0.05893874168395996,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred_eq_gt": false,
+  "cp": {
+   "est": 12,
+   "how": "cross",
+   "hit": false,
+   "err_s": -1.9
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": true,
+  "ODS_hit": true
+ },
+ {
+  "sid": "ccd_000176",
+  "source": "CCD",
+  "gap_s": 1.1,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 3.0090067386627197,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 2.9746270179748535,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 18,
+   "how": "cross",
+   "hit": false,
+   "err_s": -0.8
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": false,
+  "ODS_hit": false
+ },
+ {
+  "sid": "ccd_000178",
+  "source": "CCD",
+  "gap_s": 1.4,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 0.9333333333333333,
+   "margin": 4.355292797088623,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 0.9333333333333333,
+   "margin": 4.447835922241211,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 26,
+   "how": "cross",
+   "hit": false,
+   "err_s": 0.6
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": false,
+  "ODS_hit": false
+ },
+ {
+  "sid": "ccd_000195",
+  "source": "CCD",
+  "gap_s": 0.7,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 5.43579626083374,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 5.405966758728027,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 27,
+   "how": "cross",
+   "hit": true,
+   "err_s": 0.0
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": true,
+  "ODS_hit": true
+ },
+ {
+  "sid": "ccd_000237",
+  "source": "CCD",
+  "gap_s": 1.4,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 4.2121968269348145,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 4.375007152557373,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 9,
+   "how": "cross",
+   "hit": false,
+   "err_s": -2.1
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": true,
+  "ODS_hit": true
+ },
+ {
+  "sid": "ccd_000246",
+  "source": "CCD",
+  "gap_s": 1.0,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 1.5784835815429688,
+   "oracle_in_chain": true,
+   "chain_len": 2
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 1.5244379043579102,
+   "oracle_in_chain": true,
+   "chain_len": 2
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 20,
+   "how": "cross",
+   "hit": true,
+   "err_s": 0.0
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": true,
+  "ODS_hit": true
+ },
+ {
+  "sid": "ccd_000318",
+  "source": "CCD",
+  "gap_s": 0.7,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 0.25,
+   "margin": 3.4732608795166016,
+   "oracle_in_chain": null,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 0.25,
+   "margin": 2.871682643890381,
+   "oracle_in_chain": null,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 30,
+   "how": "cross",
+   "hit": true,
+   "err_s": 0.0
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": true,
+  "ODS_hit": true
+ },
+ {
+  "sid": "ccd_000334",
+  "source": "CCD",
+  "gap_s": 1.4,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 5.0,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 5.0,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 8,
+   "how": "cross",
+   "hit": false,
+   "err_s": -1.0
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": true,
+  "ODS_hit": true
+ },
+ {
+  "sid": "ccd_000339",
+  "source": "CCD",
+  "gap_s": 1.0,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 0.5454545454545454,
+   "margin": 2.2435736656188965,
+   "oracle_in_chain": false,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 0.5454545454545454,
+   "margin": 2.0834038257598877,
+   "oracle_in_chain": false,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 27,
+   "how": "cross",
+   "hit": true,
+   "err_s": 0.0
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": true,
+  "ODS_hit": true
+ },
+ {
+  "sid": "ccd_000405",
+  "source": "CCD",
+  "gap_s": 1.0,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 0.9090909090909091,
+   "margin": 5.477031707763672,
+   "oracle_in_chain": true,
+   "chain_len": 2
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 0.9090909090909091,
+   "margin": 5.477031707763672,
+   "oracle_in_chain": true,
+   "chain_len": 2
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 32,
+   "how": "cross",
+   "hit": true,
+   "err_s": 0.2
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": true,
+  "ODS_hit": true
+ },
+ {
+  "sid": "ccd_000413",
+  "source": "CCD",
+  "gap_s": 1.1,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 0.75,
+   "margin": 6.854281902313232,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 0.75,
+   "margin": 6.854281902313232,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 32,
+   "how": "cross",
+   "hit": false,
+   "err_s": 0.7
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": true,
+  "ODS_hit": true
+ },
+ {
+  "sid": "ccd_000430",
+  "source": "CCD",
+  "gap_s": 1.5,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 4.144906997680664,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 4.040993690490723,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 30,
+   "how": "cross",
+   "hit": true,
+   "err_s": -0.3
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": true,
+  "ODS_hit": true
+ },
+ {
+  "sid": "ccd_000433",
+  "source": "CCD",
+  "gap_s": 1.5,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 2.857527256011963,
+   "oracle_in_chain": false,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 4.022269248962402,
+   "oracle_in_chain": false,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 18,
+   "how": "cross",
+   "hit": true,
+   "err_s": -0.2
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": false,
+  "ODS_hit": false
+ },
+ {
+  "sid": "ccd_000434",
+  "source": "CCD",
+  "gap_s": 0.8,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 0.0,
+   "margin": 1.1293277740478516,
+   "oracle_in_chain": null,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 0.0,
+   "margin": 0.9496345520019531,
+   "oracle_in_chain": null,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 34,
+   "how": "depth_rise",
+   "hit": true,
+   "err_s": -0.3
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": false,
+  "ODS_hit": false
+ },
+ {
+  "sid": "ccd_000443",
+  "source": "CCD",
+  "gap_s": 1.2,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 0.9230769230769231,
+   "margin": 5.0,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 0.9230769230769231,
+   "margin": 5.0,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 23,
+   "how": "cross",
+   "hit": true,
+   "err_s": -0.1
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": true,
+  "ODS_hit": true
+ },
+ {
+  "sid": "ccd_000471",
+  "source": "CCD",
+  "gap_s": 1.0,
+  "gt": {
+   "found": true,
+   "at_entry": false,
+   "det_at_entry": false,
+   "continuity": 0.45454545454545453,
+   "margin": 1.175969123840332,
+   "oracle_in_chain": null,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": false,
+   "det_at_entry": false,
+   "continuity": 0.45454545454545453,
+   "margin": 1.175969123840332,
+   "oracle_in_chain": null,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 35,
+   "how": "cross",
+   "hit": false,
+   "err_s": 0.5
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": true,
+  "ODS_hit": true
+ },
+ {
+  "sid": "ccd_000475",
+  "source": "CCD",
+  "gap_s": 1.8,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 0.9473684210526315,
+   "margin": 0.9243979454040527,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 0.9473684210526315,
+   "margin": 0.9243979454040527,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 30,
+   "how": "cross",
+   "hit": false,
+   "err_s": 0.6
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": false,
+  "ODS_hit": false
+ },
+ {
+  "sid": "ccd_000517",
+  "source": "CCD",
+  "gap_s": 1.6,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 0.07030606269836426,
+   "oracle_in_chain": null,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 0.07030606269836426,
+   "oracle_in_chain": null,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 23,
+   "how": "cross",
+   "hit": true,
+   "err_s": 0.1
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": true,
+  "ODS_hit": true
+ },
+ {
+  "sid": "ccd_000535",
+  "source": "CCD",
+  "gap_s": 1.1,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 0.16666666666666666,
+   "margin": 0.08679056167602539,
+   "oracle_in_chain": null,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 0.16666666666666666,
+   "margin": 0.29845377802848816,
+   "oracle_in_chain": null,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 3,
+   "how": "depth_rise",
+   "hit": false,
+   "err_s": -2.6
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": true,
+  "ODS_hit": true
+ },
+ {
+  "sid": "ccd_000562",
+  "source": "CCD",
+  "gap_s": 1.1,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 0.8333333333333334,
+   "margin": 0.19468379020690918,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 0.8333333333333334,
+   "margin": 0.19468379020690918,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 32,
+   "how": "depth_rise",
+   "hit": false,
+   "err_s": -0.6
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": true,
+  "ODS_hit": false
+ },
+ {
+  "sid": "ccd_000563",
+  "source": "CCD",
+  "gap_s": 1.0,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 0.9090909090909091,
+   "margin": 4.353897571563721,
+   "oracle_in_chain": true,
+   "chain_len": 2
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 0.9090909090909091,
+   "margin": 4.395729064941406,
+   "oracle_in_chain": true,
+   "chain_len": 2
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 31,
+   "how": "cross",
+   "hit": true,
+   "err_s": -0.1
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": true,
+  "ODS_hit": false
+ },
+ {
+  "sid": "ccd_000584",
+  "source": "CCD",
+  "gap_s": 0.7,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 0.125,
+   "margin": 0.12171715497970581,
+   "oracle_in_chain": null,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 0.125,
+   "margin": 0.28805917501449585,
+   "oracle_in_chain": null,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 37,
+   "how": "cross",
+   "hit": true,
+   "err_s": -0.3
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": true,
+  "ODS_hit": true
+ },
+ {
+  "sid": "ccd_000586",
+  "source": "CCD",
+  "gap_s": 2.9,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 1.8737680912017822,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 1.9860126972198486,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 5,
+   "how": "cross",
+   "hit": false,
+   "err_s": -0.4
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": true,
+  "ODS_hit": true
+ },
+ {
+  "sid": "ccd_000595",
+  "source": "CCD",
+  "gap_s": 1.6,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 0.28948283195495605,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 0.5620479583740234,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 9,
+   "how": "cross",
+   "hit": false,
+   "err_s": -2.1
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": true,
+  "ODS_hit": true
+ },
+ {
+  "sid": "ccd_000638",
+  "source": "CCD",
+  "gap_s": 1.4,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 4.705183506011963,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 4.705183506011963,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 31,
+   "how": "cross",
+   "hit": false,
+   "err_s": 0.8
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": true,
+  "ODS_hit": true
+ },
+ {
+  "sid": "ccd_000641",
+  "source": "CCD",
+  "gap_s": 0.9,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 5.0,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 5.0,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 33,
+   "how": "cross",
+   "hit": false,
+   "err_s": -0.5
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": true,
+  "ODS_hit": true
+ },
+ {
+  "sid": "ccd_000664",
+  "source": "CCD",
+  "gap_s": 2.2,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 0.9565217391304348,
+   "margin": 1.629490613937378,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 0.9565217391304348,
+   "margin": 1.655487298965454,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 23,
+   "how": "cross",
+   "hit": true,
+   "err_s": 0.3
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": false,
+  "ODS_hit": false
+ },
+ {
+  "sid": "ccd_000681",
+  "source": "CCD",
+  "gap_s": 1.2,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 2.4817001819610596,
+   "oracle_in_chain": false,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 2.4817001819610596,
+   "oracle_in_chain": false,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 18,
+   "how": "cross",
+   "hit": false,
+   "err_s": -0.6
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": true,
+  "ODS_hit": true
+ },
+ {
+  "sid": "ccd_000733",
+  "source": "CCD",
+  "gap_s": 1.3,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 0.7857142857142857,
+   "margin": 4.616674423217773,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 0.7857142857142857,
+   "margin": 4.382543563842773,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 23,
+   "how": "cross",
+   "hit": true,
+   "err_s": 0.2
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": false,
+  "ODS_hit": false
+ },
+ {
+  "sid": "ccd_000734",
+  "source": "CCD",
+  "gap_s": 2.0,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 2.8387324810028076,
+   "oracle_in_chain": null,
+   "chain_len": 2
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 2.927112579345703,
+   "oracle_in_chain": null,
+   "chain_len": 2
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 17,
+   "how": "cross",
+   "hit": true,
+   "err_s": 0.2
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": true,
+  "ODS_hit": true
+ },
+ {
+  "sid": "ccd_000744",
+  "source": "CCD",
+  "gap_s": 1.8,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 7.908568382263184,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 8.011347770690918,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 19,
+   "how": "cross",
+   "hit": false,
+   "err_s": 0.5
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": true,
+  "ODS_hit": false
+ },
+ {
+  "sid": "ccd_000840",
+  "source": "CCD",
+  "gap_s": 0.5,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 5.497659683227539,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 5.497659683227539,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 33,
+   "how": "cross",
+   "hit": true,
+   "err_s": -0.3
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": false,
+  "ODS_hit": true
+ },
+ {
+  "sid": "ccd_000853",
+  "source": "CCD",
+  "gap_s": 1.0,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 6.889243125915527,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 6.889243125915527,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 22,
+   "how": "cross",
+   "hit": true,
+   "err_s": 0.0
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": true,
+  "ODS_hit": true
+ },
+ {
+  "sid": "ccd_000854",
+  "source": "CCD",
+  "gap_s": 1.6,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 1.3800380229949951,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 1.3476548194885254,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 33,
+   "how": "cross",
+   "hit": false,
+   "err_s": 1.3
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": false,
+  "ODS_hit": false
+ },
+ {
+  "sid": "ccd_000923",
+  "source": "CCD",
+  "gap_s": 0.2,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 0.3333333333333333,
+   "margin": 4.455323219299316,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 0.3333333333333333,
+   "margin": 4.405106544494629,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 28,
+   "how": "cross",
+   "hit": true,
+   "err_s": -0.1
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": true,
+  "ODS_hit": true
+ },
+ {
+  "sid": "ccd_000926",
+  "source": "CCD",
+  "gap_s": 0.8,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 0.8888888888888888,
+   "margin": 1.7328687906265259,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 0.8888888888888888,
+   "margin": 1.8898423910140991,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 23,
+   "how": "cross",
+   "hit": true,
+   "err_s": 0.0
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": true,
+  "ODS_hit": true
+ },
+ {
+  "sid": "ccd_000978",
+  "source": "CCD",
+  "gap_s": 1.4,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 0.6,
+   "margin": 1.696752905845642,
+   "oracle_in_chain": null,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 0.6,
+   "margin": 1.6332520246505737,
+   "oracle_in_chain": null,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 33,
+   "how": "cross",
+   "hit": true,
+   "err_s": 0.0
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": true,
+  "ODS_hit": true
+ },
+ {
+  "sid": "ccd_000982",
+  "source": "CCD",
+  "gap_s": 1.2,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 0.8461538461538461,
+   "margin": 1.8903579711914062,
+   "oracle_in_chain": null,
+   "chain_len": 2
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 0.8461538461538461,
+   "margin": 1.3944050073623657,
+   "oracle_in_chain": null,
+   "chain_len": 2
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 28,
+   "how": "cross",
+   "hit": false,
+   "err_s": 0.4
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": true,
+  "ODS_hit": true
+ },
+ {
+  "sid": "ccd_001007",
+  "source": "CCD",
+  "gap_s": 0.9,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 4.053174018859863,
+   "oracle_in_chain": false,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 4.058765888214111,
+   "oracle_in_chain": false,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 16,
+   "how": "cross",
+   "hit": false,
+   "err_s": -0.9
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": true,
+  "ODS_hit": true
+ },
+ {
+  "sid": "ccd_001008",
+  "source": "CCD",
+  "gap_s": 0.5,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 5.334522247314453,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 5.334522247314453,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 35,
+   "how": "cross",
+   "hit": true,
+   "err_s": 0.0
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": true,
+  "ODS_hit": true
+ },
+ {
+  "sid": "ccd_001011",
+  "source": "CCD",
+  "gap_s": 0.7,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 0.875,
+   "margin": 1.399296760559082,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 0.875,
+   "margin": 1.399296760559082,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 42,
+   "how": "cross",
+   "hit": true,
+   "err_s": 0.0
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": true,
+  "ODS_hit": false
+ },
+ {
+  "sid": "ccd_001050",
+  "source": "CCD",
+  "gap_s": 0.9,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 0.8,
+   "margin": 3.1767489910125732,
+   "oracle_in_chain": true,
+   "chain_len": 2
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 0.8,
+   "margin": 3.1767489910125732,
+   "oracle_in_chain": true,
+   "chain_len": 2
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 24,
+   "how": "cross",
+   "hit": false,
+   "err_s": -0.7
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": false,
+  "ODS_hit": false
+ },
+ {
+  "sid": "ccd_001068",
+  "source": "CCD",
+  "gap_s": 0.7,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 0.625,
+   "margin": 1.6746857166290283,
+   "oracle_in_chain": false,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 0.625,
+   "margin": 1.6746857166290283,
+   "oracle_in_chain": false,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 41,
+   "how": "depth_rise",
+   "hit": true,
+   "err_s": 0.2
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": true,
+  "ODS_hit": true
+ },
+ {
+  "sid": "ccd_001121",
+  "source": "CCD",
+  "gap_s": 1.3,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 0.9285714285714286,
+   "margin": 3.8384737968444824,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 0.9285714285714286,
+   "margin": 4.1109514236450195,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 31,
+   "how": "cross",
+   "hit": true,
+   "err_s": 0.2
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": false,
+  "ODS_hit": false
+ },
+ {
+  "sid": "ccd_001146",
+  "source": "CCD",
+  "gap_s": 1.5,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 3.5493550300598145,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 3.548380136489868,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 36,
+   "how": "cross",
+   "hit": false,
+   "err_s": 0.4
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": true,
+  "ODS_hit": false
+ },
+ {
+  "sid": "ccd_001171",
+  "source": "CCD",
+  "gap_s": 1.2,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 0.6153846153846154,
+   "margin": 5.0,
+   "oracle_in_chain": null,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 0.6153846153846154,
+   "margin": 5.0,
+   "oracle_in_chain": null,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 32,
+   "how": "cross",
+   "hit": true,
+   "err_s": 0.2
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": false,
+  "ODS_hit": true
+ },
+ {
+  "sid": "ccd_001181",
+  "source": "CCD",
+  "gap_s": 0.8,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 0.7777777777777778,
+   "margin": 0.514307975769043,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 0.7777777777777778,
+   "margin": 0.514307975769043,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 33,
+   "how": "depth_rise",
+   "hit": true,
+   "err_s": -0.1
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": true,
+  "ODS_hit": true
+ },
+ {
+  "sid": "ccd_001182",
+  "source": "CCD",
+  "gap_s": 1.2,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 0.7692307692307693,
+   "margin": 5.0,
+   "oracle_in_chain": true,
+   "chain_len": 2
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 0.7692307692307693,
+   "margin": 1.6644967794418335,
+   "oracle_in_chain": true,
+   "chain_len": 2
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 28,
+   "how": "cross",
+   "hit": true,
+   "err_s": 0.0
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": true,
+  "ODS_hit": true
+ },
+ {
+  "sid": "ccd_001188",
+  "source": "CCD",
+  "gap_s": 2.6,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 1.27711820602417,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 1.0785579681396484,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 24,
+   "how": "cross",
+   "hit": true,
+   "err_s": 0.3
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": true,
+  "ODS_hit": true
+ },
+ {
+  "sid": "ccd_001192",
+  "source": "CCD",
+  "gap_s": 0.8,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 5.0,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 5.0,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 20,
+   "how": "cross",
+   "hit": false,
+   "err_s": -0.9
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": false,
+  "ODS_hit": false
+ },
+ {
+  "sid": "ccd_001248",
+  "source": "CCD",
+  "gap_s": 1.4,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 0.4,
+   "margin": 5.0,
+   "oracle_in_chain": null,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 0.4,
+   "margin": 5.0,
+   "oracle_in_chain": null,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 29,
+   "how": "cross",
+   "hit": true,
+   "err_s": 0.3
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": true,
+  "ODS_hit": true
+ },
+ {
+  "sid": "ccd_001298",
+  "source": "CCD",
+  "gap_s": 0.7,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 0.875,
+   "margin": 4.512485027313232,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 0.875,
+   "margin": 4.520974159240723,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 32,
+   "how": "cross",
+   "hit": true,
+   "err_s": -0.3
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": false,
+  "ODS_hit": false
+ },
+ {
+  "sid": "ccd_001332",
+  "source": "CCD",
+  "gap_s": 2.4,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 2.5212650299072266,
+   "oracle_in_chain": false,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 1.844430685043335,
+   "oracle_in_chain": false,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 5,
+   "how": "cross",
+   "hit": false,
+   "err_s": -1.5
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": true,
+  "ODS_hit": false
+ },
+ {
+  "sid": "ccd_001362",
+  "source": "CCD",
+  "gap_s": 1.4,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 4.874929428100586,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 4.874929428100586,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 18,
+   "how": "cross",
+   "hit": true,
+   "err_s": 0.0
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": true,
+  "ODS_hit": true
+ },
+ {
+  "sid": "ccd_001405",
+  "source": "CCD",
+  "gap_s": 1.2,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 0.8461538461538461,
+   "margin": 5.0,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 0.8461538461538461,
+   "margin": 5.0,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 27,
+   "how": "cross",
+   "hit": true,
+   "err_s": -0.3
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": true,
+  "ODS_hit": true
+ },
+ {
+  "sid": "ccd_001424",
+  "source": "CCD",
+  "gap_s": 0.5,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 0.5,
+   "margin": 4.0945143699646,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 0.5,
+   "margin": 4.279207229614258,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 26,
+   "how": "cross",
+   "hit": false,
+   "err_s": -0.5
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": true,
+  "ODS_hit": true
+ },
+ {
+  "sid": "nexar_00000",
+  "source": "NEXAR",
+  "gap_s": 0.5882352941176471,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 4.982929229736328,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 5.267678737640381,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 540,
+   "how": "depth_rise",
+   "hit": false,
+   "err_s": -1.0380622837370244
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": true,
+  "ODS_hit": true
+ },
+ {
+  "sid": "nexar_00013",
+  "source": "NEXAR",
+  "gap_s": 2.1,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 0.5267682075500488,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 0.07048416137695312,
+   "oracle_in_chain": false,
+   "chain_len": 1
+  },
+  "pred_eq_gt": false,
+  "cp": {
+   "est": 610,
+   "how": "cross",
+   "hit": false,
+   "err_s": 1.7666666666666666
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": false,
+  "ODS_hit": false
+ },
+ {
+  "sid": "nexar_00022",
+  "source": "NEXAR",
+  "gap_s": 0.9,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 0.546046257019043,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 0.41600072383880615,
+   "oracle_in_chain": false,
+   "chain_len": 1
+  },
+  "pred_eq_gt": false,
+  "cp": {
+   "est": 576,
+   "how": "cross",
+   "hit": false,
+   "err_s": 0.6
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": true,
+  "ODS_hit": false
+ },
+ {
+  "sid": "nexar_00025",
+  "source": "NEXAR",
+  "gap_s": 0.7333333333333333,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 2.232710838317871,
+   "oracle_in_chain": false,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 2.19682240486145,
+   "oracle_in_chain": false,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 535,
+   "how": "cross",
+   "hit": false,
+   "err_s": -1.9333333333333333
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": false,
+  "ODS_hit": false
+ },
+ {
+  "sid": "nexar_00031",
+  "source": "NEXAR",
+  "gap_s": 2.7333333333333334,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 2.1373074054718018,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 2.356952428817749,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 558,
+   "how": "cross",
+   "hit": false,
+   "err_s": 2.1333333333333333
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": false,
+  "ODS_hit": false
+ },
+ {
+  "sid": "nexar_00036",
+  "source": "NEXAR",
+  "gap_s": 1.1295681063122922,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 0.5486717224121094,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 1.1558516025543213,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 631,
+   "how": "cross",
+   "hit": true,
+   "err_s": -0.13289036544850497
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": true,
+  "ODS_hit": false
+ },
+ {
+  "sid": "nexar_00042",
+  "source": "NEXAR",
+  "gap_s": 0.9150326797385621,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 0.9940476417541504,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 1.0396356582641602,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 495,
+   "how": "depth_rise",
+   "hit": false,
+   "err_s": -2.3856209150326797
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": true,
+  "ODS_hit": true
+ },
+ {
+  "sid": "nexar_00047",
+  "source": "NEXAR",
+  "gap_s": 1.3333333333333333,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 0.8536585365853658,
+   "margin": 1.3574657440185547,
+   "oracle_in_chain": null,
+   "chain_len": 4
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 0.8536585365853658,
+   "margin": 1.3574657440185547,
+   "oracle_in_chain": null,
+   "chain_len": 4
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 551,
+   "how": "cross",
+   "hit": true,
+   "err_s": -0.06666666666666667
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": true,
+  "ODS_hit": true
+ },
+ {
+  "sid": "nexar_00077",
+  "source": "NEXAR",
+  "gap_s": 3.1986531986531985,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 4.194096565246582,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 4.194096565246582,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 489,
+   "how": "cross",
+   "hit": true,
+   "err_s": -0.16835016835016836
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": false,
+  "ODS_hit": false
+ },
+ {
+  "sid": "nexar_00082",
+  "source": "NEXAR",
+  "gap_s": 4.866666666666666,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 2.0391154289245605,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 2.0391154289245605,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 488,
+   "how": "cross",
+   "hit": false,
+   "err_s": 0.9
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": false,
+  "ODS_hit": false
+ },
+ {
+  "sid": "nexar_00084",
+  "source": "NEXAR",
+  "gap_s": 1.3398692810457515,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 0.564985990524292,
+   "oracle_in_chain": true,
+   "chain_len": 3
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 0.25269174575805664,
+   "oracle_in_chain": true,
+   "chain_len": 3
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 601,
+   "how": "cross",
+   "hit": false,
+   "err_s": 0.35947712418300654
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": false,
+  "ODS_hit": false
+ },
+ {
+  "sid": "nexar_00096",
+  "source": "NEXAR",
+  "gap_s": 1.225296442687747,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 0.9375,
+   "margin": 2.346132278442383,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 0.9375,
+   "margin": 1.827157974243164,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 523,
+   "how": "cross",
+   "hit": true,
+   "err_s": -0.15810276679841898
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": true,
+  "ODS_hit": true
+ },
+ {
+  "sid": "nexar_00099",
+  "source": "NEXAR",
+  "gap_s": 0.6885245901639344,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 2.347484827041626,
+   "oracle_in_chain": false,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 2.0791492462158203,
+   "oracle_in_chain": false,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 453,
+   "how": "cross",
+   "hit": false,
+   "err_s": -1.540983606557377
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": true,
+  "ODS_hit": false
+ },
+ {
+  "sid": "nexar_00100",
+  "source": "NEXAR",
+  "gap_s": 1.1333333333333333,
+  "gt": {
+   "found": true,
+   "at_entry": false,
+   "det_at_entry": false,
+   "continuity": 0.9142857142857143,
+   "margin": 0.7217803001403809,
+   "oracle_in_chain": null,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": false,
+   "det_at_entry": false,
+   "continuity": 0.9142857142857143,
+   "margin": 5.0,
+   "oracle_in_chain": null,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 532,
+   "how": "area_rise",
+   "hit": false,
+   "err_s": 0.4666666666666667
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": false,
+  "ODS_hit": false
+ },
+ {
+  "sid": "nexar_00103",
+  "source": "NEXAR",
+  "gap_s": 0.7333333333333333,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 3.427891254425049,
+   "oracle_in_chain": true,
+   "chain_len": 2
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 3.1164774894714355,
+   "oracle_in_chain": true,
+   "chain_len": 2
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 615,
+   "how": "cross",
+   "hit": false,
+   "err_s": 0.7
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": true,
+  "ODS_hit": true
+ },
+ {
+  "sid": "nexar_00110",
+  "source": "NEXAR",
+  "gap_s": 4.280936454849498,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 1.0574736595153809,
+   "oracle_in_chain": false,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 0.2624351978302002,
+   "oracle_in_chain": false,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 564,
+   "how": "cross",
+   "hit": false,
+   "err_s": 3.9130434782608696
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": false,
+  "ODS_hit": true
+ },
+ {
+  "sid": "nexar_00114",
+  "source": "NEXAR",
+  "gap_s": 1.3,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 4.508877754211426,
+   "oracle_in_chain": true,
+   "chain_len": 2
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 4.3103108406066895,
+   "oracle_in_chain": true,
+   "chain_len": 2
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 544,
+   "how": "cross",
+   "hit": false,
+   "err_s": -0.6333333333333333
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": false,
+  "ODS_hit": false
+ },
+ {
+  "sid": "nexar_00125",
+  "source": "NEXAR",
+  "gap_s": 0.5573770491803278,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 1.72959566116333,
+   "oracle_in_chain": false,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 1.8220739364624023,
+   "oracle_in_chain": false,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 611,
+   "how": "cross",
+   "hit": true,
+   "err_s": -0.16393442622950818
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": true,
+  "ODS_hit": true
+ },
+ {
+  "sid": "nexar_00127",
+  "source": "NEXAR",
+  "gap_s": 0.7843137254901961,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 0.84,
+   "margin": 0.7850077152252197,
+   "oracle_in_chain": false,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 0.84,
+   "margin": 0.8707180023193359,
+   "oracle_in_chain": false,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 543,
+   "how": "cross",
+   "hit": true,
+   "err_s": 0.26143790849673204
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": true,
+  "ODS_hit": true
+ },
+ {
+  "sid": "nexar_00128",
+  "source": "NEXAR",
+  "gap_s": 0.8666666666666667,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 0.3569681644439697,
+   "oracle_in_chain": true,
+   "chain_len": 2
+  },
+  "pred": {
+   "found": true,
+   "at_entry": false,
+   "det_at_entry": false,
+   "continuity": 0.0,
+   "margin": 0.1246945858001709,
+   "oracle_in_chain": false,
+   "chain_len": 1
+  },
+  "pred_eq_gt": false,
+  "cp": {
+   "est": 533,
+   "how": "cross",
+   "hit": false,
+   "err_s": -0.6333333333333333
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": false,
+  "ODS_hit": false
+ },
+ {
+  "sid": "nexar_00129",
+  "source": "NEXAR",
+  "gap_s": 1.1,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 4.308794975280762,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 4.211894989013672,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 578,
+   "how": "cross",
+   "hit": false,
+   "err_s": -0.36666666666666664
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": true,
+  "ODS_hit": true
+ },
+ {
+  "sid": "nexar_00136",
+  "source": "NEXAR",
+  "gap_s": 2.156862745098039,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 0.520519495010376,
+   "oracle_in_chain": false,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 0.5277962684631348,
+   "oracle_in_chain": false,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 526,
+   "how": "depth_rise",
+   "hit": true,
+   "err_s": 0.0
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": false,
+  "ODS_hit": false
+ },
+ {
+  "sid": "nexar_00142",
+  "source": "NEXAR",
+  "gap_s": 1.5719063545150502,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 0.8541666666666666,
+   "margin": 0.26097774505615234,
+   "oracle_in_chain": null,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 1.848803997039795,
+   "oracle_in_chain": null,
+   "chain_len": 5
+  },
+  "pred_eq_gt": false,
+  "cp": {
+   "est": 420,
+   "how": "cross",
+   "hit": false,
+   "err_s": -5.384615384615385
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": false,
+  "ODS_hit": true
+ },
+ {
+  "sid": "nexar_00143",
+  "source": "NEXAR",
+  "gap_s": 1.180327868852459,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 0.39936304092407227,
+   "oracle_in_chain": false,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 0.4030449390411377,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred_eq_gt": false,
+  "cp": {
+   "est": 614,
+   "how": "cross",
+   "hit": false,
+   "err_s": 0.9180327868852459
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": true,
+  "ODS_hit": false
+ },
+ {
+  "sid": "nexar_00148",
+  "source": "NEXAR",
+  "gap_s": 1.1333333333333333,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 1.3546595573425293,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 1.4854106903076172,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 524,
+   "how": "cross",
+   "hit": false,
+   "err_s": -0.43333333333333335
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": true,
+  "ODS_hit": true
+ },
+ {
+  "sid": "nexar_00152",
+  "source": "NEXAR",
+  "gap_s": 1.5359477124183005,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 2.263092279434204,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 2.19744610786438,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 491,
+   "how": "cross",
+   "hit": false,
+   "err_s": -2.679738562091503
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": true,
+  "ODS_hit": false
+ },
+ {
+  "sid": "nexar_00155",
+  "source": "NEXAR",
+  "gap_s": 0.5882352941176471,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 0.47368421052631576,
+   "margin": 0.2439374327659607,
+   "oracle_in_chain": null,
+   "chain_len": 2
+  },
+  "pred": {
+   "found": true,
+   "at_entry": false,
+   "det_at_entry": false,
+   "continuity": 0.0,
+   "margin": 5.0,
+   "oracle_in_chain": null,
+   "chain_len": 1
+  },
+  "pred_eq_gt": false,
+  "cp": {
+   "est": 523,
+   "how": "depth_rise",
+   "hit": false,
+   "err_s": -1.9281045751633985
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": true,
+  "ODS_hit": true
+ },
+ {
+  "sid": "nexar_00157",
+  "source": "NEXAR",
+  "gap_s": 0.5228758169934641,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 0.4329721927642822,
+   "oracle_in_chain": false,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 0.5343570709228516,
+   "oracle_in_chain": false,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 553,
+   "how": "cross",
+   "hit": false,
+   "err_s": -0.8169934640522876
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": false,
+  "ODS_hit": true
+ },
+ {
+  "sid": "nexar_00162",
+  "source": "NEXAR",
+  "gap_s": 3.8,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 0.9043478260869565,
+   "margin": 0.8779499530792236,
+   "oracle_in_chain": null,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 0.6695652173913044,
+   "margin": 1.1368772983551025,
+   "oracle_in_chain": null,
+   "chain_len": 1
+  },
+  "pred_eq_gt": false,
+  "cp": {
+   "est": 650,
+   "how": "cross",
+   "hit": false,
+   "err_s": 3.7666666666666666
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": false,
+  "ODS_hit": false
+ },
+ {
+  "sid": "nexar_00166",
+  "source": "NEXAR",
+  "gap_s": 0.8852459016393442,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 0.1640768051147461,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 0.06411886215209961,
+   "oracle_in_chain": false,
+   "chain_len": 1
+  },
+  "pred_eq_gt": false,
+  "cp": {
+   "est": 500,
+   "how": "cross",
+   "hit": false,
+   "err_s": -2.7868852459016393
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": true,
+  "ODS_hit": true
+ },
+ {
+  "sid": "nexar_00168",
+  "source": "NEXAR",
+  "gap_s": 1.0666666666666667,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 0.9696969696969697,
+   "margin": 3.515939474105835,
+   "oracle_in_chain": false,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 0.9696969696969697,
+   "margin": 1.7697129249572754,
+   "oracle_in_chain": false,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 575,
+   "how": "cross",
+   "hit": false,
+   "err_s": 1.0
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": false,
+  "ODS_hit": false
+ },
+ {
+  "sid": "nexar_00190",
+  "source": "NEXAR",
+  "gap_s": 1.5666666666666667,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 1.8089540004730225,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 0.9002480506896973,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 543,
+   "how": "cross",
+   "hit": false,
+   "err_s": 0.6666666666666666
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": false,
+  "ODS_hit": false
+ },
+ {
+  "sid": "nexar_00199",
+  "source": "NEXAR",
+  "gap_s": 1.2,
+  "gt": {
+   "found": true,
+   "at_entry": false,
+   "det_at_entry": false,
+   "continuity": 0.5945945945945946,
+   "margin": 1.193106770515442,
+   "oracle_in_chain": null,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": false,
+   "det_at_entry": false,
+   "continuity": 0.5945945945945946,
+   "margin": 0.19556236267089844,
+   "oracle_in_chain": null,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 277,
+   "how": "depth_rise",
+   "hit": false,
+   "err_s": 1.0333333333333334
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": true,
+  "ODS_hit": true
+ },
+ {
+  "sid": "nexar_00200",
+  "source": "NEXAR",
+  "gap_s": 1.4379084967320261,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 0.05780363082885742,
+   "oracle_in_chain": false,
+   "chain_len": 3
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 0.16304230690002441,
+   "oracle_in_chain": false,
+   "chain_len": 3
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 580,
+   "how": "cross",
+   "hit": false,
+   "err_s": 1.0784313725490196
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": false,
+  "ODS_hit": false
+ },
+ {
+  "sid": "nexar_00202",
+  "source": "NEXAR",
+  "gap_s": 1.4666666666666666,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 0.5809731483459473,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 0.006552934646606445,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 563,
+   "how": "cross",
+   "hit": false,
+   "err_s": 0.5666666666666667
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": false,
+  "ODS_hit": false
+ },
+ {
+  "sid": "nexar_00208",
+  "source": "NEXAR",
+  "gap_s": 1.2666666666666666,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 2.6062304973602295,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 3.0553383827209473,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 542,
+   "how": "cross",
+   "hit": false,
+   "err_s": -0.4666666666666667
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": false,
+  "ODS_hit": false
+ },
+ {
+  "sid": "nexar_00217",
+  "source": "NEXAR",
+  "gap_s": 0.6666666666666666,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 1.6816308498382568,
+   "oracle_in_chain": true,
+   "chain_len": 2
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 2.2458980083465576,
+   "oracle_in_chain": true,
+   "chain_len": 2
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 597,
+   "how": "cross",
+   "hit": true,
+   "err_s": 0.16666666666666666
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": true,
+  "ODS_hit": true
+ },
+ {
+  "sid": "nexar_00223",
+  "source": "NEXAR",
+  "gap_s": 1.1,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 2.235091209411621,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 2.7852835655212402,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 532,
+   "how": "cross",
+   "hit": false,
+   "err_s": -1.5666666666666667
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": true,
+  "ODS_hit": true
+ },
+ {
+  "sid": "nexar_00225",
+  "source": "NEXAR",
+  "gap_s": 1.3666666666666667,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 1.3066248893737793,
+   "oracle_in_chain": false,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 1.281379222869873,
+   "oracle_in_chain": false,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 552,
+   "how": "cross",
+   "hit": false,
+   "err_s": -1.3666666666666667
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": false,
+  "ODS_hit": false
+ },
+ {
+  "sid": "nexar_00247",
+  "source": "NEXAR",
+  "gap_s": 1.7973856209150325,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 1.5284702777862549,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 1.5284702777862549,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 585,
+   "how": "cross",
+   "hit": false,
+   "err_s": 1.6993464052287581
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": false,
+  "ODS_hit": false
+ },
+ {
+  "sid": "nexar_00260",
+  "source": "NEXAR",
+  "gap_s": 0.9666666666666667,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 1.7915232181549072,
+   "oracle_in_chain": true,
+   "chain_len": 2
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 1.7915232181549072,
+   "oracle_in_chain": true,
+   "chain_len": 2
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 451,
+   "how": "cross",
+   "hit": false,
+   "err_s": -4.633333333333334
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": true,
+  "ODS_hit": true
+ },
+ {
+  "sid": "nexar_00264",
+  "source": "NEXAR",
+  "gap_s": 2.5901639344262297,
+  "gt": {
+   "found": true,
+   "at_entry": false,
+   "det_at_entry": false,
+   "continuity": 0.375,
+   "margin": 0.09759974479675293,
+   "oracle_in_chain": false,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": false,
+   "det_at_entry": false,
+   "continuity": 0.375,
+   "margin": 0.0928964614868164,
+   "oracle_in_chain": false,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 573,
+   "how": "depth_rise",
+   "hit": false,
+   "err_s": 2.1639344262295084
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": false,
+  "ODS_hit": false
+ },
+ {
+  "sid": "nexar_00291",
+  "source": "NEXAR",
+  "gap_s": 1.4052287581699345,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 2.51316237449646,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 0.8636363636363636,
+   "margin": 0.03231501579284668,
+   "oracle_in_chain": false,
+   "chain_len": 1
+  },
+  "pred_eq_gt": false,
+  "cp": {
+   "est": 550,
+   "how": "cross",
+   "hit": false,
+   "err_s": 1.0457516339869282
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": false,
+  "ODS_hit": true
+ },
+ {
+  "sid": "nexar_00310",
+  "source": "NEXAR",
+  "gap_s": 1.221122112211221,
+  "gt": {
+   "found": true,
+   "at_entry": false,
+   "det_at_entry": false,
+   "continuity": 0.5,
+   "margin": 0.557262659072876,
+   "oracle_in_chain": false,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": false,
+   "det_at_entry": false,
+   "continuity": 0.5,
+   "margin": 0.557262659072876,
+   "oracle_in_chain": false,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 634,
+   "how": "cross",
+   "hit": false,
+   "err_s": 1.188118811881188
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": false,
+  "ODS_hit": false
+ },
+ {
+  "sid": "nexar_00313",
+  "source": "NEXAR",
+  "gap_s": 0.13114754098360656,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 0.3746044635772705,
+   "oracle_in_chain": false,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 0.15397000312805176,
+   "oracle_in_chain": false,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 584,
+   "how": "cross",
+   "hit": false,
+   "err_s": -0.4918032786885246
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": true,
+  "ODS_hit": false
+ },
+ {
+  "sid": "nexar_00318",
+  "source": "NEXAR",
+  "gap_s": 1.0921501706484642,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 0.3894028663635254,
+   "oracle_in_chain": true,
+   "chain_len": 2
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 0.2619905471801758,
+   "oracle_in_chain": true,
+   "chain_len": 2
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 603,
+   "how": "cross",
+   "hit": false,
+   "err_s": 1.0580204778156996
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": false,
+  "ODS_hit": false
+ },
+ {
+  "sid": "nexar_00324",
+  "source": "NEXAR",
+  "gap_s": 0.8333333333333334,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 0.9615384615384616,
+   "margin": 3.1205387115478516,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 0.9615384615384616,
+   "margin": 3.1205387115478516,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 565,
+   "how": "depth_rise",
+   "hit": false,
+   "err_s": -0.5666666666666667
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": false,
+  "ODS_hit": false
+ },
+ {
+  "sid": "nexar_00328",
+  "source": "NEXAR",
+  "gap_s": 0.8064516129032258,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 2.595273494720459,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 1.5594674348831177,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 350,
+   "how": "cross",
+   "hit": false,
+   "err_s": -7.451612903225806
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": true,
+  "ODS_hit": false
+ },
+ {
+  "sid": "nexar_00332",
+  "source": "NEXAR",
+  "gap_s": 0.5,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 1.8804566860198975,
+   "oracle_in_chain": false,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 1.8804566860198975,
+   "oracle_in_chain": false,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 128,
+   "how": "cross",
+   "hit": false,
+   "err_s": -1.1
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": true,
+  "ODS_hit": true
+ },
+ {
+  "sid": "nexar_00334",
+  "source": "NEXAR",
+  "gap_s": 0.4,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 1.0050013065338135,
+   "oracle_in_chain": false,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 0.7052223682403564,
+   "oracle_in_chain": false,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 565,
+   "how": "cross",
+   "hit": true,
+   "err_s": 0.1
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": true,
+  "ODS_hit": true
+ },
+ {
+  "sid": "nexar_00335",
+  "source": "NEXAR",
+  "gap_s": 1.2374581939799332,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 0.4110219478607178,
+   "oracle_in_chain": false,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 1.0447587966918945,
+   "oracle_in_chain": false,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 475,
+   "how": "cross",
+   "hit": false,
+   "err_s": -3.3779264214046822
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": true,
+  "ODS_hit": true
+ },
+ {
+  "sid": "nexar_00340",
+  "source": "NEXAR",
+  "gap_s": 1.967741935483871,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 1.209574818611145,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 0.9640960693359375,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 115,
+   "how": "cross",
+   "hit": false,
+   "err_s": -12.258064516129032
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": false,
+  "ODS_hit": false
+ },
+ {
+  "sid": "nexar_00348",
+  "source": "NEXAR",
+  "gap_s": 0.8524590163934426,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 0.12821722030639648,
+   "oracle_in_chain": false,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 0.03828859329223633,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred_eq_gt": false,
+  "cp": {
+   "est": 561,
+   "how": "cross",
+   "hit": false,
+   "err_s": -0.36065573770491804
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": true,
+  "ODS_hit": true
+ },
+ {
+  "sid": "nexar_00354",
+  "source": "NEXAR",
+  "gap_s": 1.0,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 0.04683399200439453,
+   "oracle_in_chain": false,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 0.7419354838709677,
+   "margin": 2.6021957397460938,
+   "oracle_in_chain": false,
+   "chain_len": 1
+  },
+  "pred_eq_gt": false,
+  "cp": {
+   "est": 539,
+   "how": "depth_rise",
+   "hit": false,
+   "err_s": -1.1666666666666667
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": false,
+  "ODS_hit": false
+ },
+ {
+  "sid": "nexar_00355",
+  "source": "NEXAR",
+  "gap_s": 0.4666666666666667,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 1.80140221118927,
+   "oracle_in_chain": true,
+   "chain_len": 2
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 2.1009206771850586,
+   "oracle_in_chain": true,
+   "chain_len": 2
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 487,
+   "how": "cross",
+   "hit": false,
+   "err_s": -1.9
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": true,
+  "ODS_hit": true
+ },
+ {
+  "sid": "nexar_00369",
+  "source": "NEXAR",
+  "gap_s": 0.7,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 3.9719460010528564,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 3.9433789253234863,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 597,
+   "how": "cross",
+   "hit": false,
+   "err_s": 0.3333333333333333
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": true,
+  "ODS_hit": true
+ },
+ {
+  "sid": "nexar_00373",
+  "source": "NEXAR",
+  "gap_s": 0.9032258064516129,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 1.063206672668457,
+   "oracle_in_chain": false,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 1.063206672668457,
+   "oracle_in_chain": false,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 631,
+   "how": "cross",
+   "hit": true,
+   "err_s": 0.25806451612903225
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": true,
+  "ODS_hit": true
+ },
+ {
+  "sid": "nexar_00381",
+  "source": "NEXAR",
+  "gap_s": 0.8361204013377926,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 0.8461538461538461,
+   "margin": 0.09160375595092773,
+   "oracle_in_chain": false,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 0.2521953582763672,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred_eq_gt": false,
+  "cp": {
+   "est": 537,
+   "how": "cross",
+   "hit": false,
+   "err_s": 0.3010033444816054
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": false,
+  "ODS_hit": false
+ },
+ {
+  "sid": "nexar_00392",
+  "source": "NEXAR",
+  "gap_s": 0.32028469750889677,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 2.760667562484741,
+   "oracle_in_chain": false,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 2.859522819519043,
+   "oracle_in_chain": false,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 575,
+   "how": "cross",
+   "hit": false,
+   "err_s": -0.6761565836298932
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": true,
+  "ODS_hit": true
+ },
+ {
+  "sid": "nexar_00398",
+  "source": "NEXAR",
+  "gap_s": 1.8666666666666667,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 1.4396429061889648,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": false,
+   "det_at_entry": false,
+   "continuity": 0.49122807017543857,
+   "margin": 1.2751266956329346,
+   "oracle_in_chain": false,
+   "chain_len": 1
+  },
+  "pred_eq_gt": false,
+  "cp": {
+   "est": 573,
+   "how": "cross",
+   "hit": false,
+   "err_s": 1.0666666666666667
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": false,
+  "ODS_hit": false
+ },
+ {
+  "sid": "nexar_00405",
+  "source": "NEXAR",
+  "gap_s": 1.705685618729097,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 0.7216742038726807,
+   "oracle_in_chain": false,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 1.4150598049163818,
+   "oracle_in_chain": false,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 467,
+   "how": "cross",
+   "hit": false,
+   "err_s": -2.7759197324414715
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": false,
+  "ODS_hit": false
+ },
+ {
+  "sid": "nexar_00408",
+  "source": "NEXAR",
+  "gap_s": 1.1371237458193981,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 4.600191593170166,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 3.885826587677002,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 508,
+   "how": "cross",
+   "hit": false,
+   "err_s": -2.0066889632107023
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": false,
+  "ODS_hit": false
+ },
+ {
+  "sid": "nexar_00415",
+  "source": "NEXAR",
+  "gap_s": 2.466666666666667,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 0.23129725456237793,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 0.23191094398498535,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 548,
+   "how": "cross",
+   "hit": false,
+   "err_s": 0.3333333333333333
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": false,
+  "ODS_hit": false
+ },
+ {
+  "sid": "nexar_00434",
+  "source": "NEXAR",
+  "gap_s": 0.7666666666666667,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 0.25784945487976074,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 0.46810197830200195,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 269,
+   "how": "cross",
+   "hit": true,
+   "err_s": 0.16666666666666666
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": true,
+  "ODS_hit": true
+ },
+ {
+  "sid": "nexar_00456",
+  "source": "NEXAR",
+  "gap_s": 0.5,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 0.75,
+   "margin": 0.727759599685669,
+   "oracle_in_chain": false,
+   "chain_len": 13
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 0.9493794441223145,
+   "oracle_in_chain": false,
+   "chain_len": 1
+  },
+  "pred_eq_gt": false,
+  "cp": {
+   "est": 387,
+   "how": "cross",
+   "hit": false,
+   "err_s": -5.366666666666666
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": false,
+  "ODS_hit": false
+ },
+ {
+  "sid": "nexar_00466",
+  "source": "NEXAR",
+  "gap_s": 1.4666666666666666,
+  "gt": {
+   "found": true,
+   "at_entry": false,
+   "det_at_entry": false,
+   "continuity": 0.9333333333333333,
+   "margin": 0.26227593421936035,
+   "oracle_in_chain": false,
+   "chain_len": 3
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 0.8666666666666667,
+   "margin": 0.8827006816864014,
+   "oracle_in_chain": false,
+   "chain_len": 2
+  },
+  "pred_eq_gt": false,
+  "cp": {
+   "est": 512,
+   "how": "depth_rise",
+   "hit": false,
+   "err_s": -0.6666666666666666
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": false,
+  "ODS_hit": false
+ },
+ {
+  "sid": "nexar_00474",
+  "source": "NEXAR",
+  "gap_s": 1.1666666666666667,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 0.4469184875488281,
+   "oracle_in_chain": false,
+   "chain_len": 2
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 0.44371676445007324,
+   "oracle_in_chain": false,
+   "chain_len": 2
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 448,
+   "how": "cross",
+   "hit": false,
+   "err_s": -4.033333333333333
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": true,
+  "ODS_hit": true
+ },
+ {
+  "sid": "nexar_00475",
+  "source": "NEXAR",
+  "gap_s": 1.1764705882352942,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 0.9459459459459459,
+   "margin": 3.2056336402893066,
+   "oracle_in_chain": null,
+   "chain_len": 4
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 0.9459459459459459,
+   "margin": 3.458685874938965,
+   "oracle_in_chain": null,
+   "chain_len": 4
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 608,
+   "how": "cross",
+   "hit": false,
+   "err_s": 0.7516339869281046
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": false,
+  "ODS_hit": false
+ },
+ {
+  "sid": "nexar_00483",
+  "source": "NEXAR",
+  "gap_s": 1.2,
+  "gt": {
+   "found": true,
+   "at_entry": false,
+   "det_at_entry": false,
+   "continuity": 0.6756756756756757,
+   "margin": 3.961247444152832,
+   "oracle_in_chain": null,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": false,
+   "det_at_entry": false,
+   "continuity": 0.6756756756756757,
+   "margin": 3.1062772274017334,
+   "oracle_in_chain": null,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 592,
+   "how": "depth_rise",
+   "hit": false,
+   "err_s": 1.0333333333333334
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": true,
+  "ODS_hit": true
+ },
+ {
+  "sid": "nexar_00487",
+  "source": "NEXAR",
+  "gap_s": 0.3,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 0.9,
+   "margin": 0.579118549823761,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 0.9,
+   "margin": 0.7928059697151184,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 539,
+   "how": "depth_rise",
+   "hit": false,
+   "err_s": -2.7333333333333334
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": true,
+  "ODS_hit": true
+ },
+ {
+  "sid": "nexar_00497",
+  "source": "NEXAR",
+  "gap_s": 0.8333333333333334,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 1.7057945728302002,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 0.3034505844116211,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 410,
+   "how": "cross",
+   "hit": false,
+   "err_s": -4.4
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": true,
+  "ODS_hit": true
+ },
+ {
+  "sid": "nexar_00506",
+  "source": "NEXAR",
+  "gap_s": 1.4705882352941175,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 2.1595120429992676,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 2.1595120429992676,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 586,
+   "how": "cross",
+   "hit": false,
+   "err_s": 1.2745098039215685
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": false,
+  "ODS_hit": false
+ },
+ {
+  "sid": "nexar_00516",
+  "source": "NEXAR",
+  "gap_s": 0.7,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 0.5303859710693359,
+   "oracle_in_chain": false,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 0.2658405303955078,
+   "oracle_in_chain": false,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 486,
+   "how": "cross",
+   "hit": false,
+   "err_s": -3.7
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": true,
+  "ODS_hit": true
+ },
+ {
+  "sid": "nexar_00522",
+  "source": "NEXAR",
+  "gap_s": 2.0588235294117645,
+  "gt": {
+   "found": true,
+   "at_entry": false,
+   "det_at_entry": false,
+   "continuity": 0.03125,
+   "margin": 0.15046977996826172,
+   "oracle_in_chain": null,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": false,
+   "det_at_entry": false,
+   "continuity": 0.03125,
+   "margin": 0.15046977996826172,
+   "oracle_in_chain": null,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": null,
+   "how": "none",
+   "hit": false,
+   "err_s": null
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": false,
+  "ODS_hit": false
+ },
+ {
+  "sid": "nexar_00523",
+  "source": "NEXAR",
+  "gap_s": 0.7,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 0.291959285736084,
+   "oracle_in_chain": false,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 0.291959285736084,
+   "oracle_in_chain": false,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 540,
+   "how": "cross",
+   "hit": false,
+   "err_s": -1.6333333333333333
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": true,
+  "ODS_hit": true
+ },
+ {
+  "sid": "nexar_00553",
+  "source": "NEXAR",
+  "gap_s": 0.9150326797385621,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 0.9655172413793104,
+   "margin": 4.196780681610107,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 0.9655172413793104,
+   "margin": 4.308651447296143,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 612,
+   "how": "cross",
+   "hit": true,
+   "err_s": -0.16339869281045752
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": true,
+  "ODS_hit": true
+ },
+ {
+  "sid": "nexar_00675",
+  "source": "NEXAR",
+  "gap_s": 0.8333333333333334,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 5.647671222686768,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 0.6122868061065674,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 574,
+   "how": "cross",
+   "hit": true,
+   "err_s": 0.26666666666666666
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": true,
+  "ODS_hit": true
+ },
+ {
+  "sid": "nexar_00763",
+  "source": "NEXAR",
+  "gap_s": 1.8,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 0.11521172523498535,
+   "oracle_in_chain": false,
+   "chain_len": 2
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 1.4959468841552734,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred_eq_gt": false,
+  "cp": {
+   "est": 537,
+   "how": "cross",
+   "hit": true,
+   "err_s": 0.0
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": true,
+  "ODS_hit": false
+ },
+ {
+  "sid": "nexar_00927",
+  "source": "NEXAR",
+  "gap_s": 1.0333333333333334,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 0.10613512992858887,
+   "oracle_in_chain": false,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": false,
+   "det_at_entry": false,
+   "continuity": 0.0,
+   "margin": 1.2397058010101318,
+   "oracle_in_chain": false,
+   "chain_len": 1
+  },
+  "pred_eq_gt": false,
+  "cp": {
+   "est": 435,
+   "how": "cross",
+   "hit": false,
+   "err_s": -4.733333333333333
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": false,
+  "ODS_hit": false
+ },
+ {
+  "sid": "nexar_00998",
+  "source": "NEXAR",
+  "gap_s": 0.684931506849315,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 0.18058490753173828,
+   "oracle_in_chain": false,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 0.06336402893066406,
+   "oracle_in_chain": false,
+   "chain_len": 1
+  },
+  "pred_eq_gt": false,
+  "cp": {
+   "est": 497,
+   "how": "depth_rise",
+   "hit": false,
+   "err_s": -2.910958904109589
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": true,
+  "ODS_hit": true
+ },
+ {
+  "sid": "causalcrash_wHGX-QJqb4I",
+  "source": "CAUSALCRASH",
+  "gap_s": 0.8341666666666666,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 0.2296149730682373,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": false,
+   "det_at_entry": false,
+   "continuity": 0.0,
+   "margin": 0.09297895431518555,
+   "oracle_in_chain": false,
+   "chain_len": 1
+  },
+  "pred_eq_gt": false,
+  "cp": {
+   "est": 9,
+   "how": "depth_rise",
+   "hit": false,
+   "err_s": -2.5025
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": false,
+  "ODS_hit": true
+ },
+ {
+  "sid": "mmau_002001",
+  "source": "MMAU",
+  "gap_s": 0.7,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 1.6869184970855713,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 1.6825182437896729,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 29,
+   "how": "cross",
+   "hit": true,
+   "err_s": 0.1
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": true,
+  "ODS_hit": true
+ },
+ {
+  "sid": "mmau_002083",
+  "source": "MMAU",
+  "gap_s": 0.13333333333333333,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 2.0552115440368652,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 2.0552115440368652,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 32,
+   "how": "cross",
+   "hit": true,
+   "err_s": -0.06666666666666667
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": true,
+  "ODS_hit": true
+ },
+ {
+  "sid": "mmau_002108",
+  "source": "MMAU",
+  "gap_s": 0.23333333333333334,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 0.875,
+   "margin": 0.31118297576904297,
+   "oracle_in_chain": false,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 0.25006675720214844,
+   "oracle_in_chain": false,
+   "chain_len": 2
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 31,
+   "how": "cross",
+   "hit": true,
+   "err_s": -0.1
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": true,
+  "ODS_hit": true
+ },
+ {
+  "sid": "mmau_002116",
+  "source": "MMAU",
+  "gap_s": 0.23333333333333334,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 1.2232775688171387,
+   "oracle_in_chain": false,
+   "chain_len": 2
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 1.2232775688171387,
+   "oracle_in_chain": false,
+   "chain_len": 2
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 14,
+   "how": "cross",
+   "hit": false,
+   "err_s": -0.43333333333333335
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": true,
+  "ODS_hit": true
+ },
+ {
+  "sid": "mmau_002258",
+  "source": "MMAU",
+  "gap_s": 0.16666666666666666,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 2.4581997394561768,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 2.6607062816619873,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 35,
+   "how": "cross",
+   "hit": true,
+   "err_s": -0.06666666666666667
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": true,
+  "ODS_hit": true
+ },
+ {
+  "sid": "mmau_002307",
+  "source": "MMAU",
+  "gap_s": 0.23333333333333334,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 5.0,
+   "oracle_in_chain": null,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 5.0,
+   "oracle_in_chain": null,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 21,
+   "how": "cross",
+   "hit": true,
+   "err_s": -0.16666666666666666
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": true,
+  "ODS_hit": true
+ },
+ {
+  "sid": "mmau_002333",
+  "source": "MMAU",
+  "gap_s": 0.43333333333333335,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 1.9019826650619507,
+   "oracle_in_chain": false,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 1.9019826650619507,
+   "oracle_in_chain": false,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 24,
+   "how": "cross",
+   "hit": true,
+   "err_s": -0.06666666666666667
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": true,
+  "ODS_hit": true
+ },
+ {
+  "sid": "mmau_002346",
+  "source": "MMAU",
+  "gap_s": 0.13333333333333333,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 0.8,
+   "margin": 2.854221820831299,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 0.8,
+   "margin": 2.8174033164978027,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 18,
+   "how": "cross",
+   "hit": true,
+   "err_s": -0.16666666666666666
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": true,
+  "ODS_hit": true
+ },
+ {
+  "sid": "mmau_002347",
+  "source": "MMAU",
+  "gap_s": 0.26666666666666666,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 3.566739320755005,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 3.566739320755005,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 23,
+   "how": "cross",
+   "hit": true,
+   "err_s": -0.06666666666666667
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": true,
+  "ODS_hit": true
+ },
+ {
+  "sid": "mmau_002436",
+  "source": "MMAU",
+  "gap_s": 0.13333333333333333,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 0.8,
+   "margin": 2.952144145965576,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 0.8,
+   "margin": 2.952144145965576,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 60,
+   "how": "cross",
+   "hit": true,
+   "err_s": -0.1
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": true,
+  "ODS_hit": true
+ },
+ {
+  "sid": "mmau_002484",
+  "source": "MMAU",
+  "gap_s": 0.23333333333333334,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 0.75,
+   "margin": 3.154083251953125,
+   "oracle_in_chain": null,
+   "chain_len": 2
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 0.75,
+   "margin": 3.154083251953125,
+   "oracle_in_chain": null,
+   "chain_len": 2
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 34,
+   "how": "cross",
+   "hit": true,
+   "err_s": -0.1
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": true,
+  "ODS_hit": true
+ },
+ {
+  "sid": "mmau_002547",
+  "source": "MMAU",
+  "gap_s": 0.13333333333333333,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 0.6,
+   "margin": 0.3560330867767334,
+   "oracle_in_chain": true,
+   "chain_len": 2
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 0.6,
+   "margin": 0.2505381107330322,
+   "oracle_in_chain": true,
+   "chain_len": 2
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 51,
+   "how": "cross",
+   "hit": true,
+   "err_s": -0.13333333333333333
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": true,
+  "ODS_hit": true
+ },
+ {
+  "sid": "mmau_002567",
+  "source": "MMAU",
+  "gap_s": 0.16666666666666666,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 0.8333333333333334,
+   "margin": 5.116506576538086,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 0.8333333333333334,
+   "margin": 5.116506576538086,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 37,
+   "how": "cross",
+   "hit": true,
+   "err_s": -0.1
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": true,
+  "ODS_hit": true
+ },
+ {
+  "sid": "mmau_002780",
+  "source": "MMAU",
+  "gap_s": 0.26666666666666666,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 0.3333333333333333,
+   "margin": 0.776846170425415,
+   "oracle_in_chain": null,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 0.3333333333333333,
+   "margin": 0.8869929313659668,
+   "oracle_in_chain": null,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 30,
+   "how": "depth_rise",
+   "hit": false,
+   "err_s": -0.7
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": true,
+  "ODS_hit": false
+ },
+ {
+  "sid": "mmau_002923",
+  "source": "MMAU",
+  "gap_s": 0.36666666666666664,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 2.6024246215820312,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 2.9159884452819824,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 38,
+   "how": "cross",
+   "hit": true,
+   "err_s": -0.16666666666666666
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": true,
+  "ODS_hit": true
+ },
+ {
+  "sid": "mmau_002926",
+  "source": "MMAU",
+  "gap_s": 0.23333333333333334,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 2.2041678428649902,
+   "oracle_in_chain": true,
+   "chain_len": 2
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 2.2041678428649902,
+   "oracle_in_chain": true,
+   "chain_len": 2
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 40,
+   "how": "cross",
+   "hit": true,
+   "err_s": -0.23333333333333334
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": true,
+  "ODS_hit": true
+ },
+ {
+  "sid": "mmau_003126",
+  "source": "MMAU",
+  "gap_s": 0.5333333333333333,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 3.6279828548431396,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 3.743184804916382,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 48,
+   "how": "cross",
+   "hit": true,
+   "err_s": -0.2
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": true,
+  "ODS_hit": true
+ },
+ {
+  "sid": "mmau_003134",
+  "source": "MMAU",
+  "gap_s": 0.3,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 0.9,
+   "margin": 2.97650408744812,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 0.9,
+   "margin": 2.97650408744812,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 43,
+   "how": "cross",
+   "hit": true,
+   "err_s": 0.0
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": true,
+  "ODS_hit": true
+ },
+ {
+  "sid": "mmau_003205",
+  "source": "MMAU",
+  "gap_s": 0.43333333333333335,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 0.9285714285714286,
+   "margin": 0.3870053291320801,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 0.9285714285714286,
+   "margin": 1.1203601360321045,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 28,
+   "how": "cross",
+   "hit": true,
+   "err_s": -0.13333333333333333
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": true,
+  "ODS_hit": true
+ },
+ {
+  "sid": "mmau_003267",
+  "source": "MMAU",
+  "gap_s": 0.6,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 2.4676566123962402,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 2.7348310947418213,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 43,
+   "how": "cross",
+   "hit": true,
+   "err_s": 0.2
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": true,
+  "ODS_hit": true
+ },
+ {
+  "sid": "mmau_003280",
+  "source": "MMAU",
+  "gap_s": 0.4,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 3.8660264015197754,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 3.858553409576416,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 62,
+   "how": "cross",
+   "hit": true,
+   "err_s": 0.03333333333333333
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": true,
+  "ODS_hit": true
+ },
+ {
+  "sid": "mmau_003482",
+  "source": "MMAU",
+  "gap_s": 0.3,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 2.7595608234405518,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 2.7595608234405518,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 51,
+   "how": "cross",
+   "hit": true,
+   "err_s": -0.2
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": true,
+  "ODS_hit": true
+ },
+ {
+  "sid": "mmau_003500",
+  "source": "MMAU",
+  "gap_s": 0.3333333333333333,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 1.5301380157470703,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 1.5301380157470703,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 40,
+   "how": "cross",
+   "hit": true,
+   "err_s": -0.23333333333333334
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": true,
+  "ODS_hit": true
+ },
+ {
+  "sid": "mmau_003527",
+  "source": "MMAU",
+  "gap_s": 0.13333333333333333,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 0.49952125549316406,
+   "oracle_in_chain": false,
+   "chain_len": 2
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 0.49952125549316406,
+   "oracle_in_chain": false,
+   "chain_len": 2
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 41,
+   "how": "cross",
+   "hit": true,
+   "err_s": -0.16666666666666666
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": true,
+  "ODS_hit": true
+ },
+ {
+  "sid": "mmau_003619",
+  "source": "MMAU",
+  "gap_s": 0.3333333333333333,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 0.8181818181818182,
+   "margin": 1.6977629661560059,
+   "oracle_in_chain": false,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 0.8181818181818182,
+   "margin": 1.8119847774505615,
+   "oracle_in_chain": false,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 34,
+   "how": "cross",
+   "hit": true,
+   "err_s": -0.03333333333333333
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": true,
+  "ODS_hit": true
+ },
+ {
+  "sid": "mmau_003667",
+  "source": "MMAU",
+  "gap_s": 0.23333333333333334,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 0.5352237224578857,
+   "oracle_in_chain": false,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 0.5352237224578857,
+   "oracle_in_chain": false,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 50,
+   "how": "cross",
+   "hit": true,
+   "err_s": -0.03333333333333333
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": true,
+  "ODS_hit": true
+ },
+ {
+  "sid": "mmau_003719",
+  "source": "MMAU",
+  "gap_s": 0.36666666666666664,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 4.8667378425598145,
+   "oracle_in_chain": true,
+   "chain_len": 2
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 4.8667378425598145,
+   "oracle_in_chain": true,
+   "chain_len": 2
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 50,
+   "how": "depth_rise",
+   "hit": true,
+   "err_s": 0.06666666666666667
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": true,
+  "ODS_hit": true
+ },
+ {
+  "sid": "mmau_003807",
+  "source": "MMAU",
+  "gap_s": 0.6666666666666666,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 4.296334266662598,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 4.675007343292236,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 37,
+   "how": "cross",
+   "hit": true,
+   "err_s": 0.16666666666666666
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": true,
+  "ODS_hit": false
+ },
+ {
+  "sid": "mmau_004100",
+  "source": "MMAU",
+  "gap_s": 0.3,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 0.22531366348266602,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 0.07587480545043945,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 31,
+   "how": "cross",
+   "hit": true,
+   "err_s": -0.06666666666666667
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": true,
+  "ODS_hit": true
+ },
+ {
+  "sid": "mmau_005008",
+  "source": "MMAU",
+  "gap_s": 0.23333333333333334,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 3.1857078075408936,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 3.3969173431396484,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 56,
+   "how": "cross",
+   "hit": true,
+   "err_s": -0.2
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": true,
+  "ODS_hit": true
+ },
+ {
+  "sid": "mmau_005060",
+  "source": "MMAU",
+  "gap_s": 0.8,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 1.9248054027557373,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 1.9620590209960938,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 26,
+   "how": "cross",
+   "hit": true,
+   "err_s": 0.0
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": true,
+  "ODS_hit": true
+ },
+ {
+  "sid": "mmau_005147",
+  "source": "MMAU",
+  "gap_s": 0.06666666666666667,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 0.6666666666666666,
+   "margin": 1.1078696250915527,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 0.6666666666666666,
+   "margin": 1.1078696250915527,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 59,
+   "how": "cross",
+   "hit": true,
+   "err_s": -0.2
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": true,
+  "ODS_hit": true
+ },
+ {
+  "sid": "mmau_005170",
+  "source": "MMAU",
+  "gap_s": 0.5333333333333333,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 0.9292607307434082,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 1.3040416240692139,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 28,
+   "how": "cross",
+   "hit": true,
+   "err_s": -0.03333333333333333
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": true,
+  "ODS_hit": true
+ },
+ {
+  "sid": "mmau_005176",
+  "source": "MMAU",
+  "gap_s": 0.26666666666666666,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 2.6971490383148193,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 2.250991106033325,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 25,
+   "how": "cross",
+   "hit": true,
+   "err_s": -0.16666666666666666
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": true,
+  "ODS_hit": true
+ },
+ {
+  "sid": "mmau_005218",
+  "source": "MMAU",
+  "gap_s": 0.26666666666666666,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 3.956838846206665,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 3.9742989540100098,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 35,
+   "how": "cross",
+   "hit": true,
+   "err_s": -0.1
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": true,
+  "ODS_hit": true
+ },
+ {
+  "sid": "mmau_005331",
+  "source": "MMAU",
+  "gap_s": 0.1,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 3.740601062774658,
+   "oracle_in_chain": false,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 3.855624198913574,
+   "oracle_in_chain": false,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 3,
+   "how": "cross",
+   "hit": false,
+   "err_s": -1.0666666666666667
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": true,
+  "ODS_hit": true
+ },
+ {
+  "sid": "mmau_005359",
+  "source": "MMAU",
+  "gap_s": 0.7,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 2.653980255126953,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 2.4764583110809326,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 30,
+   "how": "cross",
+   "hit": true,
+   "err_s": 0.1
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": true,
+  "ODS_hit": true
+ },
+ {
+  "sid": "mmau_005362",
+  "source": "MMAU",
+  "gap_s": 0.23333333333333334,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 0.5756063461303711,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 0.7004916667938232,
+   "oracle_in_chain": false,
+   "chain_len": 1
+  },
+  "pred_eq_gt": false,
+  "cp": {
+   "est": 14,
+   "how": "cross",
+   "hit": false,
+   "err_s": -0.4
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": true,
+  "ODS_hit": true
+ },
+ {
+  "sid": "mmau_005382",
+  "source": "MMAU",
+  "gap_s": 0.36666666666666664,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 1.364442229270935,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 1.364442229270935,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 26,
+   "how": "depth_rise",
+   "hit": false,
+   "err_s": -0.8666666666666667
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": true,
+  "ODS_hit": true
+ },
+ {
+  "sid": "mmau_005531",
+  "source": "MMAU",
+  "gap_s": 0.6333333333333333,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 1.632582187652588,
+   "oracle_in_chain": false,
+   "chain_len": 2
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 1.632582187652588,
+   "oracle_in_chain": false,
+   "chain_len": 2
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 22,
+   "how": "cross",
+   "hit": true,
+   "err_s": -0.06666666666666667
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": true,
+  "ODS_hit": true
+ },
+ {
+  "sid": "mmau_005535",
+  "source": "MMAU",
+  "gap_s": 0.3,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 2.6786060333251953,
+   "oracle_in_chain": true,
+   "chain_len": 2
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 2.3256430625915527,
+   "oracle_in_chain": true,
+   "chain_len": 2
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 36,
+   "how": "cross",
+   "hit": true,
+   "err_s": 0.0
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": true,
+  "ODS_hit": true
+ },
+ {
+  "sid": "mmau_005536",
+  "source": "MMAU",
+  "gap_s": 0.13333333333333333,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 0.8,
+   "margin": 2.273357391357422,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 0.8,
+   "margin": 2.322524070739746,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 58,
+   "how": "cross",
+   "hit": true,
+   "err_s": -0.3
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": true,
+  "ODS_hit": true
+ },
+ {
+  "sid": "mmau_005723",
+  "source": "MMAU",
+  "gap_s": 0.9,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 2.074509859085083,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 2.074509859085083,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 103,
+   "how": "cross",
+   "hit": false,
+   "err_s": 0.7
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": true,
+  "ODS_hit": false
+ },
+ {
+  "sid": "mmau_005730",
+  "source": "MMAU",
+  "gap_s": 0.6,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 5.158168792724609,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 4.456445693969727,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 61,
+   "how": "cross",
+   "hit": true,
+   "err_s": -0.13333333333333333
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": true,
+  "ODS_hit": true
+ },
+ {
+  "sid": "mmau_005778",
+  "source": "MMAU",
+  "gap_s": 0.7666666666666667,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 4.845813274383545,
+   "oracle_in_chain": true,
+   "chain_len": 2
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 4.635174751281738,
+   "oracle_in_chain": true,
+   "chain_len": 2
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 39,
+   "how": "cross",
+   "hit": true,
+   "err_s": -0.06666666666666667
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": true,
+  "ODS_hit": true
+ },
+ {
+  "sid": "mmau_006502",
+  "source": "MMAU",
+  "gap_s": 1.3,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 5.0,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 5.0,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 40,
+   "how": "cross",
+   "hit": true,
+   "err_s": 0.1
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": false,
+  "ODS_hit": true
+ },
+ {
+  "sid": "mmau_006685",
+  "source": "MMAU",
+  "gap_s": 0.3333333333333333,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 3.157599925994873,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 3.4389142990112305,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 36,
+   "how": "cross",
+   "hit": true,
+   "err_s": -0.23333333333333334
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": true,
+  "ODS_hit": true
+ },
+ {
+  "sid": "mmau_006864",
+  "source": "MMAU",
+  "gap_s": 1.6,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 2.8367056846618652,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 2.576558828353882,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 48,
+   "how": "cross",
+   "hit": false,
+   "err_s": 0.5333333333333333
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": false,
+  "ODS_hit": true
+ },
+ {
+  "sid": "mmau_007219",
+  "source": "MMAU",
+  "gap_s": 1.3666666666666667,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 2.136054754257202,
+   "oracle_in_chain": false,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 1.5745110511779785,
+   "oracle_in_chain": false,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 52,
+   "how": "cross",
+   "hit": false,
+   "err_s": 0.9666666666666667
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": false,
+  "ODS_hit": false
+ },
+ {
+  "sid": "mmau_007322",
+  "source": "MMAU",
+  "gap_s": 0.23333333333333334,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 3.377453327178955,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 3.4674229621887207,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 41,
+   "how": "cross",
+   "hit": false,
+   "err_s": -0.7333333333333333
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": true,
+  "ODS_hit": true
+ },
+ {
+  "sid": "mmau_007433",
+  "source": "MMAU",
+  "gap_s": 0.4,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 1.864046573638916,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 1.882026195526123,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 36,
+   "how": "cross",
+   "hit": true,
+   "err_s": -0.26666666666666666
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": true,
+  "ODS_hit": true
+ },
+ {
+  "sid": "mmau_007438",
+  "source": "MMAU",
+  "gap_s": 0.9666666666666667,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 3.015981912612915,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 2.545140027999878,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 48,
+   "how": "depth_rise",
+   "hit": false,
+   "err_s": 0.6
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": true,
+  "ODS_hit": true
+ },
+ {
+  "sid": "mmau_007660",
+  "source": "MMAU",
+  "gap_s": 1.1666666666666667,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 0.8822579383850098,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 0.7932591438293457,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 45,
+   "how": "cross",
+   "hit": false,
+   "err_s": -0.6
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": false,
+  "ODS_hit": false
+ },
+ {
+  "sid": "mmau_007708",
+  "source": "MMAU",
+  "gap_s": 0.3333333333333333,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 0.9090909090909091,
+   "margin": 1.9898507595062256,
+   "oracle_in_chain": true,
+   "chain_len": 3
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 1.976590871810913,
+   "oracle_in_chain": true,
+   "chain_len": 4
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 100,
+   "how": "cross",
+   "hit": true,
+   "err_s": 0.03333333333333333
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": true,
+  "ODS_hit": true
+ },
+ {
+  "sid": "mmau_007714",
+  "source": "MMAU",
+  "gap_s": 1.0666666666666667,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 4.7304816246032715,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 4.7304816246032715,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 56,
+   "how": "cross",
+   "hit": false,
+   "err_s": 0.4
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": true,
+  "ODS_hit": true
+ },
+ {
+  "sid": "mmau_007731",
+  "source": "MMAU",
+  "gap_s": 0.6,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 3.628541946411133,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 2.9727673530578613,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 72,
+   "how": "cross",
+   "hit": true,
+   "err_s": 0.06666666666666667
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": true,
+  "ODS_hit": true
+ },
+ {
+  "sid": "mmau_007992",
+  "source": "MMAU",
+  "gap_s": 0.43333333333333335,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 1.9011316299438477,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 1.861659049987793,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 88,
+   "how": "cross",
+   "hit": true,
+   "err_s": 0.3
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": true,
+  "ODS_hit": true
+ },
+ {
+  "sid": "mmau_008318",
+  "source": "MMAU",
+  "gap_s": 1.2,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": false,
+   "continuity": 1.0,
+   "margin": 2.310685634613037,
+   "oracle_in_chain": null,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": false,
+   "continuity": 1.0,
+   "margin": 2.1567986011505127,
+   "oracle_in_chain": null,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 107,
+   "how": "cross",
+   "hit": false,
+   "err_s": 0.43333333333333335
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": true,
+  "ODS_hit": true
+ },
+ {
+  "sid": "mmau_008779",
+  "source": "MMAU",
+  "gap_s": 0.5,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 1.326406478881836,
+   "oracle_in_chain": true,
+   "chain_len": 2
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 1.8962855339050293,
+   "oracle_in_chain": true,
+   "chain_len": 2
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 149,
+   "how": "cross",
+   "hit": false,
+   "err_s": 0.4666666666666667
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": true,
+  "ODS_hit": true
+ },
+ {
+  "sid": "mmau_008965",
+  "source": "MMAU",
+  "gap_s": 0.9333333333333333,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 4.0695085525512695,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 3.993030548095703,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 70,
+   "how": "cross",
+   "hit": false,
+   "err_s": -1.0666666666666667
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": false,
+  "ODS_hit": true
+ },
+ {
+  "sid": "mmau_009261",
+  "source": "MMAU",
+  "gap_s": 1.5,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 0.9782608695652174,
+   "margin": 2.0126585960388184,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 0.9782608695652174,
+   "margin": 5.0,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 83,
+   "how": "cross",
+   "hit": false,
+   "err_s": -0.5333333333333333
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": true,
+  "ODS_hit": true
+ },
+ {
+  "sid": "mmau_009332",
+  "source": "MMAU",
+  "gap_s": 0.7,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 0.9090909090909091,
+   "margin": 5.33658504486084,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 0.9090909090909091,
+   "margin": 5.575870513916016,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 79,
+   "how": "depth_rise",
+   "hit": false,
+   "err_s": 0.36666666666666664
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": false,
+  "ODS_hit": false
+ },
+ {
+  "sid": "mmau_009398",
+  "source": "MMAU",
+  "gap_s": 0.6,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 0.17359554767608643,
+   "oracle_in_chain": false,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 0.42105263157894735,
+   "margin": 0.8283400535583496,
+   "oracle_in_chain": false,
+   "chain_len": 1
+  },
+  "pred_eq_gt": false,
+  "cp": {
+   "est": 11,
+   "how": "cross",
+   "hit": false,
+   "err_s": -1.0
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": true,
+  "ODS_hit": true
+ },
+ {
+  "sid": "mmau_009553",
+  "source": "MMAU",
+  "gap_s": 1.7,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 0.7774708271026611,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 1.0307483673095703,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 83,
+   "how": "cross",
+   "hit": true,
+   "err_s": 0.16666666666666666
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": false,
+  "ODS_hit": false
+ },
+ {
+  "sid": "mmau_009618",
+  "source": "MMAU",
+  "gap_s": 0.5666666666666667,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 3.703122854232788,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 4.412607192993164,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 77,
+   "how": "cross",
+   "hit": false,
+   "err_s": 0.3333333333333333
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": true,
+  "ODS_hit": true
+ },
+ {
+  "sid": "mmau_009625",
+  "source": "MMAU",
+  "gap_s": 1.9666666666666666,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 4.837475299835205,
+   "oracle_in_chain": true,
+   "chain_len": 2
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 0.08878684043884277,
+   "oracle_in_chain": true,
+   "chain_len": 2
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 108,
+   "how": "cross",
+   "hit": false,
+   "err_s": -0.4
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": true,
+  "ODS_hit": true
+ },
+ {
+  "sid": "mmau_009646",
+  "source": "MMAU",
+  "gap_s": 1.0333333333333334,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 5.0,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 5.0,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 277,
+   "how": "cross",
+   "hit": false,
+   "err_s": 0.7
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": true,
+  "ODS_hit": true
+ },
+ {
+  "sid": "mmau_009749",
+  "source": "MMAU",
+  "gap_s": 1.9,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 4.743353366851807,
+   "oracle_in_chain": false,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 1.8001973628997803,
+   "oracle_in_chain": false,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 266,
+   "how": "cross",
+   "hit": false,
+   "err_s": 0.43333333333333335
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": false,
+  "ODS_hit": true
+ },
+ {
+  "sid": "mmau_009805",
+  "source": "MMAU",
+  "gap_s": 0.36666666666666664,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 0.019259214401245117,
+   "oracle_in_chain": true,
+   "chain_len": 2
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 0.1666254997253418,
+   "oracle_in_chain": true,
+   "chain_len": 2
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 118,
+   "how": "cross",
+   "hit": false,
+   "err_s": -0.4666666666666667
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": true,
+  "ODS_hit": true
+ },
+ {
+  "sid": "mmau_009829",
+  "source": "MMAU",
+  "gap_s": 1.5,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 1.7178895473480225,
+   "oracle_in_chain": true,
+   "chain_len": 2
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 1.1120235919952393,
+   "oracle_in_chain": true,
+   "chain_len": 2
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 105,
+   "how": "cross",
+   "hit": true,
+   "err_s": 0.3
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": false,
+  "ODS_hit": false
+ },
+ {
+  "sid": "mmau_009862",
+  "source": "MMAU",
+  "gap_s": 0.4666666666666667,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 0.7197043895721436,
+   "oracle_in_chain": null,
+   "chain_len": 2
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 0.6805169582366943,
+   "oracle_in_chain": null,
+   "chain_len": 2
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 92,
+   "how": "cross",
+   "hit": true,
+   "err_s": 0.26666666666666666
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": true,
+  "ODS_hit": true
+ },
+ {
+  "sid": "mmau_009888",
+  "source": "MMAU",
+  "gap_s": 1.0,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 0.967741935483871,
+   "margin": 7.714237213134766,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 0.967741935483871,
+   "margin": 7.449315547943115,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 124,
+   "how": "cross",
+   "hit": false,
+   "err_s": 0.43333333333333335
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": true,
+  "ODS_hit": true
+ },
+ {
+  "sid": "mmau_009891",
+  "source": "MMAU",
+  "gap_s": 1.1,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 0.9705882352941176,
+   "margin": 6.101561546325684,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 0.9705882352941176,
+   "margin": 6.101561546325684,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 165,
+   "how": "depth_rise",
+   "hit": false,
+   "err_s": 0.7333333333333333
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": false,
+  "ODS_hit": false
+ },
+ {
+  "sid": "mmau_009949",
+  "source": "MMAU",
+  "gap_s": 2.533333333333333,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 7.584647178649902,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 7.709620475769043,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 113,
+   "how": "cross",
+   "hit": false,
+   "err_s": 0.8333333333333334
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": false,
+  "ODS_hit": false
+ },
+ {
+  "sid": "mmau_010358",
+  "source": "MMAU",
+  "gap_s": 0.4666666666666667,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 3.275728225708008,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 3.626288414001465,
+   "oracle_in_chain": true,
+   "chain_len": 1
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 162,
+   "how": "cross",
+   "hit": false,
+   "err_s": -0.43333333333333335
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": true,
+  "ODS_hit": true
+ },
+ {
+  "sid": "mmau_011563",
+  "source": "MMAU",
+  "gap_s": 0.4,
+  "gt": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 0.24294579029083252,
+   "oracle_in_chain": false,
+   "chain_len": 2
+  },
+  "pred": {
+   "found": true,
+   "at_entry": true,
+   "det_at_entry": true,
+   "continuity": 1.0,
+   "margin": 0.24294579029083252,
+   "oracle_in_chain": false,
+   "chain_len": 2
+  },
+  "pred_eq_gt": true,
+  "cp": {
+   "est": 24,
+   "how": "cross",
+   "hit": true,
+   "err_s": 0.0
+  },
+  "E4_sa+E2_sa+XN4_sa_hit": true,
+  "ODS_hit": true
+ }
+]

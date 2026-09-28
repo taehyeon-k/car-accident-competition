@@ -1,0 +1,40 @@
+D2o                                  S 0.738/0.703/0.668 | E 0.613/0.528 | gapE 0.90/0.59/0.54/0.36/0.20 | 1.5-2.5 seeds [0.362] | bias +0.30s | crop25 E 0.518 slope 0.46 | crop50 E 0.592 slope 0.66
+D4Ro                                 S 0.741/0.712/0.663 | E 0.616/0.542 | gapE 0.92/0.62/0.51/0.45/0.20 | 1.5-2.5 seeds [0.449] | bias +0.20s | crop25 E 0.532 slope 0.47 | crop50 E 0.592 slope 0.71
+D4Ro@entry_haz                       S 0.739/0.707/0.659 | E 0.613/0.535 | gapE 0.88/0.62/0.51/0.45/0.20 | 1.5-2.5 seeds [0.449] | bias +0.23s | crop25 E 0.518 slope 0.49 | crop50 E 0.588 slope 0.70
+D4Xo                                 S 0.726/0.724/0.677 | E 0.553/0.521 | gapE 0.88/0.60/0.51/0.33/0.16 | 1.5-2.5 seeds [0.333] | bias +0.40s | crop25 E 0.465 slope 0.47 | crop50 E 0.567 slope 0.68
+GRLo                                 S 0.716/0.697/0.663 | E 0.546/0.479 | gapE 0.84/0.58/0.46/0.28/0.13 | 1.5-2.5 seeds [0.283] | bias +0.30s | crop25 E 0.514 slope 0.52 | crop50 E 0.535 slope 0.72
+EVAL_DONE D2o|stage2/objtrack/cache_objlane_full| D4Ro|stage2/objtrack/cache_objlane_full|entry_haz_logits D4Xo|stage2/objtrack/cache_objlane_full| GRLo|stage2/objtrack/cache_objlane_full|
+ODS@s0                               S 0.742/0.715/0.674 | E 0.606/0.528 | gapE 0.91/0.57/0.52/0.42/0.22 | 1.5-2.5 seeds [0.42] | bias +0.27s | crop25 E 0.486 slope 0.46 | crop50 E 0.609 slope 0.69
+D2o@s0                               S 0.738/0.703/0.668 | E 0.613/0.528 | gapE 0.90/0.59/0.54/0.36/0.20 | 1.5-2.5 seeds [0.362] | bias +0.30s | crop25 E 0.518 slope 0.46 | crop50 E 0.592 slope 0.66
+D4Ro@s0                              S 0.741/0.712/0.663 | E 0.616/0.542 | gapE 0.92/0.62/0.51/0.45/0.20 | 1.5-2.5 seeds [0.449] | bias +0.20s | crop25 E 0.532 slope 0.47 | crop50 E 0.592 slope 0.71
+E4_sa+E2_sa+XN4_sa@s0                S 0.765/0.749/0.678 | E 0.641/0.493 | gapE 0.90/0.60/0.53/0.47/0.16 | 1.5-2.5 seeds [0.471] | bias +0.30s | crop25 E 0.514 slope 0.52 | crop50 E 0.609 slope 0.74
+E4_sa@s0                             S 0.728/0.703/0.653 | E 0.585/0.468 | gapE 0.87/0.58/0.51/0.29/0.18 | 1.5-2.5 seeds [0.29] | bias +0.33s | crop25 E 0.493 slope 0.49 | crop50 E 0.567 slope 0.70
+EVAL_DONE baselines
+D1                                   S 0.737/0.729/0.685 | E 0.588/0.542 | gapE 0.90/0.63/0.51/0.36/0.20 | 1.5-2.5 seeds [0.362] | bias +0.30s | crop25 E 0.472 slope 0.43 | crop50 E 0.574 slope 0.71
+D1@entry_obj                         S 0.675/0.687/0.674 | E 0.419/0.503 | gapE 0.81/0.49/0.43/0.22/0.13 | 1.5-2.5 seeds [0.217] | bias +0.40s | crop25 E 0.521 slope 0.45 | crop50 E 0.468 slope 0.69
+EVAL_DONE D1|stage2/actor/cache_actorfeat/a50/eval|entry_obj_logits
+ODS@phys                             S 0.745/0.714/0.676 | E 0.613/0.532 | gapE 0.90/0.57/0.55/0.41/0.20 | 1.5-2.5 seeds [0.413] | bias +0.27s | crop25 E 0.482 slope 0.47 | crop50 E 0.595 slope 0.70
+D1b                                  S 0.723/0.713/0.677 | E 0.570/0.532 | gapE 0.92/0.62/0.49/0.36/0.18 | 1.5-2.5 seeds [0.362] | bias +0.33s | crop25 E 0.479 slope 0.51 | crop50 E 0.574 slope 0.71
+EVAL_DONE D1b|stage2/actor/cache_actorfeat/a48p3/eval|
+D4Ro@phys                            S 0.741/0.709/0.666 | E 0.620/0.549 | gapE 0.93/0.65/0.50/0.43/0.20 | 1.5-2.5 seeds [0.428] | bias +0.20s | crop25 E 0.528 slope 0.47 | crop50 E 0.602 slope 0.71
+D5                                   S 0.742/0.723/0.688 | E 0.595/0.560 | gapE 0.93/0.63/0.51/0.33/0.22 | 1.5-2.5 seeds [0.333] | bias +0.30s | crop25 E 0.503 slope 0.48 | crop50 E 0.606 slope 0.71
+D5@entry_obj                         S 0.699/0.688/0.665 | E 0.472/0.479 | gapE 0.80/0.53/0.40/0.28/0.16 | 1.5-2.5 seeds [0.275] | bias +0.39s | crop25 E 0.581 slope 0.57 | crop50 E 0.535 slope 0.74
+EVAL_DONE D5|stage2/actor/cache_actorfeat/a147/eval|entry_obj_logits
+D5c                                  S 0.730/0.706/0.671 | E 0.599/0.539 | gapE 0.94/0.63/0.49/0.33/0.27 | 1.5-2.5 seeds [0.333] | bias +0.33s | crop25 E 0.500 slope 0.54 | crop50 E 0.599 slope 0.67
+D5c@entry_obj                        S 0.678/0.675/0.669 | E 0.465/0.518 | gapE 0.78/0.56/0.40/0.30/0.22 | 1.5-2.5 seeds [0.304] | bias +0.30s | crop25 E 0.556 slope 0.54 | crop50 E 0.514 slope 0.71
+EVAL_DONE D5c|stage2/actor/cache_actorfeat/a147c/eval|entry_obj_logits
+D4a                                  S 0.732/0.711/0.691 | E 0.581/0.570 | gapE 0.94/0.62/0.53/0.34/0.20 | 1.5-2.5 seeds [0.341] | bias +0.30s | crop25 E 0.511 slope 0.52 | crop50 E 0.581 slope 0.72
+D4a@entry_haz                        S 0.734/0.705/0.683 | E 0.588/0.553 | gapE 0.92/0.58/0.53/0.35/0.20 | 1.5-2.5 seeds [0.348] | bias +0.30s | crop25 E 0.514 slope 0.52 | crop50 E 0.563 slope 0.71
+EVAL_DONE D4a|stage2/actor/cache_actorfeat/a50/eval|entry_haz_logits
+D3                                   S 0.727/0.724/0.674 | E 0.592/0.549 | gapE 0.93/0.58/0.54/0.40/0.20 | 1.5-2.5 seeds [0.399] | bias +0.30s | crop25 E 0.468 slope 0.44 | crop50 E 0.588 slope 0.70
+EVAL_DONE D3|stage2/actor/cache_actorfeat/a57s/fold{fold}/eval|
+D5@chk                               S 0.742/0.723/0.688 | E 0.595/0.560 | gapE 0.93/0.63/0.51/0.33/0.22 | 1.5-2.5 seeds [0.333] | bias +0.30s | crop25 E 0.503 slope 0.48 | crop50 E 0.606 slope 0.71
+ODS@s01                              S 0.745/0.734/0.682 | E 0.623/0.546 | gapE 0.93/0.63/0.53/0.42/0.18 | 1.5-2.5 seeds [0.42, 0.377] | bias +0.30s | crop25 E 0.521 slope 0.54 | crop50 E 0.620 slope 0.74
+D4Ro+D5                              S 0.757/0.744/0.684 | E 0.627/0.556 | gapE 0.92/0.64/0.53/0.48/0.22 | 1.5-2.5 seeds [0.478] | bias +0.20s | crop25 E 0.539 slope 0.52 | crop50 E 0.616 slope 0.73
+EVAL_DONE fusion1
+D5H                                  S 0.750/0.724/0.680 | E 0.616/0.560 | gapE 0.90/0.66/0.49/0.41/0.31 | 1.5-2.5 seeds [0.413] | bias +0.30s | crop25 E 0.514 slope 0.53 | crop50 E 0.581 slope 0.75
+D5H@entry_haz                        S 0.737/0.719/0.672 | E 0.581/0.539 | gapE 0.86/0.65/0.46/0.42/0.22 | 1.5-2.5 seeds [0.42] | bias +0.30s | crop25 E 0.500 slope 0.46 | crop50 E 0.581 slope 0.72
+D4Ro+D5H                             S 0.746/0.725/0.699 | E 0.609/0.570 | gapE 0.92/0.65/0.48/0.47/0.27 | 1.5-2.5 seeds [0.471] | bias +0.27s | crop25 E 0.525 slope 0.49 | crop50 E 0.585 slope 0.75
+E4_sa+E2_sa+XN4_sa+ODS@s0            S 0.767/0.766/0.700 | E 0.665/0.542 | gapE 0.93/0.64/0.58/0.51/0.16 | 1.5-2.5 seeds [0.507] | bias +0.27s | crop25 E 0.518 slope 0.50 | crop50 E 0.602 slope 0.73
+E4_sa+E2_sa+XN4_sa+D4Ro+D5H          S 0.764/0.759/0.714 | E 0.637/0.588 | gapE 0.97/0.68/0.54/0.51/0.20 | 1.5-2.5 seeds [0.507] | bias +0.27s | crop25 E 0.546 slope 0.55 | crop50 E 0.599 slope 0.74
+EVAL_DONE fusion2
