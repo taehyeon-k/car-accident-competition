@@ -189,3 +189,30 @@ about 30% of long-gap clips. Local label flexibility and predictive surprise add
 4. Follow-up if it holds: a two-branch model (prominence slots and actor ROI as separate branches, with the actor branch gated by
    the ranker margin) in place of the probability-level fusion. Pulled-toward-COLLISION errors need a different mechanism, since
    none of the five directions moved them.
+
+## 11. 3-seed validation of D4Ro and D5H (seeds 0-2, same protocol)
+
+### LB forecast (two-factor, seeds 0-1)
+
+| recipe | ⅓ score | crop25 ENTRY | forecast |
+|---|---|---|---|
+| v8 (LB .5929) | 0.6987 | 0.5317 | **0.5897** |
+| v8 + ODS | 0.7055 | 0.5246 | **0.5921** |
+| v8 + D4Ro | 0.7095 | 0.5211 | **0.5940** |
+| v8 + D5H | 0.7174 | 0.5528 | **0.6262** |
+| v8 + v15 | 0.7186 | 0.5423 | **0.6198** |
+| v15 alone | 0.7149 | 0.5387 | **0.6130** |
+
+### 3 seeds (ensembles of seeds 0-2 of every family)
+
+| recipe | S nat/½/⅓ | ENTRY nat/½/⅓ | COLL | ENTRY <.5/.5–1/1–1.5/1.5–2.5/>2.5 s | bias | crop25 E | crop50 E | ENTRY vs v8 +/− |
+|---|---|---|---|---|---|---|---|---|
+| v8 | 0.764/0.750/0.710 | 0.641/0.609/0.539 | 0.842 | 0.95/0.63/0.51/0.43/0.20 | +0.33 s | 0.525 | 0.620 | +0/−0 |
+| ODS | 0.755/0.742/0.705 | 0.641/0.623/0.595 | 0.820 | 0.94/0.67/0.55/0.42/0.31 | +0.29 s | 0.525 | 0.651 | +54/−38 |
+| D4Ro | 0.755/0.741/0.686 | 0.630/0.637/0.546 | 0.842 | 0.92/0.65/0.51/0.48/0.24 | +0.20 s | 0.549 | 0.620 | +44/−45 |
+| D5H | 0.752/0.738/0.712 | 0.627/0.620/0.578 | 0.824 | 0.97/0.70/0.49/0.40/0.27 | +0.40 s | 0.539 | 0.585 | +64/−57 |
+| v15 = D4Ro+D5H | 0.758/0.748/0.714 | 0.648/0.644/0.592 | 0.828 | 0.97/0.70/0.50/0.49/0.27 | +0.27 s | 0.553 | 0.630 | +63/−46 |
+| v8 + ODS | 0.772/0.754/0.715 | 0.655/0.627/0.567 | 0.849 | 0.96/0.64/0.55/0.46/0.22 | +0.30 s | 0.521 | 0.637 | +18/−6 |
+| v8 + v15 | 0.775/0.761/0.709 | 0.672/0.648/0.549 | 0.845 | 0.97/0.68/0.53/0.45/0.24 | +0.30 s | 0.532 | 0.623 | +30/−18 |
+
+The suite reproduces the robustness profile exactly for v8 at seeds 0-1 (⅓ score .6987, crop25 ENTRY .5317), so the two-factor forecast applies. Forecast caveat: fitted on 6 LB recipes (LOO MAE .014); crop25 of the new recipes is at the edge of the fitted range, so .62 is an optimistic extrapolation. At 3 seeds v15 alone matches or beats v8 on every ENTRY metric (native +.007, ⅓ +.053, 1.5-2.5 s +.06, >2.5 s +.07, crop25 +.028) but loses COLLISION (-.014); v8 + v15 gives the best native score / ENTRY found (.775 / .672) but a lower ⅓ ENTRY than v15 alone. D4Ro's seed-0 gains over ODS do not fully hold (⅓ ENTRY .546 vs .595). D5H drives the ⅓-rate and crop25 gains.
