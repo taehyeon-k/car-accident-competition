@@ -42,6 +42,12 @@ RECIPES = {  # LB-scored: v5 0.5314, v6 0.5277, v7 0.5464, v8 0.5929, v10 0.5590
     "v12": same(["XSbU_E4", "XSbU_E2", "XSbU_XN4", "XSbUB_E4"]),
     "v13": same(["E4_sbuC", "E2_sbuC", "XN4_sbuC"]),    # stride mix + unlabelled consistency + window crops, no MM-AU/CCD extras
     "v13nc": same(["E4_sbu", "E2_sbu", "XN4_sbu"]),     # same without window crops (attribution)
+    "v13+OA": same(["E4_sbuC", "E2_sbuC", "XN4_sbuC", "E4_sbOA"]),              # + object-crop E4 family (no window crops)
+    "v13+OAC": same(["E4_sbuC", "E2_sbuC", "XN4_sbuC", "E4_sbOAC"]),            # + object-crop E4 family with window crops
+    "v13+OAC2": same(["E4_sbuC", "E2_sbuC", "XN4_sbuC", "E4_sbOAC", "E2_sbOAC"]),  # + object-crop E4 and E2 families
+    "OAC+XN4": same(["E4_sbOAC", "E2_sbOAC", "XN4_sbuC"]),                      # object-crop E4/E2 replace v13's E4/E2
+    "v8+OA": same(["E4_sa", "E2_sa", "XN4_sa", "E4_sbOA"]),                      # v8 + object-crop E4 family
+    "v8+OAC": same(["E4_sa", "E2_sa", "XN4_sa", "E4_sbOAC"]),                    # v8 + object-crop E4 family with window crops
 }
 CONDITIONS = [(1, 0.0), (2, 0.0), (3, 0.0), (4, 0.0), (1, 0.5), (1, 0.25), (3, 0.5)]
 # "DACON-like" view (pre-registered before its result was seen): the known test samples are CCD clips, 10 fps, 50 frames. Each clip at the
@@ -66,10 +72,15 @@ def item_dacon(row):
         L = max(DACON_LEN, c - e + 1); rng = np.random.default_rng(zlib.crc32(sid.encode())); lo, hi = max(0, c - L + 1), min(e, n - L)
         start = int(rng.integers(lo, hi + 1)) if hi >= lo else max(0, min(e, n - L))
         sl = slice(start, start + L); kept, mot, res = kept[sl], mot[sl].copy(), res[sl].copy(); mot[0] = 0; res[0] = 0
+    else: sl = slice(None)
     reduced = frames_all[kept]; pos = C.select_adaptive(reduced); frames = reduced[pos]
     g = segments(motion28(mot), pos); r = segments(res, pos)
+    both = np.concatenate([g, r], 1); import os
+    of = C.REPO / f"{os.environ.get('OBJ_CACHE', 'stage2/objtrack/cache_objfeat')}/k{k}/{sid}.npy"
+    obf = np.load(of)[sl] if of.exists() else None
     return {"sid": sid, "frames": frames, "x": torch.from_numpy(np.ascontiguousarray(feats[kept[pos]])), "global": torch.from_numpy(g),
-            "both": torch.from_numpy(np.concatenate([g, r], 1)), "abs": kept[pos], "n": len(reduced), "n_native": len(frames_all), "row": row}
+            "both": torch.from_numpy(both), "abs": kept[pos], "n": len(reduced), "n_native": len(frames_all), "row": row,
+            "both_objfeat": torch.from_numpy(np.concatenate([both, segments(obf, pos)], 1)) if obf is not None else None}
 
 
 def load_member(fam, fold, seed, dev):
@@ -79,6 +90,7 @@ def load_member(fam, fold, seed, dev):
     p = next(r / fam for r in AUX_ROOTS if (r / fam).is_dir()) / "cv" / f"fold{fold}_seed{seed}" / "checkpoint.pt"
     cfg = torch.load(p, map_location="cpu", weights_only=False)["config"]
     kind = {"both": "both", "global": "global"}.get(cfg.get("motion", "none"))
+    if cfg.get("objmotion"): kind = "both_objfeat" if cfg.get("obj_cache") else "both_obj"
     return load_aux(p, dev), kind, cfg.get("feats_dir", "")
 
 

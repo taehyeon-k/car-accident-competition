@@ -60,3 +60,20 @@ v13 **0.7675** (ENTRY .630, COLLISION .873), NEXAR **0.723** — v8 recipe 0.774
   at native frame rate on held-out NEXAR. The equal stride mix + consistency appears to sharpen the short-gap behaviour even without
   the extras (v13nc shows the same).
 * Forecast: a tie with v8 (0.589 vs 0.590). v13 is the robust, extras-free candidate; it is not expected to beat v8 by a clear margin.
+
+## 7. Object crops (option 3) combined with v13 and v8 (2026-09-28)
+Object-crop families: E4_sbOA (stride mix + object appearance), E4_sbOAC / E2_sbOAC (+ window crops; crops now rebuild the object
+features of the window). The unlabelled consistency loss cannot be combined yet (no detections for the unlabelled pool).
+Robustness profile (seeds 0-1, clean) and the frame-rate + truncation forecast (6 LB points):
+| | v8 | v8 + OA | v8 + OAC | v13 | v13 + OA | v13 + OAC | v13 + OAC(E4,E2) | OAC(E4,E2) + XN4_sbuC |
+|---|---|---|---|---|---|---|---|---|
+| native / ½ / ⅓ / ¼ | .749/.734/.699/.701 | .752/.752/.706/.701 | .748/.741/.701/.695 | .752/.745/.707/.713 | .746/.750/.708/.718 | .746/.749/.705/.711 | .751/.754/.709/.716 | .745/.749/.709/.714 |
+| ENTRY native / ⅓ | .616/.518 | .620/.542 | .623/.521 | .609/.553 | .592/.560 | .588/.549 | .606/.535 | .599/.535 |
+| ENTRY on 25 % windows | .532 | .518 | .521 | .518 | .504 | .518 | .511 | .504 |
+| ENTRY gap 1-1.5 / 1.5-2.5 / >2.5 s | .47/.42/.18 | .51/**.45**/.17 | .48/.40/.17 | .51/.32/.13 | .53/.38/.15 | .53/.32/.13 | .52/.34/.12 | .51/.35/.10 |
+| forecast | 0.590 | 0.587 | 0.584 | 0.589 | 0.579 | 0.586 | 0.586 | 0.581 |
+ENTRY scorecard (3 seeds): E4_sbOAC alone has the smallest long-gap bias of any family (+0.27 s; 1.5-2.5 s .38), but in ensembles the
+effect is diluted (v13-based ensembles .27-.29 at 1.5-2.5 s, bias +0.50 s).
+**Verdict:** object crops improve long-gap ENTRY at the family level and slightly on top of v8 (v8 + OA: 1.5-2.5 s .42 → .45, ⅓-rate
+.699 → .706), but no combination moves the forecast (all 0.579-0.590 vs v8 0.590) and none fixes v13's long-gap regression.
+Not worth building a detector/tracker runtime on this evidence.

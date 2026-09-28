@@ -437,6 +437,7 @@ def main():
             for i, f in enumerate(flip):
                 if f and base[i] is train_items[i]:
                     cr = crop_item(train_rows[i], train_items[i], np.random.default_rng(int(torch.randint(1 << 30, (1,), generator=gen))))
+                    if cr is not None and a.objmotion: cr = add_obj(cr, 1)  # object features of the cropped window (native indices)
                     if cr is not None: base[i] = cr
             for it in base: it.setdefault("attr_w", 1.0); it.setdefault("entry_w", 1.0)
         if a.truncate_aug:  # H7: replace a random subset of clips by their pre-collision truncation (COLLISION masked)
