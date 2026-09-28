@@ -1,0 +1,76 @@
+[
+ {
+  "epoch": 1,
+  "train_loss": 10.58697424693541,
+  "train_direct": 4.57770804383538,
+  "train_entry_obj": 4.405234577980909,
+  "train_entry_haz": 5.360475781289014,
+  "train_obj_rank": 0.4947432838380337,
+  "train_obj_state": 1.097586985338818
+ },
+ {
+  "epoch": 2,
+  "train_loss": 8.23596238006245,
+  "train_direct": 3.247863845391707,
+  "train_entry_obj": 3.833876544778997,
+  "train_entry_haz": 4.056062419306148,
+  "train_obj_rank": 0.5281949615613981,
+  "train_obj_state": 1.0850624726577238
+ },
+ {
+  "epoch": 3,
+  "train_loss": 7.115092125805941,
+  "train_direct": 2.922101083126935,
+  "train_entry_obj": 3.450678313320333,
+  "train_entry_haz": 3.219850014556538,
+  "train_obj_rank": 0.5378873052752831,
+  "train_obj_state": 0.986900498921221
+ },
+ {
+  "epoch": 4,
+  "train_loss": 6.386527717113495,
+  "train_direct": 2.6039541255344045,
+  "train_entry_obj": 3.209271926771511,
+  "train_entry_haz": 2.78441375087608,
+  "train_obj_rank": 0.49718433508480137,
+  "train_obj_state": 0.9244923198764975
+ },
+ {
+  "epoch": 5,
+  "train_loss": 5.899504802443764,
+  "train_direct": 2.428105518221855,
+  "train_entry_obj": 3.0315223200754686,
+  "train_entry_haz": 2.6271574686874044,
+  "train_obj_rank": 0.4554622045675801,
+  "train_obj_state": 0.879676063629714
+ },
+ {
+  "epoch": 6,
+  "train_loss": 5.504738114096901,
+  "train_direct": 2.3039405278184195,
+  "train_entry_obj": 2.8403872508894312,
+  "train_entry_haz": 2.385920512405309,
+  "train_obj_rank": 0.421949174223383,
+  "train_obj_state": 0.8494608673182401
+ },
+ {
+  "epoch": 7,
+  "train_loss": 5.142688531767238,
+  "train_direct": 2.1561139090494676,
+  "train_entry_obj": 2.6798539988019248,
+  "train_entry_haz": 2.246967054226182,
+  "train_obj_rank": 0.3249259381555021,
+  "train_obj_state": 0.8188623982396993
+ },
+ {
+  "epoch": 8,
+  "train_loss": 4.990840185772289,
+  "train_direct": 2.1201748766682367,
+  "train_entry_obj": 2.6425051133741033,
+  "train_entry_haz": 2.209590581330386,
+  "train_obj_rank": 0.35408394648270175,
+  "train_obj_state": 0.7796011411330916,
+  "val_fpsblind_score": 0.7528501379052943,
+  "val_official": 0.9478501379052944
+ }
+]
