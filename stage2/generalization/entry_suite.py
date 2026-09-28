@@ -186,6 +186,7 @@ def gapood(run, seeds, dev):
                     if sp_: P[key][f"s{s}"].append(decode(sp_, it, r))
         hit = lambda p: abs(p["entry_frame"] - p["entry_gt"]) / fps[p["sample_id"]] <= .300001
         bias = lambda ps: float(np.median([(p["entry_frame"] - p["entry_gt"]) / fps[p["sample_id"]] for p in ps]))
+        out.setdefault("_preds", {})[sp] = {key: P[key]["ens"] for key in P}
         out[sp] = {key: {m: {"entry_acc": round(float(np.mean([hit(p) for p in P[key][m]])), 3), "bias_s": round(bias(P[key][m]), 3),
                              "score": round(C.metrics(P[key][m])["score"], 4)} for m in P[key]} for key in P}
     return out
@@ -198,6 +199,6 @@ def gapood_main():
         o = gapood(run, a.seeds, dev); C.dump(RES / f"gapood_{run}.json", o)
         for sp in ("L", "S"):
             for key in ("k1", "k3"):
-                d = o[sp][key]; sd = [d[f"s{s}"]["entry_acc"] for s in a.seeds if f"s{s}" in d]
+                d = o[sp][key]  # (per-clip ensemble predictions saved under o["_preds"]); sd = [d[f"s{s}"]["entry_acc"] for s in a.seeds if f"s{s}" in d]
                 print(f"{run:24s} gap-OOD {sp} {key}: ENTRY ens {d['ens']['entry_acc']:.3f} (seeds {sd}) bias {d['ens']['bias_s']:+.2f}s score {d['ens']['score']:.3f} "
                       f"| prior {d['prior']['entry_acc']:.3f} bias {d['prior']['bias_s']:+.2f}s", flush=True)

@@ -161,6 +161,9 @@ def _aux(loss, parts, out, batch, cfg):
         lb = distribution_loss(out["entry_bnd_logits"], batch["entry_index"], batch["time_valid"], batch["normalized_positions"].float(), "soft_index", 1.0)
         ew = batch["entry_w"].float() if "entry_w" in batch else torch.ones_like(lb)
         parts["entry_bnd"] = (ew * lb).mean(); loss = loss + cfg["w_entry_bnd"] * parts["entry_bnd"]
+    if cfg.get("pos_grl", 0.0) and "pos_logits" in out:  # Exp F: 5 bins of GT ENTRY's relative position in the (possibly cropped) clip
+        n = batch["time_valid"].sum(1).clamp_min(1).float(); y = (batch["entry_index"].float() / n * 5).long().clamp(0, 4)
+        parts["pos"] = F.cross_entropy(out["pos_logits"].float(), y); loss = loss + parts["pos"]
     if cfg.get("w_gap", 0.0) > 0:  # gap prior: Gaussian NLL of log(1 + COLLISION - ENTRY) in sampled positions (FPS-blind)
         tgt = torch.log1p((batch["collision_index"] - batch["entry_index"]).clamp_min(0).float())
         ls = out["gap_logsig"]; nll = ls + 0.5 * ((tgt - out["gap_mu"]) / ls.exp()) ** 2

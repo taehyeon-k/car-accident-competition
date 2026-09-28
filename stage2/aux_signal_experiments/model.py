@@ -17,6 +17,14 @@ from torch import nn
 from stage2.phase_study.model import PhasePyramid
 
 
+class _GradReverse(torch.autograd.Function):
+    @staticmethod
+    def forward(ctx, x, lam): ctx.lam = lam; return x.view_as(x)
+
+    @staticmethod
+    def backward(ctx, g): return -ctx.lam * g, None
+
+
 class CausalEntry(nn.Module):
     """H8: ENTRY logits from frame embeddings using only positions <= t + lookahead (dilated causal convs, residual).
     The bidirectional pyramid (which sees the collision) is not used for ENTRY."""
@@ -39,7 +47,7 @@ class CausalEntry(nn.Module):
 
 class AuxPyramid(PhasePyramid):
     def __init__(self, phase_rep="none", risk=False, boundary="none", lane="none", motion_dim=0, hr=False, clip_norm="none",
-                 causal_entry=-1, anchor_attr=False, entry_aux=False, gap_head=False, entry_bnd="none", entry_bnd_alpha=1.0, hard_state=False, obj_branch="none", obj_k=3, obj_d=0, obj_alpha=1.0, obj_state=False, obj_lane_drop=0.0, obj_rgate=False, **kw):
+                 causal_entry=-1, anchor_attr=False, entry_aux=False, gap_head=False, entry_bnd="none", entry_bnd_alpha=1.0, hard_state=False, obj_branch="none", obj_k=3, obj_d=0, obj_alpha=1.0, obj_state=False, obj_lane_drop=0.0, obj_rgate=False, pos_grl=0.0, **kw):
         super().__init__(phase_rep=phase_rep, attach="final", motion=False, **kw)
         H = self.event.in_features
         # Exp 2: object/lane ENTRY branch. The per-object features ride at the END of the motion input (segments: [max, mean] of K x D);
@@ -79,6 +87,9 @@ class AuxPyramid(PhasePyramid):
         self.hard_state = nn.Linear(2 * H, 3) if hard_state else None
         self.gap_head = nn.Linear(H, 2) if gap_head else None  # gap prior: (mu, log sigma) of log(1 + COLLISION - ENTRY positions)
         self.entry_aux = nn.Linear(H, 1) if entry_aux else None  # P4: broad-target auxiliary ENTRY head (training only, never decoded)
+        # Exp F: temporal-position probe on the ENTRY-pooled representation (pos_grl > 0: gradient reversal with that weight;
+        # pos_grl < 0: control probe on detached features, no effect on the model)
+        self.pos_grl = pos_grl; self.pos_probe = nn.Sequential(nn.Linear(H, 32), nn.GELU(), nn.Linear(32, 5)) if pos_grl else None
         self.anchor_attr = anchor_attr  # H15: side / evasion pooled at the model's own (detached) ENTRY / COLLISION distributions
         if hr:  # 14x25 high-resolution tokens: per-token LayerNorm + 384->4 projection, flattened (1400) into the input projection
             self.hr_norm = nn.LayerNorm(384); self.hr_tok = nn.Linear(384, 4); motion_dim = motion_dim + 350 * 4
@@ -168,6 +179,12 @@ class AuxPyramid(PhasePyramid):
             out["gap_mu"], out["gap_logsig"] = g[:, 0], g[:, 1].clamp(-3, 3)
         if self.entry_aux is not None:
             out["entry_aux_logits"] = self.entry_aux(h).squeeze(-1).masked_fill(~valid, torch.finfo(h.dtype).min / 4)
+        if self.pos_probe is not None:
+            neg = torch.finfo(torch.float32).min / 4
+            we = out["entry_logits"].detach().float().masked_fill(~valid, neg).softmax(-1)
+            pooled = torch.einsum("bt,bth->bh", we, h.float())
+            pooled = _GradReverse.apply(pooled, self.pos_grl) if self.pos_grl > 0 else pooled.detach()
+            out["pos_logits"] = self.pos_probe(pooled)
         if not return_hidden: out.pop("hidden")
         return out
 
@@ -180,7 +197,7 @@ def build(cfg):
                       entry_bnd=cfg.get("entry_bnd", "none"), entry_bnd_alpha=cfg.get("entry_bnd_alpha", 1.0),
                       hard_state=cfg.get("w_hard_state", 0.0) > 0, obj_branch=cfg.get("obj_branch", "none"), obj_k=cfg.get("obj_k", 3),
                       obj_d=cfg.get("obj_d", 0), obj_alpha=cfg.get("obj_alpha", 1.0), obj_state=cfg.get("w_obj_state", 0.0) > 0,
-                      obj_lane_drop=cfg.get("obj_lane_drop", 0.0), obj_rgate=cfg.get("obj_rgate", False))
+                      obj_lane_drop=cfg.get("obj_lane_drop", 0.0), obj_rgate=cfg.get("obj_rgate", False), pos_grl=cfg.get("pos_grl", 0.0))
 
 
 def load(path, device):

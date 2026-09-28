@@ -372,6 +372,7 @@ def main():
     p.add_argument("--unl-stride", action="store_true", help="stride-augment the --extra-unl clips with the --stride-aug probabilities")
     p.add_argument("--epochs", type=int, default=30); p.add_argument("--patience", type=int, default=7)
     p.add_argument("--batch-size", type=int, default=4)
+    p.add_argument("--pos-grl", type=float, default=0.0, help="Exp F: ENTRY-position probe with gradient reversal of this weight (<0: detached control probe)")
     p.add_argument("--train-split", default="train"); p.add_argument("--val-split", default="val"); p.add_argument("--output", default=None)
     a = p.parse_args()
     CONS.update(entry_w=a.cons_entry_w, collision_w=a.cons_coll_w, entry_bins=a.cons_entry_bins)
@@ -450,7 +451,7 @@ def main():
                motion_dim=motion_dim, n_train=len(train_rows), n_val=len(val_rows))
     model = AuxPyramid(phase_rep=a.phase_rep, risk=a.risk != "none", boundary=a.boundary, lane=a.lane, motion_dim=motion_dim, hr=a.hr, clip_norm=a.clip_norm, causal_entry=a.causal_entry, anchor_attr=a.anchor_attr, entry_aux=a.w_entry_aux > 0, feat_dim=feat_dim, gap_head=a.w_gap > 0,
                        entry_bnd=a.entry_bnd, entry_bnd_alpha=a.entry_bnd_alpha, hard_state=a.w_hard_state > 0, obj_branch=a.obj_branch, obj_k=a.obj_k, obj_d=a.obj_d, obj_alpha=a.obj_alpha, obj_state=a.w_obj_state > 0,
-                       obj_lane_drop=a.obj_lane_drop, obj_rgate=a.obj_rgate).to(device)
+                       obj_lane_drop=a.obj_lane_drop, obj_rgate=a.obj_rgate, pos_grl=a.pos_grl).to(device)
     params = sum(x.numel() for x in model.parameters())
     import copy
     ema = copy.deepcopy(model).eval() if a.ema else None

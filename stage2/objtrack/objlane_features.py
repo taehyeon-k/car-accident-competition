@@ -19,10 +19,22 @@ from pathlib import Path
 import numpy as np
 
 REPO = Path("/workspace/car-accident")
-CROPS = REPO / "stage2/objtrack/cache_objcrop"
+import os
+K_IN = int(os.environ.get("OBJ_K_IN", 3))   # slots in the crop cache (3 = cache_objcrop, 6 = cache_objcrop6)
+CROPS = REPO / ("stage2/objtrack/cache_objcrop" if K_IN == 3 else f"stage2/objtrack/cache_objcrop{K_IN}")
 CORR = REPO / "stage2/objtrack/cache_corridor"
 PCA = REPO / "stage2/objtrack/cache_objapp/pca.npz"
 K = 3
+
+
+def relevance(vec, persist):
+    """SEL-H causal lane-relevance score of one slot from its current feature vector (current + previous retained frame only)
+    and its causal persistence: ego-lane overlap / intrusion depth, rising depth / overlap, lateral motion toward the lane centre,
+    box growth, persistence and a mild size prior. No labels, no future frames, no FPS, no source."""
+    la, g, a = vec[5], vec[6], vec[7]; lane_ok, depth, ov, dd, dov, lat = vec[8], vec[9], vec[10], vec[12], vec[13], vec[14]
+    s = 0.5 * la + 2.0 * max(g, 0.0) + 0.5 * persist + 1.0 * max(a, 0.0)
+    if lane_ok: s += 0.6 * ov + 0.4 * float(np.clip(depth, -1, 1)) + 3.0 * max(dd, 0.0) + 2.0 * max(dov, 0.0) + 3.0 * max(lat, 0.0)
+    return s
 
 
 def lane_at(left, right, row_y, y):
@@ -40,16 +52,19 @@ def conf_lookup(tracks):
     return {(int(f), int(t)): float(s) for f, t, s in zip(tracks["frame"], tracks["track"], tracks["score"]) if t >= 0}
 
 
-def clip_features(d, corr, k, variant, pca, conf=None):
-    pres, box, tid = d["present"], d["box"], d["track"]; n = len(pres); kept = np.arange(0, n, k)
+def clip_features(d, corr, k, variant, pca, conf=None, select="none", k_out=None, return_order=False):
+    """select='none': the first k_out (default K_IN) prominence slots; 'heur' (SEL-H): per frame, the k_out slots with the highest
+    causal relevance() among the K_IN prominence candidates, ordered by relevance."""
+    pres, box, tid = d["present"], d["box"], d["track"]; n = len(pres); kept = np.arange(0, n, k); KI = pres.shape[1]
+    k_out = k_out or KI; orders = []
     L, R, row_y = corr["left"].astype(np.float32), corr["right"].astype(np.float32), corr["row_y"]
     if variant in ("full", "fullq"):
         z = ((d["emb"].astype(np.float32) - pca["mu"]) @ pca["comp"].T) / pca["scale"]; z[~pres] = 0
     D = {"geo": 15, "full": 48, "fullq": 51}[variant]; seen = {}
-    out = np.zeros((len(kept), K * D), np.float32); last = {}
+    out = np.zeros((len(kept), k_out * D), np.float32); last = {}; seen_all = {}
     for t, f in enumerate(kept):
-        cur = {}
-        for j in range(K):
+        cur = {}; vecs = {}
+        for j in range(KI):
             if not pres[f, j]: continue
             b = box[f, j]; x1, y1, x2, y2 = [float(v) for v in b]; cx = (x1 + x2) / 2; w, h = x2 - x1, y2 - y1
             la = np.log(max(w * h, 1e-5)); dc = abs(cx - .5); key = int(tid[f, j])
@@ -76,23 +91,29 @@ def clip_features(d, corr, k, variant, pca, conf=None):
             if variant == "fullq":  # reliability inputs: detector confidence, causal persistence (last 10 retained frames), q
                 hist = seen.setdefault(key, []); persist = sum(1 for tt in hist if t - tt <= 10) / 10.0
                 vec += [conf.get((int(f), key), 0.0), min(persist, 1.0), q]
-            out[t, j * D:(j + 1) * D] = vec
+            ps = sum(1 for tt in seen_all.get(key, []) if t - tt <= 10) / 10.0 if key >= 0 else 0.0
+            vecs[j] = (relevance(vec, min(ps, 1.0)) if select == "heur" else -j, vec)
             cur[key] = {"t": t, "la": la, "dc": dc, "lane": bool(lane), "lv": lv, "z": z[f, j] if variant in ("full", "fullq") else None}
-            if key >= 0: seen.setdefault(key, []).append(t)
+            if key >= 0: seen.setdefault(key, []).append(t); seen_all.setdefault(key, []).append(t)
+        ranked = sorted(vecs, key=lambda j: -vecs[j][0])[:k_out]
+        for i, j in enumerate(ranked): out[t, i * D:(i + 1) * D] = vecs[j][1]
+        orders.append([int(tid[f, j]) for j in ranked])
         for key_, v in cur.items():
             if key_ >= 0: last[key_] = v
-    return out
+    return (out, orders) if return_order else out
 
 
 def main():
-    ap = argparse.ArgumentParser(); ap.add_argument("--variant", choices=["geo", "full", "fullq"], required=True); a = ap.parse_args()
-    out = REPO / f"stage2/objtrack/cache_objlane_{a.variant}"; pca = dict(np.load(PCA))
+    ap = argparse.ArgumentParser(); ap.add_argument("--variant", choices=["geo", "full", "fullq"], required=True)
+    ap.add_argument("--select", choices=["none", "heur"], default="none"); ap.add_argument("--k-out", type=int, default=None); a = ap.parse_args()
+    suf = ("" if K_IN == 3 else f"_k{K_IN}") + ("" if a.select == "none" else f"_{a.select}{a.k_out}")
+    out = REPO / f"stage2/objtrack/cache_objlane_{a.variant}{suf}"; pca = dict(np.load(PCA))
     files = sorted(p for p in CROPS.glob("*.npz") if not p.name.endswith(".tmp.npz"))
     for f in files:
         d = np.load(f); corr = np.load(CORR / f"{f.stem}.npz")
         conf = conf_lookup(np.load(REPO / "stage2/objtrack/cache_tracks" / f"{f.stem}.npz")) if a.variant == "fullq" else None
         for k in (1, 2, 3, 4):
-            (out / f"k{k}").mkdir(parents=True, exist_ok=True); np.save(out / f"k{k}" / f"{f.stem}.npy", clip_features(d, corr, k, a.variant, pca, conf))
+            (out / f"k{k}").mkdir(parents=True, exist_ok=True); np.save(out / f"k{k}" / f"{f.stem}.npy", clip_features(d, corr, k, a.variant, pca, conf, a.select, a.k_out))
     print("done", a.variant, len(files))
 
 
