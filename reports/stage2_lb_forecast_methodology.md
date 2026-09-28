@@ -59,3 +59,12 @@ Rejected: native CV, per-source slices, the CCD-native slice, and a test-format 
 
 Implication: obeying the labelled-only rule by dropping XN4 costs ~.015; the flow-based families (FG2, FG2_E2, FGk) recover v8's
 level without any extra data. Nothing tested so far is forecast to beat v8 by a resolvable margin.
+
+## Attempt at a 0.63-forecast model (2026-09-29 07:40-07:52 KST)
+Target: forecast .63 needs S_third about +.048 over v8 at matched seeds (~.758 vs .710 at 3 seeds).
+* 1/3-heavy training mix (native / 1/2 / 1/3 = .25 / .25 / .5), 3 seeds: E4t .759 / .741 / .710 (ENTRY .644 / .539) vs E4_sa
+  .756 / .736 / .689 -> +.021 at 1/3 with no native loss; FG2t (flow) .747 / .737 / .702 vs FG2 .766 / .737 / .714 -> worse.
+* Labelled-only ensembles: E4t + FG2 + FGk .779 / .766 / .711 -> forecast .5933 +- .0068; E4t + FG2 + FG2_E2 .774 / .762 / .708 ->
+  .5912 +- .0075. Best native / 1/2 labelled-only ensembles so far, but 1/3 saturates at ~.71 for every ensemble: family-level
+  1/3 gains (E4t +.021, FG2 +.025) do not add up after averaging.
+* Result: no candidate reaches a resolvable gain over v8; .63 is not reached.
