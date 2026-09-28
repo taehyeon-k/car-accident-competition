@@ -75,3 +75,6 @@ NEXAR +0.035, ENTRY −0.03…−0.05 on the three non-NEXAR sources; the ⅓-ra
 the DACON CCD samples are native 10 fps). No offline metric predicted the drop's size. Prime suspect: the pseudo-labelled extras
 (teacher ENTRY / metadata COLLISION conventions, or same-source similarity inflating CV). **v11 / v12 contain the same extras, so
 their forecasts are withdrawn.** Five LB points now: v5 0.5314, v6 0.5277, v7 0.5464, v8 0.5929, v10 0.5590.
+* **v12 = 0.5635** (XSbU + ViT-B family; contains the MM-AU/CCD extras). Offline it was the best at every frame rate (⅓ rate 0.745 vs
+  v8 0.710). Together with v10 (0.5590) this is the second submission with extras below v8 (0.5929): the extras-trained recipes lose
+  ~0.03 on the LB despite better CV. Six LB points: v5 .5314, v6 .5277, v7 .5464, v8 .5929, v10 .5590, v12 .5635.

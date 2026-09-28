@@ -287,6 +287,7 @@ Leaderboard (from the user):
 | **v7 E4+E2+XN4 full refit** (2026-09-26) | — | 0.5464 | 0.7340 | accel ±0.5, steer **3°** |
 | **v8 = v7 + stride aug** (2026-09-27) | — | **0.5929** | — | Stage 2 best; see `reports/stage2_leaderboard_correlation.md` |
 | v10 = v8 families + MM-AU/CCD metadata-labelled extras (XC_E4 + XS_E2 + XS_XN4) | — | 0.5590 | **0.7475** (Stage 3 best) | accel ±0.4, steer 7°; forecast 0.607 was wrong (−0.034 vs v8) |
+| v12 = XSbU (stride mix + consistency + MM-AU/CCD extras) + ViT-B family, 16 members | — | 0.5635 | ? | confirms extras hurt: v10 / v12 both < v8 (0.5929) |
 | v4 | — | — | 0.6900 | accel ±0.25, steer 1.5° |
 | NEXAR specialist | — | 0.437 | **0.7388** | accel ±0.5, steer 5° |
 | **v5 LC-v2 15-head + motion** | 0.953 | **0.5314** | 0.6972 | accel ±1.0, steer 5° |
