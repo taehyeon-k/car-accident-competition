@@ -108,3 +108,13 @@
   free-space right & ensemble wrong 40, the reverse 46; probability correlation .48), so no combination beats the ensemble.
   Per source, CCD improves (.606 -> .622) and NEXAR drops (.684 -> .668). Verdict: negative — evasion plateaus at ~.70-.72 with the
   evidence tested so far (the ensemble already encodes the free-space information, or the label is partly subjective).
+
+## Deepening Exp 4 — pre-collision ENTRY expert with actor evidence (PCE; single seed, 5 folds)
+* PCE = D5H recipe trained only on windows ending just before COLLISION (--truncate-aug 1 --truncate-near; native rate only); PCEg =
+  same without object features (control, ~H7/H8). Evaluated on inputs cut at the v8+D5H out-of-fold predicted COLLISION.
+* Standalone: PCE ENTRY .599/.486 (native / 1/3), 1.5-2.5 s .42, bias +.20 s, crop25 .609; PCEg .546/.415, .32, +.40 s, .511 ->
+  object evidence is what makes a collision-blind ENTRY expert work (H7/H8 had none).
+* Complementary to v8+D5H: oracle-of-two ENTRY .743 native / .775 DACON-like vs .662 / .665.
+* Fusion (expert ENTRY on the prefix before the predicted COLLISION, p = (1-a) ensemble + a expert; suite --fuse-expert):
+  a .25 -> score .778/.772/.725/.752/.752/.766 vs .775/.764/.722/.746/.735/.766 (native, 1/2, 1/3, crop50, crop25, DACON view);
+  crop25 ENTRY .532 -> .581, long-gap bias +.40 -> +.23 s; DACON view flat. Promising but single-seed expert -> needs 3-seed validation.

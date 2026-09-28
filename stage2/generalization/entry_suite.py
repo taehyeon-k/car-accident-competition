@@ -32,6 +32,8 @@ DACON_STRIDE = {"CCD": 1, "AIHUB": 2}; DACON_LEN = 50  # --dacon: + DACON-like v
 GAPS = [(0, .5), (.5, 1), (1, 1.5), (1.5, 2.5), (2.5, 99)]
 TTA_VIEWS = []  # --tta: head-level multi-rate views (s, o): positions[o::s], s in 2, 3 (only when T >= 3 s)
 TTA_W = []; TTA_G = [0]
+FUSE_EXPERT = False; EXP_A = []  # --fuse-expert A,..: pre-collision ENTRY expert members (truncate_near) run on the prefix before the reference's predicted COLLISION; ENTRY = (1-a) others + a expert
+CUT = {}  # --cut-at KEY: {cond: {sid: predicted COLLISION frame}} -> inputs end before it; ENTRY = argmax inside, COLLISION = the reference's
 PHYS = 0.0  # --phys w: lightweight physical decoder weight (0 = plain decoding)
 
 
@@ -44,7 +46,8 @@ def members(run, fold, seeds, dev):
             cfg = torch.load(c, map_location="cpu", weights_only=False)["config"]
             kind = {"both": "both", "global": "global"}.get(cfg.get("motion", "none"), None)
             if cfg.get("objmotion"): kind = "both_objfeat" if cfg.get("obj_cache") else "both_obj"
-            out.append((load_model(c, dev), kind, cfg.get("feats_dir", ""), s, eval_cache(cfg)))
+            mdl = load_model(c, dev); mdl.pce_expert = bool(cfg.get("truncate_near")) and FUSE_EXPERT
+            out.append((mdl, kind, cfg.get("feats_dir", ""), s, eval_cache(cfg)))
     return out
 
 
@@ -68,6 +71,11 @@ def member_probs(ms, it, dev, entry_key):
             xm = xs[fd]
         src = it["_oc"][kind] if (kind and kind not in it) else it
         mo = (src["both_objfeat"] if kind not in it else it[kind]) if kind else None
+        if getattr(m, "pce_expert", False):  # prefix of the sampled positions before the predicted COLLISION (>= 4), zero mass after it
+            T = xm.shape[1]; tc = max(int((np.asarray(it["frames"]) < it["_fuse_c"]).sum()), min(4, T))
+            oe = m(xm[:, :tc], v[:, :tc], motion=mo[None, :tc].to(dev)) if kind else m(xm[:, :tc], v[:, :tc])
+            pe_ = torch.zeros(T, device=dev); pe_[:tc] = oe[entry_key if entry_key in oe else "entry_logits"][0].float().softmax(-1)
+            out.append((s, pe_, None, None, None, None, None, "expert")); continue
         o = m(xm, v, motion=mo[None].to(dev)) if kind else m(xm, v)
         ek = entry_key if entry_key in o else "entry_logits"
         views = None
@@ -100,10 +108,12 @@ def spread(p, T, s, o):
     return full / full.sum()
 
 
-def decode(parts, it, r, w=0.0, gate=0):
+def decode(parts, it, r, w=0.0, gate=0, alpha=0.0):
     if gate and len(it["frames"]) < gate: w = 0.0   # length gate: views only for clips with >= gate sampled positions
+    experts = [p for p in parts if len(p) > 7 and p[7] == "expert"]; parts = [p for p in parts if not (len(p) > 7 and p[7] == "expert")]
     mix = lambda p, j: (1 - w) * p[j] + w * p[6][j - 1] if (w and len(p) > 6 and p[6] is not None) else p[j]
     pe = torch.stack([mix(p, 1) for p in parts]).mean(0); pc = torch.stack([mix(p, 2) for p in parts]).mean(0)
+    if experts and alpha: pe = (1 - alpha) * pe + alpha * torch.stack([p[1] for p in experts]).mean(0)
     le = pe.log()
     if PHYS and all(len(p) > 5 and p[5] is not None for p in parts):  # Stage2_experiments lightweight physical decoder (no gap / position prior)
         st = torch.stack([p[5] for p in parts]).mean(0); T = len(pe); m = 3
@@ -115,7 +125,9 @@ def decode(parts, it, r, w=0.0, gate=0):
         after = torch.where(t < T - 1, (ca[hi + 1] - ca[t + 1]) / (hi - t).clamp_min(1), torch.full_like(pe, .5))
         le = ps.clamp_min(1e-12).log() + PHYS * (before + after - 1)                            # AFTER persists, BEFORE precedes
     ei, ci = constrained_anchors(le[None], pc.log()[None]); fr = it["frames"]
-    return {"sample_id": r["sample_id"], "source_id": r["source_id"], "entry_frame": int(fr[int(ei[0])]), "collision_frame": int(fr[int(ci[0])]),
+    if it.get("_cut_c") is not None: ei = le.argmax()[None]
+    return {"sample_id": r["sample_id"], "source_id": r["source_id"], "entry_frame": int(fr[int(ei[0])]),
+            "collision_frame": int(it["_cut_c"]) if it.get("_cut_c") is not None else int(fr[int(ci[0])]),
             "entry_side": int(np.mean([p[3] for p in parts]) >= .5), "evasion_space": int(np.mean([p[4] for p in parts]) >= .5),
             "entry_gt": int(r["entry_frame"]), "collision_gt": int(r["collision_frame"]), "entry_side_gt": int(r["entry_side"] == "RIGHT"),
             "evasion_gt": int(r["evasion_space"]), "num_available_frames": it["n_native"], "_lo": int(fr[0]), "_hi": int(fr[-1]), "_n": len(fr),
@@ -141,9 +153,17 @@ def run_arm(run, seeds, dev, entry_key="entry_logits"):
             for cond, (k, cr) in CONDS.items():
                 fl = None
                 if cond == "dacon": k, cr, fl = DACON_STRIDE.get(r["source_id"].split(":")[0], 3), 0.0, DACON_LEN
-                it = item(r, k, cr, fixed_len=fl); it["_oc"] = {m_[4]: item(r, k, cr, oc=m_[4], fixed_len=fl) for m_ in ms if m_[4]}
+                ef = CUT[cond][r["sample_id"]] if CUT else None
+                it = item(r, k, cr, fixed_len=fl, end_frame=ef); it["_oc"] = {m_[4]: item(r, k, cr, oc=m_[4], fixed_len=fl, end_frame=ef) for m_ in ms if m_[4]}
+                it["_cut_c"] = ef
+                if FUSE_EXPERT: it["_fuse_c"] = FUSE_C[cond][r["sample_id"]]
                 parts = member_probs(ms, it, dev, entry_key)
                 P[cond]["ens"].append(decode(parts, it, r))
+                for a_ in EXP_A: P[cond].setdefault(f"a{a_}", []).append(decode(parts, it, r, alpha=a_))
+                for s_ in seeds:
+                    for a_ in EXP_A:
+                        sp = [p for p in parts if p[0] == s_]
+                        if sp: P[cond].setdefault(f"a{a_}s{s_}", []).append(decode(sp, it, r, alpha=a_))
                 for w in TTA_W:
                     for g in TTA_G: P[cond].setdefault(f"w{w}" + (f"g{g}" if g else ""), []).append(decode(parts, it, r, w, g))
                 for s in seeds:
@@ -208,11 +228,20 @@ def main():
     ap.add_argument("--entry-key", default="entry_logits"); ap.add_argument("--tag", default=""); ap.add_argument("--priors", action="store_true")
     ap.add_argument("--tta", default="", help="head-level multi-rate TTA: comma list of view weights w (p = (1-w) full + w mean(views))")
     ap.add_argument("--tta-gates", default="0", help="comma list of minimum sampled positions for the TTA views (0 = always)")
+    ap.add_argument("--fuse-expert", default="", help="comma list of ENTRY weights a for pre-collision expert members (needs --fuse-ref)")
+    ap.add_argument("--fuse-ref", default="", help="suite key whose per-condition predicted COLLISION cuts the expert's input")
+    ap.add_argument("--cut-at", default="", help="suite result key whose per-condition predicted COLLISION ends every input (pre-collision ENTRY expert)")
     ap.add_argument("--dacon", action="store_true", help="also evaluate the DACON-like view (50-frame window, source stride)")
     ap.add_argument("--phys", type=float, default=0.0, help="lightweight physical decoder weight on the object-state persistence terms")
     a = ap.parse_args(); dev = torch.device("cuda"); fps = C.fps_table(); RES.mkdir(parents=True, exist_ok=True)
     global PHYS; PHYS = a.phys
     if a.dacon: CONDS["dacon"] = (1, 0.0)
+    if a.fuse_expert:
+        global FUSE_EXPERT, EXP_A, FUSE_C; FUSE_EXPERT = True; EXP_A = [float(x) for x in a.fuse_expert.split(",")]
+        ref = json.loads((RES / f"{a.fuse_ref}.json").read_text())["preds"]; FUSE_C = {c: {q["sample_id"]: int(q["collision_frame"]) for q in ref[c]} for c in CONDS}
+    if a.cut_at:
+        global CUT; ref = json.loads((RES / f"{a.cut_at}.json").read_text())["preds"]
+        CUT = {c: {q["sample_id"]: int(q["collision_frame"]) for q in ref[c]} for c in CONDS}
     if a.tta:
         global TTA_VIEWS, TTA_W; TTA_VIEWS = [(2, 0), (2, 1), (3, 0), (3, 1), (3, 2)]; TTA_W = [float(x) for x in a.tta.split(",")]
         global TTA_G; TTA_G = [int(x) for x in a.tta_gates.split(",")]
@@ -223,7 +252,7 @@ def main():
                "per_seed": {f"s{s}": metrics({c: P[c][f"s{s}"] for c in CONDS}, fps) for s in a.seeds}}
         if a.priors: res["priors"] = prior_baselines(P, fps)
         C.dump(RES / f"{key}.json", {"metrics": res, "preds": {c: P[c]["ens"] for c in CONDS}})
-        for vk in [f"w{w}" + (f"g{g}" if g else "") for w in TTA_W for g in TTA_G]:
+        for vk in [f"a{a_}" for a_ in EXP_A] + [f"w{w}" + (f"g{g}" if g else "") for w in TTA_W for g in TTA_G]:
             mw = metrics({c: P[c][vk] for c in CONDS}, fps); C.dump(RES / f"{key}@tta{vk[1:]}.json", {"metrics": {"ensemble": mw}, "preds": {c: P[c][vk] for c in CONDS}})
             print(f"{key + f'@tta{vk[1:]}':36s} S " + "/".join(f"{mw[c]['score']:.3f}" for c in CONDS) + " | E " + "/".join(f"{mw[c]['entry_acc']:.3f}" for c in CONDS)
                   + " | C " + "/".join(f"{mw[c]['collision_acc']:.3f}" for c in CONDS) + f" | bias {mw['long_gap_bias_median_s']:+.2f}s", flush=True)

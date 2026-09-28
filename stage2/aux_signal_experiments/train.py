@@ -226,13 +226,14 @@ def warp_item(row, base, rng, lo=0.6, hi=1.7):
     return it
 
 
-def truncated_item(row, rng):
+def truncated_item(row, rng, near=False):
     """Pre-collision truncation (H7): the clip is cut at a random native frame between ENTRY + 25 % of the gap and COLLISION - 1, so
     the collision is NOT visible; ENTRY + attributes stay supervised, COLLISION loss is masked. Breaks the 'ENTRY = just before
     COLLISION' shortcut. Frame indices only."""
     frames_all, _ = C.dense(row["sample_id"]); e, c = int(row["entry_frame"]), int(row["collision_frame"])
     ei, ci = int(np.searchsorted(frames_all, e)), int(np.searchsorted(frames_all, c))
     lo = ei + max(1, (ci - ei) // 4)
+    if near: lo = max(ei + 1, ci - max(2, (ci - ei) // 4))  # pre-collision expert: cut just before COLLISION (as at inference, at the predicted one)
     if ci - 1 <= lo or lo < 4: return None
     cut = int(rng.integers(lo, ci))
     it = C.make_item(row, "adaptive", 0, cut)
@@ -345,6 +346,7 @@ def main():
     p.add_argument("--crop-aug", type=float, default=0.0, help="probability per native-rate clip per epoch of a random window containing ENTRY..COLLISION")
     p.add_argument("--gap-aug", type=float, default=0.0, help="Exp 4: probability per native-rate clip per epoch of a counterfactual gap warp")
     p.add_argument("--gap-balance", action="store_true", help="ENTRY loss weight = inverse frequency of the clip's ENTRY->COLLISION gap bin (training labels only)")
+    p.add_argument("--truncate-near", action="store_true", help="truncation cut just before COLLISION (pre-collision ENTRY expert)")
     p.add_argument("--truncate-aug", type=float, default=0.0, help="probability of pre-collision truncation per labelled clip (H7)")
     p.add_argument("--unl-consistency", type=float, default=0.0, help="H9: consistency weight on unlabelled clips (native vs stride 2/3 view)")
     p.add_argument("--unl-batch", type=int, default=4)
@@ -530,11 +532,12 @@ def main():
                     if cr is not None: base[i] = cr
             for it in base: it.setdefault("attr_w", 1.0); it.setdefault("entry_w", 1.0)
         if a.truncate_aug:  # H7: replace a random subset of clips by their pre-collision truncation (COLLISION masked)
-            assert a.motion == "both" and not a.objmotion and a.base_loss == "nt"
+            assert a.motion == "both" and a.base_loss == "nt"
             flip = (torch.rand(len(base), generator=gen) < a.truncate_aug).tolist(); base = list(base)
             for i, f in enumerate(flip):
                 if f:
-                    tr = truncated_item(train_rows[i], np.random.default_rng(int(torch.randint(1 << 30, (1,), generator=gen))))
+                    tr = truncated_item(train_rows[i], np.random.default_rng(int(torch.randint(1 << 30, (1,), generator=gen))), a.truncate_near)
+                    if tr is not None and a.objmotion: tr = add_obj(tr, 1)
                     if tr is not None: base[i] = tr
             for it in base: it.setdefault("attr_w", 1.0); it.setdefault("entry_w", 1.0)
         if a.corrupt_aug:  # image-quality augmentation: same clip, DINO tokens re-encoded from low-res / JPEG-15 frames (stride-1 views only)

@@ -31,7 +31,7 @@ FOLD_HINT = 0  # set by the evaluators per CV fold ('{fold}' in OBJ_CACHE = per-
 def root(run): return next(r for r in ROOTS if (r / run.split("+")[0]).is_dir())
 
 
-def item(row, k, crop=0.0, corrupt="", oc=None, fixed_len=None):
+def item(row, k, crop=0.0, corrupt="", oc=None, fixed_len=None, end_frame=None):
     sid = row["sample_id"]; frames_all, feats = C.dense(sid)
     if k == 1:
         kept = np.arange(len(frames_all)); mot = np.load(C.DENSE / f"{sid}.motion.npy")
@@ -46,6 +46,9 @@ def item(row, k, crop=0.0, corrupt="", oc=None, fixed_len=None):
         lo, hi = max(0, c - L + 1), min(e, n - L)
         start = int(rng.integers(lo, hi + 1)) if hi >= lo else max(0, min(e, n - L))
         sl = slice(start, start + L); kept, mot, res = kept[sl], mot[sl].copy(), res[sl].copy(); mot[0] = 0; res[0] = 0
+    cut = None
+    if end_frame is not None:  # pre-collision expert: keep only frames before end_frame (native frame number), at least 4
+        cut = max(int((frames_all[kept] < end_frame).sum()), min(4, len(kept))); kept, mot, res = kept[:cut], mot[:cut], res[:cut]
     reduced = frames_all[kept]; pos = C.select_adaptive(reduced)
     frames = reduced[pos]; x = torch.from_numpy(np.ascontiguousarray(feats[kept[pos]]))
     if corrupt:  # image-quality corruption: DINO tokens re-encoded from corrupted frames (extract_corrupt.py; stride 1, no crop only)
@@ -55,6 +58,7 @@ def item(row, k, crop=0.0, corrupt="", oc=None, fixed_len=None):
     g = segments(motion28(mot), pos); r = segments(res, pos)
     ob = np.load(C.REPO / f"stage2/generalization/cache_objmotion/k{k}/{sid}.npy") if (C.REPO / f"stage2/generalization/cache_objmotion/k{k}/{sid}.npy").exists() else None
     if ob is not None and (crop or fixed_len): ob = ob[sl]
+    if ob is not None and cut is not None: ob = ob[:cut]
     both = np.concatenate([g, r], 1)
     oc = (oc or os.environ.get("OBJ_CACHE", "stage2/objtrack/cache_objfeat")).replace("{fold}", str(FOLD_HINT))
     of = C.REPO / f"{oc}/k{k}/{sid}.npy"  # RF-DETR + ByteTrack track features (O1), if extracted
@@ -62,6 +66,7 @@ def item(row, k, crop=0.0, corrupt="", oc=None, fixed_len=None):
         of = C.REPO / f"{oc}/k{k}c{int(round(crop * 100))}/{sid}.npy"
     obf = np.load(of) if of.exists() else None
     if obf is not None and (crop or fixed_len): obf = obf[sl]
+    if obf is not None and cut is not None: obf = obf[:cut]
     return {"sid": sid, "frames": frames, "x": x, "global": torch.from_numpy(g), "both": torch.from_numpy(both),
             "_m28": motion28(mot), "_res": res, "_pos": pos, "_obf": obf,   # per-retained-frame inputs (head-level multi-view TTA re-segments them)
             "both_obj": torch.from_numpy(np.concatenate([both, segments(ob, pos)], 1)) if ob is not None else None,
