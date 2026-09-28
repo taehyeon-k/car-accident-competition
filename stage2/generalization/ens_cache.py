@@ -81,9 +81,14 @@ def run(models, it, dev):
 
 def main():
     ap = argparse.ArgumentParser(); ap.add_argument("families", nargs="+"); ap.add_argument("--seeds", type=int, nargs="+", default=[0, 1])
+    ap.add_argument("--no-views", action="store_true", help="full-positions distributions only (no head-level TTA views)")
+    ap.add_argument("--std-conds", action="store_true", help="only native, 1/2, 1/3, crop50, crop25 (no 1/4, 1/3+crop50, DACON view)")
     a = ap.parse_args(); dev = torch.device("cuda"); OUT.mkdir(parents=True, exist_ok=True)
+    global VIEWS
+    if a.no_views: VIEWS = []
     fams = [f for f in a.families if not (OUT / f"{f}.pkl").exists()]
     conds = [(f"k{k}_crop{c}", k, c, False) for k, c in CONDITIONS] + [("dacon10fps_len50", 1, 0.0, True)]
+    if a.std_conds: conds = [c for c in conds if c[0] in ("k1_crop0.0", "k2_crop0.0", "k3_crop0.0", "k1_crop0.5", "k1_crop0.25")]
     res = {f: {c[0]: [] for c in conds} for f in fams}
     for fold in range(5):
         mem = {f: [load_member(f, fold, s, dev) for s in a.seeds] for f in fams}

@@ -32,6 +32,7 @@ DACON_STRIDE = {"CCD": 1, "AIHUB": 2}; DACON_LEN = 50  # --dacon: + DACON-like v
 GAPS = [(0, .5), (.5, 1), (1, 1.5), (1.5, 2.5), (2.5, 99)]
 TTA_VIEWS = []  # --tta: head-level multi-rate views (s, o): positions[o::s], s in 2, 3 (only when T >= 3 s)
 TTA_W = []; TTA_G = [0]
+ENTRY_FAMS = set()  # --entry-fams A,B: ENTRY averaged over these families only (COLLISION / attributes over all members)
 FUSE_EXPERT = False; EXP_A = []  # --fuse-expert A,..: pre-collision ENTRY expert members (truncate_near) run on the prefix before the reference's predicted COLLISION; ENTRY = (1-a) others + a expert
 CUT = {}  # --cut-at KEY: {cond: {sid: predicted COLLISION frame}} -> inputs end before it; ENTRY = argmax inside, COLLISION = the reference's
 PHYS = 0.0  # --phys w: lightweight physical decoder weight (0 = plain decoding)
@@ -46,7 +47,7 @@ def members(run, fold, seeds, dev):
             cfg = torch.load(c, map_location="cpu", weights_only=False)["config"]
             kind = {"both": "both", "global": "global"}.get(cfg.get("motion", "none"), None)
             if cfg.get("objmotion"): kind = "both_objfeat" if cfg.get("obj_cache") else "both_obj"
-            mdl = load_model(c, dev); mdl.pce_expert = bool(cfg.get("truncate_near")) and FUSE_EXPERT
+            mdl = load_model(c, dev); mdl.pce_expert = bool(cfg.get("truncate_near")) and FUSE_EXPERT; mdl.fam = r
             out.append((mdl, kind, cfg.get("feats_dir", ""), s, eval_cache(cfg)))
     return out
 
@@ -54,6 +55,7 @@ def members(run, fold, seeds, dev):
 def eval_cache(cfg):
     """evaluation object cache of a member: actor caches <layout>[/fold{f}]/train -> .../eval; otherwise OBJ_CACHE (None)"""
     oc = cfg.get("obj_cache") or ""
+    if "cache_flowgrid" in oc: return oc   # per-frame feature cache already in the k-view layout (night campaign flow grid)
     if "cache_actorfeat" not in oc: return None
     parts = oc.rstrip("/").split("/"); parts[-1] = "eval"
     if parts[-2].startswith("fold"): parts[-2] = "fold{fold}"
@@ -94,7 +96,7 @@ def member_probs(ms, it, dev, entry_key):
             if pev: views = (torch.from_numpy(np.mean(pev, 0)).to(dev), torch.from_numpy(np.mean(pcv, 0)).to(dev))
         out.append((s, o[ek][0].float().softmax(-1), o["collision_logits"][0].float().softmax(-1),
                     float(o["side_logits"][0].float().softmax(-1)[1]), float(o["evasion_logits"].float().sigmoid().reshape(-1)[0]),
-                    o["obj_state_logits"][0].float().softmax(-1) if "obj_state_logits" in o else None, views))
+                    o["obj_state_logits"][0].float().softmax(-1) if "obj_state_logits" in o else None, views, None, getattr(m, "fam", "")))
     return out
 
 
@@ -112,7 +114,8 @@ def decode(parts, it, r, w=0.0, gate=0, alpha=0.0):
     if gate and len(it["frames"]) < gate: w = 0.0   # length gate: views only for clips with >= gate sampled positions
     experts = [p for p in parts if len(p) > 7 and p[7] == "expert"]; parts = [p for p in parts if not (len(p) > 7 and p[7] == "expert")]
     mix = lambda p, j: (1 - w) * p[j] + w * p[6][j - 1] if (w and len(p) > 6 and p[6] is not None) else p[j]
-    pe = torch.stack([mix(p, 1) for p in parts]).mean(0); pc = torch.stack([mix(p, 2) for p in parts]).mean(0)
+    ep = [p for p in parts if len(p) > 8 and p[8] in ENTRY_FAMS] if ENTRY_FAMS else parts   # --entry-fams: ENTRY from a family subset
+    pe = torch.stack([mix(p, 1) for p in (ep or parts)]).mean(0); pc = torch.stack([mix(p, 2) for p in parts]).mean(0)
     if experts and alpha: pe = (1 - alpha) * pe + alpha * torch.stack([p[1] for p in experts]).mean(0)
     le = pe.log()
     if PHYS and all(len(p) > 5 and p[5] is not None for p in parts):  # Stage2_experiments lightweight physical decoder (no gap / position prior)
@@ -231,11 +234,13 @@ def main():
     ap.add_argument("--fuse-expert", default="", help="comma list of ENTRY weights a for pre-collision expert members (needs --fuse-ref)")
     ap.add_argument("--fuse-ref", default="", help="suite key whose per-condition predicted COLLISION cuts the expert's input")
     ap.add_argument("--cut-at", default="", help="suite result key whose per-condition predicted COLLISION ends every input (pre-collision ENTRY expert)")
+    ap.add_argument("--entry-fams", default="", help="comma list of families whose ENTRY distributions are averaged (default all)")
     ap.add_argument("--dacon", action="store_true", help="also evaluate the DACON-like view (50-frame window, source stride)")
     ap.add_argument("--phys", type=float, default=0.0, help="lightweight physical decoder weight on the object-state persistence terms")
     a = ap.parse_args(); dev = torch.device("cuda"); fps = C.fps_table(); RES.mkdir(parents=True, exist_ok=True)
     global PHYS; PHYS = a.phys
     if a.dacon: CONDS["dacon"] = (1, 0.0)
+    global ENTRY_FAMS; ENTRY_FAMS = set(x for x in a.entry_fams.split(",") if x)
     if a.fuse_expert:
         global FUSE_EXPERT, EXP_A, FUSE_C; FUSE_EXPERT = True; EXP_A = [float(x) for x in a.fuse_expert.split(",")]
         ref = json.loads((RES / f"{a.fuse_ref}.json").read_text())["preds"]; FUSE_C = {c: {q["sample_id"]: int(q["collision_frame"]) for q in ref[c]} for c in CONDS}

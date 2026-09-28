@@ -47,7 +47,7 @@ class CausalEntry(nn.Module):
 
 class AuxPyramid(PhasePyramid):
     def __init__(self, phase_rep="none", risk=False, boundary="none", lane="none", motion_dim=0, hr=False, clip_norm="none",
-                 causal_entry=-1, anchor_attr=False, entry_aux=False, gap_head=False, entry_bnd="none", entry_bnd_alpha=1.0, hard_state=False, obj_branch="none", obj_k=3, obj_d=0, obj_alpha=1.0, obj_state=False, obj_lane_drop=0.0, obj_rgate=False, pos_grl=0.0, entry_hazard="none", **kw):
+                 causal_entry=-1, anchor_attr=False, entry_aux=False, gap_head=False, entry_bnd="none", entry_bnd_alpha=1.0, hard_state=False, obj_branch="none", obj_k=3, obj_d=0, obj_alpha=1.0, obj_state=False, obj_lane_drop=0.0, obj_rgate=False, pos_grl=0.0, entry_hazard="none", aux_act_dim=0, **kw):
         super().__init__(phase_rep=phase_rep, attach="final", motion=False, **kw)
         H = self.event.in_features
         # Exp 2: object/lane ENTRY branch. The per-object features ride at the END of the motion input (segments: [max, mean] of K x D);
@@ -93,9 +93,11 @@ class AuxPyramid(PhasePyramid):
         # Stage2_experiments D4: single-transition hazard ENTRY head. h_t = sigmoid(a_t), P(E=t) = h_t prod_{j<t} (1 - h_j); a_t from the
         # attention-pooled object/actor representation (32) + a projection of the fused hidden state (32). No position input.
         # "replace": ENTRY = hazard distribution; "residual": ENTRY logits + beta * log P_hazard (beta = sigmoid(g), g init 0)
+        # night campaign: auxiliary per-position regression of the collision actor's geometry (training only, dropped at inference)
+        self.aux_act = nn.Sequential(nn.Linear(H, 64), nn.GELU(), nn.Linear(64, aux_act_dim)) if aux_act_dim else None
         self.entry_hazard = entry_hazard
         if entry_hazard != "none":
-            assert obj_branch != "none", "the hazard head is conditioned on the object/actor branch"
+            # conditioned on the object / actor branch when present; otherwise on the fused hidden state only (object input = 0)
             self.hz_h = nn.Sequential(nn.LayerNorm(H), nn.Linear(H, 32), nn.GELU())
             self.hz_out = nn.Sequential(nn.Dropout(0.35), nn.Linear(64, 32), nn.GELU(), nn.Linear(32, 1))
             nn.init.constant_(self.hz_out[-1].bias, -3.0)  # low initial hazard
@@ -186,6 +188,12 @@ class AuxPyramid(PhasePyramid):
                 out["entry_haz_logits"] = logp
                 if self.entry_hazard == "replace": out["entry_logits"] = logp
                 else: out["entry_logits"] = (out["entry_logits"] + torch.sigmoid(self.hz_gate) * logp.clamp_min(-1e4)).masked_fill(~valid, neg)
+        if obj is None and self.entry_hazard != "none":  # hazard ENTRY without an object branch (night campaign: flow families)
+            neg = torch.finfo(torch.float32).min / 4; B_, T_ = h.shape[:2]
+            a_t = self.hz_out(torch.cat([h.new_zeros(B_, T_, 32).float(), self.hz_h(h.float())], -1)).squeeze(-1).float()
+            lsp, lsn = F.logsigmoid(a_t), F.logsigmoid(-a_t).masked_fill(~valid, 0.0)
+            logp = (lsp + torch.cumsum(lsn, 1) - lsn).masked_fill(~valid, neg); out["entry_haz_logits"] = logp
+            out["entry_logits"] = (out["entry_logits"].float() + torch.sigmoid(self.hz_gate) * logp.clamp_min(-1e4)).masked_fill(~valid, neg) if self.entry_hazard == "residual" else logp
         if self.hard_state is not None:
             l0 = out["level0"] * valid[..., None]; d = l0 - torch.cat([l0[:, :1], l0[:, :-1]], 1)
             out["hard_state_logits"] = self.hard_state(self.drop(torch.cat([l0, d], -1))).float()
@@ -202,6 +210,7 @@ class AuxPyramid(PhasePyramid):
             pooled = torch.einsum("bt,bth->bh", we, h.float())
             pooled = _GradReverse.apply(pooled, self.pos_grl) if self.pos_grl > 0 else pooled.detach()
             out["pos_logits"] = self.pos_probe(pooled)
+        if self.aux_act is not None: out["aux_act_pred"] = self.aux_act(self.drop(out["hidden"] * valid[..., None]))
         if not return_hidden: out.pop("hidden")
         return out
 
@@ -215,7 +224,7 @@ def build(cfg):
                       hard_state=cfg.get("w_hard_state", 0.0) > 0, obj_branch=cfg.get("obj_branch", "none"), obj_k=cfg.get("obj_k", 3),
                       obj_d=cfg.get("obj_d", 0), obj_alpha=cfg.get("obj_alpha", 1.0), obj_state=cfg.get("w_obj_state", 0.0) > 0,
                       obj_lane_drop=cfg.get("obj_lane_drop", 0.0), obj_rgate=cfg.get("obj_rgate", False), pos_grl=cfg.get("pos_grl", 0.0),
-                      entry_hazard=cfg.get("entry_hazard", "none"))
+                      entry_hazard=cfg.get("entry_hazard", "none"), aux_act_dim=cfg.get("aux_act_dim", 0))
 
 
 def load(path, device):

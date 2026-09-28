@@ -289,11 +289,19 @@ def collate(items, motion, lane):
         hr = torch.zeros(len(items), b["x"].shape[1], 350, 384, dtype=torch.float16)
         for j, it in enumerate(items): hr[j, :len(it["hr"])] = it["hr"]
         b["hr"] = hr
+    if any("aux_act" in it for it in items):
+        T = b["x"].shape[1]; D_ = next(it["aux_act"].shape[1] for it in items if "aux_act" in it)
+        b["aux_act"] = torch.zeros(len(items), T, D_); b["aux_act_has"] = torch.zeros(len(items))
+        for j, it in enumerate(items):
+            if "aux_act" in it: b["aux_act"][j, :len(it["aux_act"])] = it["aux_act"]; b["aux_act_has"][j] = 1.0
     if any("kd_path" in it for it in items):  # distillation targets (actor/cache_kd): [B, 2, T] teacher ENTRY / COLLISION distributions
         T = b["x"].shape[1]; b["kd"] = torch.zeros(len(items), 2, T); b["kd_has"] = torch.zeros(len(items))
         for j, it in enumerate(items):
             if "kd_path" in it and os.path.exists(it["kd_path"]):
                 t = torch.from_numpy(np.load(it["kd_path"]).astype(np.float32)); b["kd"][j, :, :t.shape[1]] = t; b["kd_has"][j] = 1.0
+                ap_ = it["kd_path"][:-4] + ".attr.npy"
+                if os.path.exists(ap_):
+                    b.setdefault("kd_attr", torch.full((len(items), 2), -1.0))[j] = torch.from_numpy(np.load(ap_).astype(np.float32))
     if any("attr_w" in it for it in items):
         b["attr_w"] = torch.tensor([it.get("attr_w", 1.0) for it in items]); b["entry_w"] = torch.tensor([it.get("entry_w", 1.0) for it in items])
         b["collision_w"] = torch.tensor([it.get("collision_w", 1.0) for it in items])
@@ -402,8 +410,12 @@ def main():
     p.add_argument("--w-haz", type=float, default=0.0, help="D4: weight of the hazard-alone ENTRY distribution loss")
     p.add_argument("--dyn-label", default="", help="D2: 'r,lam,late,warmup' local dynamic ENTRY target (positions, cost/position, late factor, epochs)")
     p.add_argument("--obj-cache-val", default="", help="object/actor cache for the validation clips (actor from a predicted COLLISION)")
+    p.add_argument("--aux-act", type=float, default=0.0, help="weight of the auxiliary actor-geometry regression (a147 cache geometry, training only)")
+    p.add_argument("--aux-act-cache", default="stage2/actor/cache_actorfeat/a147/train", help="k-layout actor feature cache for --aux-act targets")
     p.add_argument("--kd-dir", default="", help="distillation targets dir (cache_kd): fold{f}/k{k}/<sid>.npy teacher ENTRY / COLLISION")
+    p.add_argument("--kd-views", default="1,2,3", help="input views that receive distillation targets (1 = native, 2 / 3 = stride views)")
     p.add_argument("--w-kd", type=float, default=0.0, help="weight of KL(teacher ENTRY || student ENTRY)")
+    p.add_argument("--w-kd-attr", type=float, default=0.0, help="weight of side / evasion distillation to the teacher probabilities")
     p.add_argument("--w-kd-coll", type=float, default=0.0, help="weight of KL(teacher COLLISION || student COLLISION)")
     p.add_argument("--pos-grl", type=float, default=0.0, help="Exp F: ENTRY-position probe with gradient reversal of this weight (<0: detached control probe)")
     p.add_argument("--train-split", default="train"); p.add_argument("--val-split", default="val"); p.add_argument("--output", default=None)
@@ -454,8 +466,11 @@ def main():
         for it in train_items: it["attr_w"] = 1.0; it["entry_w"] = 0.0 if C.source(it) in masked else 1.0
         assert a.base_loss == "nt", "--mask-entry-sources uses the weighted NT loss"
     if a.objmotion:
-        assert a.motion == "both" and not a.geo and not extra, "--objmotion is appended to the 'both' motion input"
+        assert a.motion == "both" and not a.geo, "--objmotion is appended to the 'both' motion input"
         for it in train_items: add_obj(it, 1)
+        for it in extra:  # extras (pseudo-labelled NEXAR) need their own per-frame cache files in <obj-cache>/k1 (e.g. flow grid)
+            assert "_views" not in it, "--objmotion with stride-augmented extras is not supported"
+            add_obj(it, 1)
         OBJ_TRAIN = OBJ
         if a.obj_cache_val: OBJ = Path(a.obj_cache_val) if Path(a.obj_cache_val).is_absolute() else C.REPO / a.obj_cache_val
         for it in val_items: add_obj(it, 1)
@@ -474,11 +489,23 @@ def main():
         if a.stride_offsets:  # every start offset of each stride: views_off[k][o][i]; one offset drawn per clip per epoch
             views_off = {k: [[stride_item(it, k, o) for it in train_items] for o in range(k)] for k in views}
         if a.objmotion: views = {k: [add_obj(it, k) for it in v] for k, v in views.items()}
+    AUXD = [0, 1, 2, 3, 5, 6, 7, 8, 9, 10, 12, 13, 14]  # actor present, cx, bottom y, width, log area, growth, approach, lane ok, depth, overlap, d(depth), d(overlap), lateral
+    if a.aux_act:  # per sampled position: segment mean of the per-frame actor geometry (GT-COLLISION actor; training targets only)
+        AD = C.REPO / a.aux_act_cache
+        def _aux(it, k):
+            o = np.load(AD / f"k{k}" / f"{it['sample_id']}.npy").astype(np.float32)[:, AUXD]
+            seg = segments(o, it["_pos"] if "_pos" in it else it["abs_idx"]); it["aux_act"] = torch.from_numpy(seg[:, len(AUXD):])
+        for it in train_items: _aux(it, 1)
+        for k_, vs in views.items():
+            for it in vs: _aux(it, k_)
     if a.kd_dir:  # teacher targets of this fold's training clips, per input view (native k1, stride views k2 / k3)
         import re as _re
         _m = _re.search(r'fold(\d)_train', str(a.train_split)); kdf = C.REPO / a.kd_dir / (f"fold{_m.group(1)}" if _m else "all")  # full refit: all/
-        for it in train_items: it["kd_path"] = str(kdf / "k1" / f"{it['sample_id']}.npy")
+        kviews = {int(v) for v in a.kd_views.split(",")}
+        if 1 in kviews:
+            for it in train_items: it["kd_path"] = str(kdf / "k1" / f"{it['sample_id']}.npy")
         for k_, vs in views.items():
+            if k_ not in kviews: continue
             for it in vs: it["kd_path"] = str(kdf / f"k{k_}" / f"{it['sample_id']}.npy")
     for it in train_items + [e for e in extra if "_views" not in e]: it["phase_entry_index"], it["phase_collision_index"] = it["entry_index"], it["collision_index"]
     if a.hr:
@@ -491,11 +518,12 @@ def main():
     if a.objmotion: mode = "custom"
     if a.hr and motion_dim == 0: mode = "custom"
     feat_dim = int(C.dense(train_rows[0]["sample_id"])[1].shape[-1])  # 384 (ViT-S) unless FEATS_DIR points at another backbone
-    cfg = dict(vars(a), feat_dim=feat_dim, feats_dir=os.environ.get("FEATS_DIR", ""), n_unl=len(unl_ids), hr=a.hr, extra_labels=extra_name, n_extra=len(extra), soft_width=0.0, lr=1e-3, weight_decay=.05, strict_fps_blind=True, selection="direct",
+    cfg = dict(vars(a), aux_act_dim=13 if a.aux_act else 0, feat_dim=feat_dim, feats_dir=os.environ.get("FEATS_DIR", ""), n_unl=len(unl_ids), hr=a.hr, extra_labels=extra_name, n_extra=len(extra), soft_width=0.0, lr=1e-3, weight_decay=.05, strict_fps_blind=True, selection="direct",
                motion_dim=motion_dim, n_train=len(train_rows), n_val=len(val_rows))
     model = AuxPyramid(phase_rep=a.phase_rep, risk=a.risk != "none", boundary=a.boundary, lane=a.lane, motion_dim=motion_dim, hr=a.hr, clip_norm=a.clip_norm, causal_entry=a.causal_entry, anchor_attr=a.anchor_attr, entry_aux=a.w_entry_aux > 0, feat_dim=feat_dim, gap_head=a.w_gap > 0,
                        entry_bnd=a.entry_bnd, entry_bnd_alpha=a.entry_bnd_alpha, hard_state=a.w_hard_state > 0, obj_branch=a.obj_branch, obj_k=a.obj_k, obj_d=a.obj_d, obj_alpha=a.obj_alpha, obj_state=a.w_obj_state > 0,
-                       obj_lane_drop=a.obj_lane_drop, obj_rgate=a.obj_rgate, pos_grl=a.pos_grl, entry_hazard=a.entry_hazard).to(device)
+                       obj_lane_drop=a.obj_lane_drop, obj_rgate=a.obj_rgate, pos_grl=a.pos_grl, entry_hazard=a.entry_hazard,
+                       aux_act_dim=13 if a.aux_act else 0).to(device)
     params = sum(x.numel() for x in model.parameters())
     import copy
     ema = copy.deepcopy(model).eval() if a.ema else None
@@ -596,6 +624,18 @@ def main():
                     t_ = t_ / t_.sum(-1, keepdim=True).clamp_min(1e-8)
                     kl = (t_ * (t_.clamp_min(1e-8).log() - ls_)).sum(-1)
                     parts[f"kd_{key_[:5]}"] = (kl * has).sum() / has.sum(); loss = loss + w_ * parts[f"kd_{key_[:5]}"]
+            if a.aux_act and "aux_act" in batch and "aux_act_pred" in o:  # actor geometry regression (masked to positions with the actor)
+                tg = batch["aux_act"]; m_ = (tg[..., 0] > 0).float() * batch["time_valid"].float() * batch["aux_act_has"][:, None]
+                pred = o["aux_act_pred"].float(); pres = torch.nn.functional.binary_cross_entropy_with_logits(pred[..., 0], (tg[..., 0] > 0).float(), reduction="none")
+                reg = ((pred[..., 1:] - tg[..., 1:]) ** 2).mean(-1)
+                vm = batch["time_valid"].float() * batch["aux_act_has"][:, None]
+                parts["aux_act"] = (pres * vm).sum() / vm.sum().clamp_min(1) + (reg * m_).sum() / m_.sum().clamp_min(1); loss = loss + a.aux_act * parts["aux_act"]
+            if a.kd_dir and a.w_kd_attr and "kd_attr" in batch:  # attribute distillation: soft side / evasion targets from the teacher
+                ka = batch["kd_attr"]; ok_ = ka[:, 0] >= 0
+                if ok_.any():
+                    ps_ = o["side_logits"].float().log_softmax(-1)[ok_]; ts_ = torch.stack([1 - ka[ok_, 0], ka[ok_, 0]], -1)
+                    ev_ = torch.nn.functional.binary_cross_entropy_with_logits(o["evasion_logits"].float().reshape(-1)[ok_], ka[ok_, 1])
+                    parts["kd_attr"] = -(ts_ * ps_).sum(-1).mean() + ev_; loss = loss + a.w_kd_attr * parts["kd_attr"]
             if a.consistency:  # same clips at a random lower frame rate; native-rate view (index into train_items) is the teacher
                 idx = order[s:s + a.batch_size]; lab = [i for i in idx if i < len(base)]
                 if lab:
