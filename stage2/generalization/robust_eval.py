@@ -31,15 +31,16 @@ FOLD_HINT = 0  # set by the evaluators per CV fold ('{fold}' in OBJ_CACHE = per-
 def root(run): return next(r for r in ROOTS if (r / run.split("+")[0]).is_dir())
 
 
-def item(row, k, crop=0.0, corrupt="", oc=None):
+def item(row, k, crop=0.0, corrupt="", oc=None, fixed_len=None):
     sid = row["sample_id"]; frames_all, feats = C.dense(sid)
     if k == 1:
         kept = np.arange(len(frames_all)); mot = np.load(C.DENSE / f"{sid}.motion.npy")
         res = np.load(C.REPO / f"stage2/aux_signal_experiments/cache_residual/{sid}.residual.npy")
     else:
         d = np.load(STRIDE / f"k{k}" / f"{sid}.npz"); kept, mot, res = d["kept"], d["motion"], d["residual"]
-    if crop:  # random window of crop*N retained frames that still contains ENTRY..COLLISION (seeded per clip)
-        fr_k = frames_all[kept]; n = len(fr_k); L = max(int(round(crop * n)), 8)
+    if fixed_len and len(kept) <= fixed_len: fixed_len = None  # DACON-like view: clips up to fixed_len frames are kept whole
+    if crop or fixed_len:  # random window of crop*N (or fixed_len) retained frames that still contains ENTRY..COLLISION (seeded per clip)
+        fr_k = frames_all[kept]; n = len(fr_k); L = fixed_len if fixed_len else max(int(round(crop * n)), 8)
         e = int(np.abs(fr_k - int(row["entry_frame"])).argmin()); c = int(np.abs(fr_k - int(row["collision_frame"])).argmin())
         L = max(L, c - e + 1); rng = np.random.default_rng(zlib.crc32(sid.encode()))  # process-stable seed (was hash(sid))
         lo, hi = max(0, c - L + 1), min(e, n - L)
@@ -53,15 +54,16 @@ def item(row, k, crop=0.0, corrupt="", oc=None):
         x = torch.from_numpy(np.load(C.REPO / f"stage2/generalization/cache_corrupt/{corrupt}/{sid}.npy"))
     g = segments(motion28(mot), pos); r = segments(res, pos)
     ob = np.load(C.REPO / f"stage2/generalization/cache_objmotion/k{k}/{sid}.npy") if (C.REPO / f"stage2/generalization/cache_objmotion/k{k}/{sid}.npy").exists() else None
-    if ob is not None and crop: ob = ob[sl]
+    if ob is not None and (crop or fixed_len): ob = ob[sl]
     both = np.concatenate([g, r], 1)
     oc = (oc or os.environ.get("OBJ_CACHE", "stage2/objtrack/cache_objfeat")).replace("{fold}", str(FOLD_HINT))
     of = C.REPO / f"{oc}/k{k}/{sid}.npy"  # RF-DETR + ByteTrack track features (O1), if extracted
     if crop and (C.REPO / f"{oc}/k{k}c{int(round(crop * 100))}/{sid}.npy").exists():  # condition-specific cache (actor from that window's COLLISION estimate)
         of = C.REPO / f"{oc}/k{k}c{int(round(crop * 100))}/{sid}.npy"
     obf = np.load(of) if of.exists() else None
-    if obf is not None and crop: obf = obf[sl]
+    if obf is not None and (crop or fixed_len): obf = obf[sl]
     return {"sid": sid, "frames": frames, "x": x, "global": torch.from_numpy(g), "both": torch.from_numpy(both),
+            "_m28": motion28(mot), "_res": res, "_pos": pos, "_obf": obf,   # per-retained-frame inputs (head-level multi-view TTA re-segments them)
             "both_obj": torch.from_numpy(np.concatenate([both, segments(ob, pos)], 1)) if ob is not None else None,
             "both_objfeat": torch.from_numpy(np.concatenate([both, segments(obf, pos)], 1)) if obf is not None else None,
             "abs": kept[pos], "n": len(reduced), "n_native": len(frames_all), "row": row}

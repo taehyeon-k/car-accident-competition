@@ -23,11 +23,15 @@ from stage2.long_context_v2_experiments import common as C
 from stage2.aux_signal_experiments.model import load as load_model
 from stage2.spotting_experiments.objective import constrained_anchors
 from .robust_eval import item, root, FOLDS
+from stage2.aux_signal_experiments.train import segments
 from .clean_eval import EXCL
 
 RES = C.REPO / "stage2/generalization/results/entry_suite"
 CONDS = {"k1": (1, 0.0), "k2": (2, 0.0), "k3": (3, 0.0), "crop50": (1, 0.5), "crop25": (1, 0.25)}
+DACON_STRIDE = {"CCD": 1, "AIHUB": 2}; DACON_LEN = 50  # --dacon: + DACON-like view (robustness_profile.item_dacon window rule)
 GAPS = [(0, .5), (.5, 1), (1, 1.5), (1.5, 2.5), (2.5, 99)]
+TTA_VIEWS = []  # --tta: head-level multi-rate views (s, o): positions[o::s], s in 2, 3 (only when T >= 3 s)
+TTA_W = []; TTA_G = [0]
 PHYS = 0.0  # --phys w: lightweight physical decoder weight (0 = plain decoding)
 
 
@@ -62,17 +66,44 @@ def member_probs(ms, it, dev, entry_key):
         if fd:
             if fd not in xs: xs[fd] = torch.from_numpy(np.ascontiguousarray(np.load(f"{fd}/{it['sid']}.npy", mmap_mode="r")[it["abs"]]))[None].to(dev)
             xm = xs[fd]
-        mo = (it["_oc"][kind]["both_objfeat"] if kind not in it else it[kind]) if kind else None
+        src = it["_oc"][kind] if (kind and kind not in it) else it
+        mo = (src["both_objfeat"] if kind not in it else it[kind]) if kind else None
         o = m(xm, v, motion=mo[None].to(dev)) if kind else m(xm, v)
         ek = entry_key if entry_key in o else "entry_logits"
+        views = None
+        if TTA_VIEWS:  # same sampled frames, thinned; motion / object features re-segmented over the view (as the runtime would)
+            T = xm.shape[1]; pev, pcv = [], []
+            for st_, of_ in TTA_VIEWS:
+                if T < 3 * st_: continue
+                sub = np.arange(of_, T, st_); ps_ = it["_pos"][sub]
+                g = segments(it["_m28"], ps_); r_ = segments(it["_res"], ps_)
+                if kind == "global": mv = g
+                elif kind == "both": mv = np.concatenate([g, r_], 1)
+                elif kind: mv = np.concatenate([g, r_, segments(src["_obf"], ps_)], 1)
+                vv = torch.ones(1, len(sub), dtype=torch.bool, device=dev)
+                ov = m(xm[:, sub], vv, motion=torch.from_numpy(mv)[None].to(dev)) if kind else m(xm[:, sub], vv)
+                pev.append(spread(ov[ek][0].float().softmax(-1).cpu().numpy(), T, st_, of_)); pcv.append(spread(ov["collision_logits"][0].float().softmax(-1).cpu().numpy(), T, st_, of_))
+            if pev: views = (torch.from_numpy(np.mean(pev, 0)).to(dev), torch.from_numpy(np.mean(pcv, 0)).to(dev))
         out.append((s, o[ek][0].float().softmax(-1), o["collision_logits"][0].float().softmax(-1),
                     float(o["side_logits"][0].float().softmax(-1)[1]), float(o["evasion_logits"].float().sigmoid().reshape(-1)[0]),
-                    o["obj_state_logits"][0].float().softmax(-1) if "obj_state_logits" in o else None))
+                    o["obj_state_logits"][0].float().softmax(-1) if "obj_state_logits" in o else None, views))
     return out
 
 
-def decode(parts, it, r):
-    pe = torch.stack([p[1] for p in parts]).mean(0); pc = torch.stack([p[2] for p in parts]).mean(0)
+def spread(p, T, s, o):
+    """view distribution over positions o, o+s, ... -> full positions (ens_cache.spread): position t takes the mass of the view position
+    whose segment (previous view position, this view position] contains t, shared equally"""
+    full = np.zeros(T, np.float32); idx = np.arange(o, T, s); lo = 0
+    for j, a in enumerate(idx):
+        hi = a if j < len(idx) - 1 else T - 1
+        full[lo:hi + 1] += p[j] / (hi - lo + 1); lo = hi + 1
+    return full / full.sum()
+
+
+def decode(parts, it, r, w=0.0, gate=0):
+    if gate and len(it["frames"]) < gate: w = 0.0   # length gate: views only for clips with >= gate sampled positions
+    mix = lambda p, j: (1 - w) * p[j] + w * p[6][j - 1] if (w and len(p) > 6 and p[6] is not None) else p[j]
+    pe = torch.stack([mix(p, 1) for p in parts]).mean(0); pc = torch.stack([mix(p, 2) for p in parts]).mean(0)
     le = pe.log()
     if PHYS and all(len(p) > 5 and p[5] is not None for p in parts):  # Stage2_experiments lightweight physical decoder (no gap / position prior)
         st = torch.stack([p[5] for p in parts]).mean(0); T = len(pe); m = 3
@@ -88,7 +119,7 @@ def decode(parts, it, r):
             "entry_side": int(np.mean([p[3] for p in parts]) >= .5), "evasion_space": int(np.mean([p[4] for p in parts]) >= .5),
             "entry_gt": int(r["entry_frame"]), "collision_gt": int(r["collision_frame"]), "entry_side_gt": int(r["entry_side"] == "RIGHT"),
             "evasion_gt": int(r["evasion_space"]), "num_available_frames": it["n_native"], "_lo": int(fr[0]), "_hi": int(fr[-1]), "_n": len(fr),
-            "_npk": n_peaks(pe.cpu().numpy())}
+            "_npk": n_peaks(pe.cpu().numpy()), "_psr": float(np.mean([p[3] for p in parts])), "_pev": float(np.mean([p[4] for p in parts]))}
 
 
 def n_peaks(p, rel=0.25):
@@ -108,9 +139,13 @@ def run_arm(run, seeds, dev, entry_key="entry_logits"):
         for r in C.rows(str(FOLDS / f"fold{f}_val.jsonl")):
             if r["sample_id"] in EXCL: continue
             for cond, (k, cr) in CONDS.items():
-                it = item(r, k, cr); it["_oc"] = {m_[4]: item(r, k, cr, oc=m_[4]) for m_ in ms if m_[4]}
+                fl = None
+                if cond == "dacon": k, cr, fl = DACON_STRIDE.get(r["source_id"].split(":")[0], 3), 0.0, DACON_LEN
+                it = item(r, k, cr, fixed_len=fl); it["_oc"] = {m_[4]: item(r, k, cr, oc=m_[4], fixed_len=fl) for m_ in ms if m_[4]}
                 parts = member_probs(ms, it, dev, entry_key)
                 P[cond]["ens"].append(decode(parts, it, r))
+                for w in TTA_W:
+                    for g in TTA_G: P[cond].setdefault(f"w{w}" + (f"g{g}" if g else ""), []).append(decode(parts, it, r, w, g))
                 for s in seeds:
                     sp = [p for p in parts if p[0] == s]
                     if sp: P[cond][f"s{s}"].append(decode(sp, it, r))
@@ -171,9 +206,16 @@ def prior_baselines(P_ref, fps):
 def main():
     ap = argparse.ArgumentParser(); ap.add_argument("runs", nargs="+"); ap.add_argument("--seeds", type=int, nargs="+", default=[0, 1, 2])
     ap.add_argument("--entry-key", default="entry_logits"); ap.add_argument("--tag", default=""); ap.add_argument("--priors", action="store_true")
+    ap.add_argument("--tta", default="", help="head-level multi-rate TTA: comma list of view weights w (p = (1-w) full + w mean(views))")
+    ap.add_argument("--tta-gates", default="0", help="comma list of minimum sampled positions for the TTA views (0 = always)")
+    ap.add_argument("--dacon", action="store_true", help="also evaluate the DACON-like view (50-frame window, source stride)")
     ap.add_argument("--phys", type=float, default=0.0, help="lightweight physical decoder weight on the object-state persistence terms")
     a = ap.parse_args(); dev = torch.device("cuda"); fps = C.fps_table(); RES.mkdir(parents=True, exist_ok=True)
     global PHYS; PHYS = a.phys
+    if a.dacon: CONDS["dacon"] = (1, 0.0)
+    if a.tta:
+        global TTA_VIEWS, TTA_W; TTA_VIEWS = [(2, 0), (2, 1), (3, 0), (3, 1), (3, 2)]; TTA_W = [float(x) for x in a.tta.split(",")]
+        global TTA_G; TTA_G = [int(x) for x in a.tta_gates.split(",")]
     for run in a.runs:
         key = run + (f"@{a.tag}" if a.tag else "")
         P = run_arm(run, a.seeds, dev, a.entry_key)
@@ -181,6 +223,10 @@ def main():
                "per_seed": {f"s{s}": metrics({c: P[c][f"s{s}"] for c in CONDS}, fps) for s in a.seeds}}
         if a.priors: res["priors"] = prior_baselines(P, fps)
         C.dump(RES / f"{key}.json", {"metrics": res, "preds": {c: P[c]["ens"] for c in CONDS}})
+        for vk in [f"w{w}" + (f"g{g}" if g else "") for w in TTA_W for g in TTA_G]:
+            mw = metrics({c: P[c][vk] for c in CONDS}, fps); C.dump(RES / f"{key}@tta{vk[1:]}.json", {"metrics": {"ensemble": mw}, "preds": {c: P[c][vk] for c in CONDS}})
+            print(f"{key + f'@tta{vk[1:]}':36s} S " + "/".join(f"{mw[c]['score']:.3f}" for c in CONDS) + " | E " + "/".join(f"{mw[c]['entry_acc']:.3f}" for c in CONDS)
+                  + " | C " + "/".join(f"{mw[c]['collision_acc']:.3f}" for c in CONDS) + f" | bias {mw['long_gap_bias_median_s']:+.2f}s", flush=True)
         e = res["ensemble"]; g = e["gap"]
         seeds_lg = [res["per_seed"][f"s{s}"]["gap"]["1.5-2.5"]["entry_acc"] for s in a.seeds]
         print(f"{key:36s} S {e['k1']['score']:.3f}/{e['k2']['score']:.3f}/{e['k3']['score']:.3f} | E {e['k1']['entry_acc']:.3f}/{e['k3']['entry_acc']:.3f} "
