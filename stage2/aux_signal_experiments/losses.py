@@ -119,11 +119,11 @@ def total_loss(out, batch, cfg):
     return _aux(loss, parts, out, batch, cfg)
 
 
-def _hard_boundary(out, batch, cfg):
+def _hard_boundary(out, batch, cfg, key="entry_logits", state_key="hard_state_logits"):
     """Exp 6 — local supervision of the ENTRY transition (sampled positions, no FPS).
     ranking: logit(e) > logit(e - d) + m and logit(e) > logit(e + d) + m for d in {2, 4} (e + d kept before COLLISION);
     states:  CE on positions within +-8 of e: BEFORE (t < e - 1), ONSET (|t - e| <= 1), AFTER (e + 1 < t < COLLISION)."""
-    valid = batch["time_valid"]; T = valid.shape[1]; e = batch["entry_index"].long(); c = batch["collision_index"].long(); z = out["entry_logits"].float()
+    valid = batch["time_valid"]; T = valid.shape[1]; e = batch["entry_index"].long(); c = batch["collision_index"].long(); z = out[key].float()
     ew = batch["entry_w"].float() if "entry_w" in batch else torch.ones(z.shape[0], device=z.device)
     rank = z.new_zeros(()); nr = 0
     ze = z.gather(1, e[:, None])[:, 0]
@@ -134,11 +134,11 @@ def _hard_boundary(out, batch, cfg):
             if ok.any():
                 rank = rank + (ew * ok * torch.relu(0.5 - (ze - z.gather(1, jj[:, None])[:, 0]))).sum() / (ew * ok).sum().clamp_min(1e-6); nr += 1
     parts = {"hb_rank": rank / max(nr, 1)}
-    if "hard_state_logits" in out:
+    if state_key in out:
         t = torch.arange(T, device=z.device)[None]; rel = t - e[:, None]
         tgt = torch.full_like(rel, -1); tgt[rel < -1] = 0; tgt[rel.abs() <= 1] = 1; tgt[(rel > 1) & (t < c[:, None])] = 2
         tgt[(rel.abs() > 8) | ~valid] = -1
-        ce = F.cross_entropy(out["hard_state_logits"].transpose(1, 2), tgt.clamp_min(0), reduction="none")
+        ce = F.cross_entropy(out[state_key].transpose(1, 2), tgt.clamp_min(0), reduction="none")
         m = (tgt >= 0).float() * ew[:, None]; parts["hb_state"] = (ce * m).sum() / m.sum().clamp_min(1e-6)
     return parts
 
@@ -149,6 +149,10 @@ def _aux(loss, parts, out, batch, cfg):
         lo = distribution_loss(out["entry_obj_logits"], batch["entry_index"], batch["time_valid"], batch["normalized_positions"].float(), "soft_index", 1.0)
         ew = batch["entry_w"].float() if "entry_w" in batch else torch.ones_like(lo)
         parts["entry_obj"] = (ew * lo).mean(); loss = loss + cfg["w_obj_branch"] * parts["entry_obj"]
+    if cfg.get("w_obj_rank", 0.0) > 0 or cfg.get("w_obj_state", 0.0) > 0:  # Exp D: onset supervision on the object/lane branch itself
+        ob = _hard_boundary(out, batch, cfg, key="entry_obj_logits", state_key="obj_state_logits")
+        parts["obj_rank"] = ob["hb_rank"]; loss = loss + cfg.get("w_obj_rank", 0.0) * ob["hb_rank"]
+        if "hb_state" in ob: parts["obj_state"] = ob["hb_state"]; loss = loss + cfg.get("w_obj_state", 0.0) * ob["hb_state"]
     if cfg.get("w_hard_rank", 0.0) > 0 or cfg.get("w_hard_state", 0.0) > 0:
         hb = _hard_boundary(out, batch, cfg); parts.update(hb)
         loss = loss + cfg.get("w_hard_rank", 0.0) * hb["hb_rank"] + cfg.get("w_hard_state", 0.0) * hb.get("hb_state", 0.0)

@@ -9,6 +9,7 @@ No FPS. Usage: python -m stage2.objtrack.obj_crops [--workers 3]
 from __future__ import annotations
 
 import argparse
+import os
 from pathlib import Path
 
 import cv2
@@ -20,9 +21,10 @@ from stage2.long_context_v2_experiments import common as C
 from stage2.geometry_pretrain.models.geometry_dino import DinoBackbone
 
 TRACKS = C.REPO / "stage2/objtrack/cache_tracks"
-OUT = C.REPO / "stage2/objtrack/cache_objcrop"
+OUT = C.REPO / ("stage2/objtrack/cache_objcrop" if int(os.environ.get("OBJ_K", 3)) == 3 else f"stage2/objtrack/cache_objcrop{os.environ.get('OBJ_K')}")
 CKPT = "/workspace/outputs/geometry_pretrain/runs/phase1_partial_noanchor/backbone_best.pth"
-K, S, VEH = 3, 224, (2, 3, 4, 6, 8)
+import os
+K, S, VEH = int(os.environ.get("OBJ_K", 3)), 224, (2, 3, 4, 6, 8)
 MEAN = torch.tensor([0.485, 0.456, 0.406]).view(1, 3, 1, 1) * 255
 STD = torch.tensor([0.229, 0.224, 0.225]).view(1, 3, 1, 1) * 255
 

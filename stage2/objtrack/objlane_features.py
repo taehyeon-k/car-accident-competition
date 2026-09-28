@@ -35,12 +35,17 @@ def lane_at(left, right, row_y, y):
     return None
 
 
-def clip_features(d, corr, k, variant, pca):
+def conf_lookup(tracks):
+    """(native frame, track id) -> detector confidence, from cache_tracks."""
+    return {(int(f), int(t)): float(s) for f, t, s in zip(tracks["frame"], tracks["track"], tracks["score"]) if t >= 0}
+
+
+def clip_features(d, corr, k, variant, pca, conf=None):
     pres, box, tid = d["present"], d["box"], d["track"]; n = len(pres); kept = np.arange(0, n, k)
     L, R, row_y = corr["left"].astype(np.float32), corr["right"].astype(np.float32), corr["row_y"]
-    if variant == "full":
+    if variant in ("full", "fullq"):
         z = ((d["emb"].astype(np.float32) - pca["mu"]) @ pca["comp"].T) / pca["scale"]; z[~pres] = 0
-    D = 15 if variant == "geo" else 48
+    D = {"geo": 15, "full": 48, "fullq": 51}[variant]; seen = {}
     out = np.zeros((len(kept), K * D), np.float32); last = {}
     for t, f in enumerate(kept):
         cur = {}
@@ -49,6 +54,8 @@ def clip_features(d, corr, k, variant, pca):
             b = box[f, j]; x1, y1, x2, y2 = [float(v) for v in b]; cx = (x1 + x2) / 2; w, h = x2 - x1, y2 - y1
             la = np.log(max(w * h, 1e-5)); dc = abs(cx - .5); key = int(tid[f, j])
             lane = lane_at(L[f], R[f], row_y, y2)
+            if variant == "fullq":  # lane reliability q = defined fraction of near-field corridor rows in this frame (current only)
+                nr = slice(int(len(row_y) * 0.55), len(row_y)); q = float((np.isfinite(L[f][nr]) & np.isfinite(R[f][nr])).mean())
             if lane:
                 Lb, Rb = lane; cc, hw = (Lb + Rb) / 2, (Rb - Lb) / 2
                 depth = ((x2 - Lb) if cx < cc else (Rb - x1)) / hw
@@ -62,24 +69,30 @@ def clip_features(d, corr, k, variant, pca):
                 if lane and p["lane"]:
                     dd = float(np.clip(lv[1] - p["lv"][1], -1, 1)); dov = float(np.clip(lv[2] - p["lv"][2], -1, 1))
                     lat = float(np.clip(abs(p["lv"][3]) - abs(lv[3]), -1, 1))
-                if variant == "full": dz = float(np.linalg.norm(z[f, j] - p["z"]) / 8)
+                if variant in ("full", "fullq"): dz = float(np.linalg.norm(z[f, j] - p["z"]) / 8)
             vec = [1.0, cx - .5, y2, w, h, la / 5, g, a] + lv[:1] + lv[1:] + [dd, dov, lat]
-            if variant == "full": vec += list(z[f, j]) + [dz]
+            if variant == "fullq": vec[8:15] = [v * q for v in vec[8:15]]  # lane features scaled by lane reliability
+            if variant in ("full", "fullq"): vec += list(z[f, j]) + [dz]
+            if variant == "fullq":  # reliability inputs: detector confidence, causal persistence (last 10 retained frames), q
+                hist = seen.setdefault(key, []); persist = sum(1 for tt in hist if t - tt <= 10) / 10.0
+                vec += [conf.get((int(f), key), 0.0), min(persist, 1.0), q]
             out[t, j * D:(j + 1) * D] = vec
-            cur[key] = {"t": t, "la": la, "dc": dc, "lane": bool(lane), "lv": lv, "z": z[f, j] if variant == "full" else None}
+            cur[key] = {"t": t, "la": la, "dc": dc, "lane": bool(lane), "lv": lv, "z": z[f, j] if variant in ("full", "fullq") else None}
+            if key >= 0: seen.setdefault(key, []).append(t)
         for key_, v in cur.items():
             if key_ >= 0: last[key_] = v
     return out
 
 
 def main():
-    ap = argparse.ArgumentParser(); ap.add_argument("--variant", choices=["geo", "full"], required=True); a = ap.parse_args()
+    ap = argparse.ArgumentParser(); ap.add_argument("--variant", choices=["geo", "full", "fullq"], required=True); a = ap.parse_args()
     out = REPO / f"stage2/objtrack/cache_objlane_{a.variant}"; pca = dict(np.load(PCA))
     files = sorted(p for p in CROPS.glob("*.npz") if not p.name.endswith(".tmp.npz"))
     for f in files:
         d = np.load(f); corr = np.load(CORR / f"{f.stem}.npz")
+        conf = conf_lookup(np.load(REPO / "stage2/objtrack/cache_tracks" / f"{f.stem}.npz")) if a.variant == "fullq" else None
         for k in (1, 2, 3, 4):
-            (out / f"k{k}").mkdir(parents=True, exist_ok=True); np.save(out / f"k{k}" / f"{f.stem}.npy", clip_features(d, corr, k, a.variant, pca))
+            (out / f"k{k}").mkdir(parents=True, exist_ok=True); np.save(out / f"k{k}" / f"{f.stem}.npy", clip_features(d, corr, k, a.variant, pca, conf))
     print("done", a.variant, len(files))
 
 

@@ -39,7 +39,7 @@ class CausalEntry(nn.Module):
 
 class AuxPyramid(PhasePyramid):
     def __init__(self, phase_rep="none", risk=False, boundary="none", lane="none", motion_dim=0, hr=False, clip_norm="none",
-                 causal_entry=-1, anchor_attr=False, entry_aux=False, gap_head=False, entry_bnd="none", entry_bnd_alpha=1.0, hard_state=False, obj_branch="none", obj_k=3, obj_d=0, obj_alpha=1.0, **kw):
+                 causal_entry=-1, anchor_attr=False, entry_aux=False, gap_head=False, entry_bnd="none", entry_bnd_alpha=1.0, hard_state=False, obj_branch="none", obj_k=3, obj_d=0, obj_alpha=1.0, obj_state=False, obj_lane_drop=0.0, obj_rgate=False, **kw):
         super().__init__(phase_rep=phase_rep, attach="final", motion=False, **kw)
         H = self.event.in_features
         # Exp 2: object/lane ENTRY branch. The per-object features ride at the END of the motion input (segments: [max, mean] of K x D);
@@ -50,6 +50,12 @@ class AuxPyramid(PhasePyramid):
             self.ob_in = nn.Sequential(nn.Linear(2 * obj_d, 32), nn.GELU(), nn.Dropout(0.35))
             self.ob_t = nn.Sequential(nn.Conv1d(32, 32, 5, padding=2), nn.GELU(), nn.Dropout(0.35), nn.Conv1d(32, 1, 3, padding=1))
             self.ob_gate = nn.Parameter(torch.tensor(-2.0))
+            self.ob_state = nn.Linear(32, 3) if obj_state else None
+            # Exp C: lane-feature dropout (train only; per object slot) and a reliability-conditioned residual gate on
+            # [attended detector confidence, persistence, lane reliability q, branch score] (needs the 'fullq' layout, D = 51)
+            self.obj_lane_drop = obj_lane_drop
+            self.ob_rgate = nn.Linear(4, 1) if obj_rgate else None
+            if obj_rgate: nn.init.zeros_(self.ob_rgate.weight); nn.init.constant_(self.ob_rgate.bias, -2.0)  # Exp D: BEFORE / ONSET / AFTER on the pooled object representation
         self.risk = nn.Sequential(nn.Linear(H, 32), nn.GELU(), nn.Linear(32, 1)) if risk else None
         self.boundary_mode = boundary
         if boundary == "bnd1": self.bnd = nn.Linear(H, 2)
@@ -131,12 +137,26 @@ class AuxPyramid(PhasePyramid):
             B, T, _ = obj.shape; K, D = self.obj_k, self.obj_d
             mx, mean = obj[..., :K * D].reshape(B, T, K, D), obj[..., K * D:].reshape(B, T, K, D)
             present = mx[..., 0] > 0
+            if self.training and self.obj_lane_drop > 0:  # drop the 7 lane-relative features of random object slots
+                keep = (torch.rand(B, 1, K, 1, device=obj.device) >= self.obj_lane_drop).float()
+                lane_mask = torch.ones(D, device=obj.device); lane_mask[8:15] = 0
+                m_ = keep + (1 - keep) * lane_mask; mx, mean = mx * m_, mean * m_
             z = self.ob_in(torch.cat([mx, mean], -1))                                    # [B, T, K, 32]
-            sc = self.ob_t(z.permute(0, 2, 3, 1).reshape(B * K, 32, T)).reshape(B, K, T).transpose(1, 2)  # [B, T, K]
+            hz = self.ob_t[:3](z.permute(0, 2, 3, 1).reshape(B * K, 32, T))                              # [B*K, 32, T]
+            sc = self.ob_t[3](hz).reshape(B, K, T).transpose(1, 2)                                          # [B, T, K]
+            if self.ob_state is not None:  # attention-pooled (by the per-object onset scores) object representation per position
+                att = sc.masked_fill(~present, -1e4).softmax(-1) * present.any(-1, keepdim=True)
+                pooled = torch.einsum("btk,btkc->btc", att, hz.reshape(B, K, 32, T).permute(0, 3, 1, 2))
+                out["obj_state_logits"] = self.ob_state(pooled)
             ob = torch.logsumexp(sc.masked_fill(~present, -1e4), -1).masked_fill(~present.any(-1), 0.0)  # no vehicle -> neutral
             neg = torch.finfo(torch.float32).min / 4; ob = ob.masked_fill(~valid, neg)
             out["entry_obj_logits"] = ob; out.setdefault("entry_v8_logits", out["entry_logits"])
             alpha = self.obj_alpha * torch.sigmoid(self.ob_gate)
+            if self.ob_rgate is not None:  # per-position gate from reliability of the attended objects + branch score
+                att = sc.masked_fill(~present, -1e4).softmax(-1) * present.any(-1, keepdim=True)
+                rel = torch.einsum("btk,btkc->btc", att, mean[..., 48:51])
+                g_in = torch.cat([rel, (ob.clamp(-10, 10) / 10)[..., None]], -1)
+                alpha = self.obj_alpha * torch.sigmoid(self.ob_rgate(g_in).squeeze(-1))
             out["entry_logits"] = (out["entry_logits"].float() + alpha * ob.clamp_min(-1e4)).masked_fill(~valid, neg)
         if self.hard_state is not None:
             l0 = out["level0"] * valid[..., None]; d = l0 - torch.cat([l0[:, :1], l0[:, :-1]], 1)
@@ -159,7 +179,8 @@ def build(cfg):
                       anchor_attr=cfg.get("anchor_attr", False), entry_aux=cfg.get("w_entry_aux", 0.0) > 0, feat_dim=cfg.get("feat_dim", 384), gap_head=cfg.get("w_gap", 0.0) > 0,
                       entry_bnd=cfg.get("entry_bnd", "none"), entry_bnd_alpha=cfg.get("entry_bnd_alpha", 1.0),
                       hard_state=cfg.get("w_hard_state", 0.0) > 0, obj_branch=cfg.get("obj_branch", "none"), obj_k=cfg.get("obj_k", 3),
-                      obj_d=cfg.get("obj_d", 0), obj_alpha=cfg.get("obj_alpha", 1.0))
+                      obj_d=cfg.get("obj_d", 0), obj_alpha=cfg.get("obj_alpha", 1.0), obj_state=cfg.get("w_obj_state", 0.0) > 0,
+                      obj_lane_drop=cfg.get("obj_lane_drop", 0.0), obj_rgate=cfg.get("obj_rgate", False))
 
 
 def load(path, device):
