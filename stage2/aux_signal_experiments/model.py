@@ -39,7 +39,7 @@ class CausalEntry(nn.Module):
 
 class AuxPyramid(PhasePyramid):
     def __init__(self, phase_rep="none", risk=False, boundary="none", lane="none", motion_dim=0, hr=False, clip_norm="none",
-                 causal_entry=-1, anchor_attr=False, entry_aux=False, gap_head=False, **kw):
+                 causal_entry=-1, anchor_attr=False, entry_aux=False, gap_head=False, entry_bnd="none", entry_bnd_alpha=1.0, **kw):
         super().__init__(phase_rep=phase_rep, attach="final", motion=False, **kw)
         H = self.event.in_features
         self.risk = nn.Sequential(nn.Linear(H, 32), nn.GELU(), nn.Linear(32, 1)) if risk else None
@@ -55,6 +55,11 @@ class AuxPyramid(PhasePyramid):
         # "m" = divide motion inputs by their per-clip median magnitude; "xm" = both
         self.clip_norm = clip_norm
         self.causal_entry = CausalEntry(H, lookahead=causal_entry) if causal_entry >= 0 else None
+        # Exp 1: fine-resolution ENTRY boundary branch on level-0 features [l_t, l_t - l_{t-1}] (before pooling), fused as a residual
+        self.entry_bnd = entry_bnd; self.entry_bnd_alpha = entry_bnd_alpha
+        if entry_bnd != "none":
+            self.ebnd_in = nn.Sequential(nn.Linear(2 * H, 64), nn.GELU(), nn.Dropout(0.35)); self.ebnd_conv = nn.Conv1d(64, 1, 3, padding=1)
+            if entry_bnd == "gate": self.ebnd_gate = nn.Parameter(torch.tensor(-2.0))  # alpha = alpha_max * sigmoid(g), starts ~0.12
         self.gap_head = nn.Linear(H, 2) if gap_head else None  # gap prior: (mu, log sigma) of log(1 + COLLISION - ENTRY positions)
         self.entry_aux = nn.Linear(H, 1) if entry_aux else None  # P4: broad-target auxiliary ENTRY head (training only, never decoded)
         self.anchor_attr = anchor_attr  # H15: side / evasion pooled at the model's own (detached) ENTRY / COLLISION distributions
@@ -101,6 +106,13 @@ class AuxPyramid(PhasePyramid):
             else: b = self.bnd(hd.transpose(1, 2)).transpose(1, 2)
             out["bnd_entry_logits"], out["bnd_collision_logits"] = b[..., 0], b[..., 1]
         if self.lane is not None: out["lane_logits"] = self.lane(hd)
+        if self.entry_bnd != "none":
+            l0 = out["level0"] * valid[..., None]; d = l0 - torch.cat([l0[:, :1], l0[:, :-1]], 1)
+            b = self.ebnd_conv(self.ebnd_in(torch.cat([l0, d], -1)).transpose(1, 2)).squeeze(1).float()
+            neg = torch.finfo(b.dtype).min / 4; b = b.masked_fill(~valid, neg)
+            alpha = self.entry_bnd_alpha * (torch.sigmoid(self.ebnd_gate) if self.entry_bnd == "gate" else 1.0)
+            out["entry_v8_logits"] = out["entry_logits"]; out["entry_bnd_logits"] = b
+            out["entry_logits"] = (out["entry_logits"].float() + alpha * b.clamp_min(-1e4)).masked_fill(~valid, neg)
         if self.gap_head is not None:  # attention-pooled clip summary (same pooling as side/evasion) -> gap distribution
             hid = out["hidden"]; neg = torch.finfo(hid.dtype).min / 4
             wa = self.attn(hid).squeeze(-1).masked_fill(~valid, neg).softmax(-1)
@@ -116,7 +128,8 @@ def build(cfg):
     return AuxPyramid(phase_rep=cfg.get("phase_rep", "none"), risk=cfg.get("risk", "none") != "none",
                       boundary=cfg.get("boundary", "none"), lane=cfg.get("lane", "none"), motion_dim=cfg.get("motion_dim", 0),
                       hr=cfg.get("hr", False), clip_norm=cfg.get("clip_norm", "none"), causal_entry=cfg.get("causal_entry", -1),
-                      anchor_attr=cfg.get("anchor_attr", False), entry_aux=cfg.get("w_entry_aux", 0.0) > 0, feat_dim=cfg.get("feat_dim", 384), gap_head=cfg.get("w_gap", 0.0) > 0)
+                      anchor_attr=cfg.get("anchor_attr", False), entry_aux=cfg.get("w_entry_aux", 0.0) > 0, feat_dim=cfg.get("feat_dim", 384), gap_head=cfg.get("w_gap", 0.0) > 0,
+                      entry_bnd=cfg.get("entry_bnd", "none"), entry_bnd_alpha=cfg.get("entry_bnd_alpha", 1.0))
 
 
 def load(path, device):

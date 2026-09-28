@@ -143,5 +143,5 @@ class LCPyramid(nn.Module):
             stages = [self.phase(self.drop(h))]
             for r in self.refine: stages.append(r(stages[-1], valid))
             out["phase_logits"] = stages[-1]; out["phase_stages"] = stages[:-1]
-        if return_hidden: out["hidden"] = h
+        if return_hidden: out["hidden"] = h; out["level0"] = levels[0].transpose(1, 2)  # full-resolution, before any temporal pooling
         return out

@@ -143,13 +143,20 @@ def binned(probs, norm_pos, valid, B=64):
     return out / out.sum(1, keepdim=True).clamp_min(1e-8)
 
 
+CONS = {"entry_w": 1.0, "collision_w": 1.0, "entry_bins": 64}  # Exp 3: per-event consistency weights / ENTRY bin count (set in main)
+
+
 def consistency_loss(o_ref, b_ref, o_aug, b_aug):
-    """KL(teacher || student) on binned ENTRY / COLLISION distributions + attribute probability agreement; teacher = o_ref (detached)."""
+    """KL(teacher || student) on binned ENTRY / COLLISION distributions + attribute probability agreement; teacher = o_ref (detached).
+    Exp 3: ENTRY and COLLISION terms weighted separately; ENTRY may use coarser bins (broad agreement instead of exact localisation)."""
     loss = 0.0
     for e in ("entry", "collision"):
-        p = binned(o_ref[f"{e}_logits"].float().softmax(-1).detach(), b_ref["normalized_positions"], b_ref["time_valid"].float())
-        q = binned(o_aug[f"{e}_logits"].float().softmax(-1), b_aug["normalized_positions"], b_aug["time_valid"].float())
-        loss = loss + (p * ((p + 1e-8).log() - (q + 1e-8).log())).sum(1).mean()
+        w = CONS[f"{e}_w"]
+        if not w: continue
+        B = CONS["entry_bins"] if e == "entry" else 64
+        p = binned(o_ref[f"{e}_logits"].float().softmax(-1).detach(), b_ref["normalized_positions"], b_ref["time_valid"].float(), B)
+        q = binned(o_aug[f"{e}_logits"].float().softmax(-1), b_aug["normalized_positions"], b_aug["time_valid"].float(), B)
+        loss = loss + w * (p * ((p + 1e-8).log() - (q + 1e-8).log())).sum(1).mean()
     ps, qs = o_ref["side_logits"].float().softmax(-1).detach(), o_aug["side_logits"].float().log_softmax(-1)
     loss = loss - (ps * qs).sum(1).mean() + (ps * (ps + 1e-8).log()).sum(1).mean()
     pe, qe = o_ref["evasion_logits"].float().sigmoid().detach(), o_aug["evasion_logits"].float()
@@ -173,6 +180,30 @@ def crop_item(row, base, rng, lo_frac=0.25, hi_frac=0.75):
     it["motion"] = torch.cat([it["motion"], torch.from_numpy(segments(residual_per_frame(row["sample_id"]), it["abs_idx"]))], 1)
     it["phase_entry_index"], it["phase_collision_index"] = it["entry_index"], it["collision_index"]
     it.update(attr_w=1.0, entry_w=base.get("entry_w", 1.0), collision_w=1.0)
+    return it
+
+
+def warp_item(row, base, rng, lo=0.6, hi=1.7):
+    """Exp 4 — counterfactual gap augmentation. The ENTRY..COLLISION interval is resampled by a factor f ~ LogUniform(lo, hi) on a
+    virtual timeline (f < 1 drops between-frames, f > 1 repeats them); frames before ENTRY and after COLLISION are unchanged. Adaptive
+    sampling then runs on the virtual timeline, so the same visual ENTRY onset appears at a different ENTRY->COLLISION distance.
+    DINO tokens come from the real frames; motion is aggregated over the real frames each step covers. Frame indices only."""
+    from .nexar_labels import motion28
+    sid = row["sample_id"]; frames_all, _ = C.dense(sid); n = len(frames_all)
+    e, c = int(np.searchsorted(frames_all, int(row["entry_frame"]))), int(np.searchsorted(frames_all, int(row["collision_frame"])))
+    if c - e < 2: return None
+    f = float(np.exp(rng.uniform(np.log(lo), np.log(hi))))
+    between = np.round(np.linspace(e, c, max(2, int(round((c - e) * f)) + 1))).astype(int)
+    real = np.concatenate([np.arange(0, e), between, np.arange(c + 1, n)])
+    v = np.arange(len(real)); pos = C.select_adaptive(v); sel = real[pos]; vfr = v[pos]
+    ve, vc = e, e + len(between) - 1
+    g = segments(motion28(C.motion(sid)), sel); r = segments(residual_per_frame(sid), sel)
+    it = {k_: val for k_, val in base.items() if k_ not in ("motion", "abs_idx", "frame_numbers", "normalized_positions", "x_shape", "_pos")}
+    it.update(frame_numbers=torch.from_numpy(vfr.copy()), normalized_positions=torch.from_numpy((vfr - vfr[0]).astype(np.float32) / max(int(vfr[-1] - vfr[0]), 1)),
+              abs_idx=sel, x_shape=len(sel), entry_index=int(np.abs(vfr - ve).argmin()), collision_index=int(np.abs(vfr - vc).argmin()),
+              num_available_frames=len(v), motion=torch.from_numpy(np.concatenate([g, r], 1)))
+    it["phase_entry_index"], it["phase_collision_index"] = it["entry_index"], it["collision_index"]
+    it.setdefault("attr_w", 1.0); it.setdefault("entry_w", base.get("entry_w", 1.0))
     return it
 
 
@@ -293,6 +324,7 @@ def main():
     p.add_argument("--anchor-attr", action="store_true", help="H15: pool side/evasion at the predicted ENTRY/COLLISION distributions")
     p.add_argument("--causal-entry", type=int, default=-1, help="H8: ENTRY from a causal branch with this look-ahead (positions); -1 = off")
     p.add_argument("--crop-aug", type=float, default=0.0, help="probability per native-rate clip per epoch of a random window containing ENTRY..COLLISION")
+    p.add_argument("--gap-aug", type=float, default=0.0, help="Exp 4: probability per native-rate clip per epoch of a counterfactual gap warp")
     p.add_argument("--gap-balance", action="store_true", help="ENTRY loss weight = inverse frequency of the clip's ENTRY->COLLISION gap bin (training labels only)")
     p.add_argument("--truncate-aug", type=float, default=0.0, help="probability of pre-collision truncation per labelled clip (H7)")
     p.add_argument("--unl-consistency", type=float, default=0.0, help="H9: consistency weight on unlabelled clips (native vs stride 2/3 view)")
@@ -311,6 +343,12 @@ def main():
     p.add_argument("--w-entry", type=float, default=1.0, help="ENTRY weight in the NT direct loss (1 = NT)")
     p.add_argument("--sigma-entry", type=float, default=None, help="H17: ENTRY-only target width (convention-shift tolerance); default = --sigma")
     p.add_argument("--sigma", type=float, default=1.0, help="direct-target Gaussian width in sampled positions (1 = NT)")
+    p.add_argument("--cons-entry-w", type=float, default=1.0, help="Exp 3: weight of the ENTRY term in the consistency losses (0 = COLLISION-only)")
+    p.add_argument("--cons-coll-w", type=float, default=1.0, help="Exp 3: weight of the COLLISION term in the consistency losses")
+    p.add_argument("--cons-entry-bins", type=int, default=64, help="Exp 3: ENTRY consistency bins (coarse, e.g. 8 = broad agreement)")
+    p.add_argument("--entry-bnd", choices=["none", "fixed", "gate"], default="none", help="Exp 1: level-0 ENTRY boundary branch fused as a residual")
+    p.add_argument("--entry-bnd-alpha", type=float, default=1.0, help="Exp 1: fusion weight (fixed) or its maximum (gate)")
+    p.add_argument("--w-entry-bnd", type=float, default=0.5, help="Exp 1: weight of the branch-alone ENTRY loss")
     p.add_argument("--w-gap", type=float, default=0.0, help="weight of the gap-prior head (log ENTRY->COLLISION distance in positions)")
     p.add_argument("--w-entry-aux", type=float, default=0.0, help="P4: weight of a broad auxiliary ENTRY head (not decoded)")
     p.add_argument("--sigma-entry-aux", type=float, default=3.0, help="P4: target width of the auxiliary ENTRY head (sampled positions)")
@@ -326,6 +364,7 @@ def main():
     p.add_argument("--batch-size", type=int, default=4)
     p.add_argument("--train-split", default="train"); p.add_argument("--val-split", default="val"); p.add_argument("--output", default=None)
     a = p.parse_args()
+    CONS.update(entry_w=a.cons_entry_w, collision_w=a.cons_coll_w, entry_bins=a.cons_entry_bins)
     if a.feats_unl_dir: os.environ["FEATS_UNL_DIR"] = str(Path(a.feats_unl_dir) if Path(a.feats_unl_dir).is_absolute() else C.REPO / a.feats_unl_dir)
     if a.feats_dir: os.environ["FEATS_DIR"] = str(Path(a.feats_dir) if Path(a.feats_dir).is_absolute() else C.REPO / a.feats_dir)
     if a.obj_cache:
@@ -399,7 +438,8 @@ def main():
     feat_dim = int(C.dense(train_rows[0]["sample_id"])[1].shape[-1])  # 384 (ViT-S) unless FEATS_DIR points at another backbone
     cfg = dict(vars(a), feat_dim=feat_dim, feats_dir=os.environ.get("FEATS_DIR", ""), n_unl=len(unl_ids), hr=a.hr, extra_labels=extra_name, n_extra=len(extra), soft_width=0.0, lr=1e-3, weight_decay=.05, strict_fps_blind=True, selection="direct",
                motion_dim=motion_dim, n_train=len(train_rows), n_val=len(val_rows))
-    model = AuxPyramid(phase_rep=a.phase_rep, risk=a.risk != "none", boundary=a.boundary, lane=a.lane, motion_dim=motion_dim, hr=a.hr, clip_norm=a.clip_norm, causal_entry=a.causal_entry, anchor_attr=a.anchor_attr, entry_aux=a.w_entry_aux > 0, feat_dim=feat_dim, gap_head=a.w_gap > 0).to(device)
+    model = AuxPyramid(phase_rep=a.phase_rep, risk=a.risk != "none", boundary=a.boundary, lane=a.lane, motion_dim=motion_dim, hr=a.hr, clip_norm=a.clip_norm, causal_entry=a.causal_entry, anchor_attr=a.anchor_attr, entry_aux=a.w_entry_aux > 0, feat_dim=feat_dim, gap_head=a.w_gap > 0,
+                       entry_bnd=a.entry_bnd, entry_bnd_alpha=a.entry_bnd_alpha).to(device)
     params = sum(x.numel() for x in model.parameters())
     import copy
     ema = copy.deepcopy(model).eval() if a.ema else None
@@ -432,6 +472,14 @@ def main():
                 base = [train_items[i] if ks[i] == 0 else views[ks[i] + 1][i] for i in range(len(train_items))]
         else:
             base = train_items
+        if a.gap_aug:  # Exp 4: counterfactual ENTRY->COLLISION gap warps of native-rate clips
+            flip = (torch.rand(len(base), generator=gen) < a.gap_aug).tolist(); base = list(base)
+            for i, f in enumerate(flip):
+                if f and base[i] is train_items[i]:
+                    w = warp_item(train_rows[i], train_items[i], np.random.default_rng(int(torch.randint(1 << 30, (1,), generator=gen))))
+                    if w is not None and a.objmotion: w = add_obj(w, 1)
+                    if w is not None: base[i] = w
+            for it in base: it.setdefault("attr_w", 1.0); it.setdefault("entry_w", 1.0)
         if a.crop_aug:  # window crops of native-rate clips (stride views untouched)
             flip = (torch.rand(len(base), generator=gen) < a.crop_aug).tolist(); base = list(base)
             for i, f in enumerate(flip):

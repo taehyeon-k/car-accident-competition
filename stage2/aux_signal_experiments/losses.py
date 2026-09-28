@@ -120,6 +120,11 @@ def total_loss(out, batch, cfg):
 
 
 def _aux(loss, parts, out, batch, cfg):
+    if cfg.get("entry_bnd", "none") != "none" and cfg.get("w_entry_bnd", 0.0) > 0:  # the boundary branch is also a detector on its own
+        from stage2.spotting_experiments.objective import distribution_loss
+        lb = distribution_loss(out["entry_bnd_logits"], batch["entry_index"], batch["time_valid"], batch["normalized_positions"].float(), "soft_index", 1.0)
+        ew = batch["entry_w"].float() if "entry_w" in batch else torch.ones_like(lb)
+        parts["entry_bnd"] = (ew * lb).mean(); loss = loss + cfg["w_entry_bnd"] * parts["entry_bnd"]
     if cfg.get("w_gap", 0.0) > 0:  # gap prior: Gaussian NLL of log(1 + COLLISION - ENTRY) in sampled positions (FPS-blind)
         tgt = torch.log1p((batch["collision_index"] - batch["entry_index"]).clamp_min(0).float())
         ls = out["gap_logsig"]; nll = ls + 0.5 * ((tgt - out["gap_mu"]) / ls.exp()) ** 2

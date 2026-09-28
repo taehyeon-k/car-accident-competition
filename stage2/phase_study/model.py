@@ -77,7 +77,7 @@ class PhasePyramid(LCPyramid):
         weights = self.attn(h).squeeze(-1).masked_fill(~valid, neg).softmax(-1)
         pooled = torch.einsum("bt,bth->bh", weights, h)
         out["side_logits"] = self.side(self.drop(pooled)); out["evasion_logits"] = self.evasion(self.drop(pooled)).squeeze(-1)
-        if return_hidden: out["hidden"] = h
+        if return_hidden: out["hidden"] = h; out["level0"] = levels[0].transpose(1, 2)  # full resolution, before temporal pooling
         return out
 
 

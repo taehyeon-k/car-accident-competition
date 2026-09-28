@@ -29,3 +29,10 @@ def add(lines, front=False):
     hdr = [l for l in old if l.startswith("#")]; body = [l for l in old if not l.startswith("#")]
     body = (lines + body) if front else (body + lines)
     JOBS.write_text("\n".join(hdr + body) + "\n")
+
+
+def gapood(run, seeds, args, stop=9):
+    """gap-OOD: train on short/medium gaps -> validate long (L), train on medium/long -> validate short (S); fixed stop epoch (no
+    selection on the OOD validation set)."""
+    return [f"{run}|{G}/results/{run}/{sp}_seed{s}|--seed {s} --train-split {G}/gapood/{sp}_train.jsonl --val-split {G}/gapood/{sp}_val.jsonl "
+            f"--stop-epoch {stop} {args}" for s in seeds for sp in ("L", "S")]
