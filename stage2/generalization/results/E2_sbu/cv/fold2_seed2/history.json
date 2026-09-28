@@ -1,0 +1,137 @@
+[
+ {
+  "epoch": 1,
+  "train_loss": 9.824306556156703,
+  "train_direct": 4.4447091817855835,
+  "train_boundary": 1.2534791690962654,
+  "train_unl_consistency": 11.067565757887705,
+  "val_fpsblind_score": 0.29272903928971616,
+  "val_official": 0.5227290392897163
+ },
+ {
+  "epoch": 2,
+  "train_loss": 8.39936261858259,
+  "train_direct": 3.3944876534598216,
+  "train_boundary": 0.8953777291945049,
+  "train_unl_consistency": 11.224157547950744,
+  "val_fpsblind_score": 0.36721565323522604,
+  "val_official": 0.5972156532352261
+ },
+ {
+  "epoch": 3,
+  "train_loss": 7.724465710776193,
+  "train_direct": 2.933048449243818,
+  "train_boundary": 0.6979216111557824,
+  "train_unl_consistency": 11.628231946059636,
+  "val_fpsblind_score": 0.40863578168391534,
+  "val_official": 0.6236357816839153
+ },
+ {
+  "epoch": 4,
+  "train_loss": 7.61627230644226,
+  "train_direct": 2.6703173977988106,
+  "train_boundary": 0.5994485693318503,
+  "train_unl_consistency": 12.926535936764308,
+  "val_fpsblind_score": 0.42476132010533374,
+  "val_official": 0.6447613201053337
+ },
+ {
+  "epoch": 5,
+  "train_loss": 6.975094985961914,
+  "train_direct": 2.5019133823258537,
+  "train_boundary": 0.5108372411557607,
+  "train_unl_consistency": 12.016422690664019,
+  "val_fpsblind_score": 0.47483297779990985,
+  "val_official": 0.6998329777999098
+ },
+ {
+  "epoch": 6,
+  "train_loss": 6.6255187375204905,
+  "train_direct": 2.3561732377324787,
+  "train_boundary": 0.4516328681792532,
+  "train_unl_consistency": 11.77602186543601,
+  "val_fpsblind_score": 0.47949248599895383,
+  "val_official": 0.6844924859989538
+ },
+ {
+  "epoch": 7,
+  "train_loss": 6.156512876919337,
+  "train_direct": 2.2285763570240564,
+  "train_boundary": 0.3774482297045844,
+  "train_unl_consistency": 10.958223249231066,
+  "val_fpsblind_score": 0.450984492481203,
+  "val_official": 0.695984492481203
+ },
+ {
+  "epoch": 8,
+  "train_loss": 6.041495152882168,
+  "train_direct": 2.138453349045345,
+  "train_boundary": 0.3413521692156792,
+  "train_unl_consistency": 11.200364159686226,
+  "val_fpsblind_score": 0.49755433755433753,
+  "val_official": 0.6975543375543375
+ },
+ {
+  "epoch": 9,
+  "train_loss": 6.0384052344730925,
+  "train_direct": 2.0994239721979415,
+  "train_boundary": 0.3421793520450592,
+  "train_unl_consistency": 11.416418988364084,
+  "val_fpsblind_score": 0.46608606251631907,
+  "val_official": 0.7160860625163191
+ },
+ {
+  "epoch": 10,
+  "train_loss": 6.046755831582206,
+  "train_direct": 2.0184429100581576,
+  "train_boundary": 0.30873030232531684,
+  "train_unl_consistency": 11.948106939452035,
+  "val_fpsblind_score": 0.49720500599025036,
+  "val_official": 0.7072050059902504
+ },
+ {
+  "epoch": 11,
+  "train_loss": 5.935348333631243,
+  "train_direct": 1.9817078386034284,
+  "train_boundary": 0.27252113010202134,
+  "train_unl_consistency": 11.910122355393002,
+  "val_fpsblind_score": 0.47586077054370624,
+  "val_official": 0.6758607705437063
+ },
+ {
+  "epoch": 12,
+  "train_loss": 5.9804171902792795,
+  "train_direct": 1.9537309050559997,
+  "train_boundary": 0.28717865709747586,
+  "train_unl_consistency": 12.215559882777077,
+  "val_fpsblind_score": 0.4958607705437062,
+  "val_official": 0.7108607705437062
+ },
+ {
+  "epoch": 13,
+  "train_loss": 5.6613660880497525,
+  "train_direct": 1.8718545164380755,
+  "train_boundary": 0.23888858120356288,
+  "train_unl_consistency": 11.565337078911918,
+  "val_fpsblind_score": 0.4503100233100233,
+  "val_official": 0.7003100233100233
+ },
+ {
+  "epoch": 14,
+  "train_loss": 6.174610873631068,
+  "train_direct": 1.8769385269709995,
+  "train_boundary": 0.2620518209678786,
+  "train_unl_consistency": 13.197887216295515,
+  "val_fpsblind_score": 0.47247372883026756,
+  "val_official": 0.6824737288302676
+ },
+ {
+  "epoch": 15,
+  "train_loss": 5.581811843599592,
+  "train_direct": 1.837106238092695,
+  "train_boundary": 0.23665515120540345,
+  "train_unl_consistency": 11.453453019687108,
+  "val_fpsblind_score": 0.4705527102005975,
+  "val_official": 0.7205527102005975
+ }
+]
