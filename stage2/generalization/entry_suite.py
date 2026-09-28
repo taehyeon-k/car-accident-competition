@@ -156,3 +156,48 @@ def main():
 
 
 if __name__ == "__main__": main()
+
+
+@torch.inference_mode()
+def gapood(run, seeds, dev):
+    """gap-OOD: models trained on short/medium gaps (L split) scored on long-gap clips, and trained on medium/long gaps (S split) scored
+    on short-gap clips; native and 1/3 rate; ensemble + per seed + a timing prior fitted on the same training split."""
+    fps = C.fps_table(); G = C.REPO / "stage2/generalization/gapood"; out = {}
+    for sp in ("L", "S"):
+        ms = []
+        for r_ in run.split("+"):
+            for s in seeds:
+                c = root(r_) / r_ / f"{sp}_seed{s}" / "checkpoint.pt"
+                if not c.exists(): continue
+                cfg = torch.load(c, map_location="cpu", weights_only=False)["config"]
+                kind = {"both": "both", "global": "global"}.get(cfg.get("motion", "none"), None)
+                if cfg.get("objmotion"): kind = "both_objfeat" if cfg.get("obj_cache") else "both_obj"
+                ms.append((load_model(c, dev), kind, cfg.get("feats_dir", ""), s))
+        tr = C.rows(str(G / f"{sp}_train.jsonl"))
+        gfrac = float(np.median([(int(r["collision_frame"]) - int(r["entry_frame"])) / max(int(r["num_frames"]) - 1, 1) for r in tr]))
+        P = {k: {"ens": [], "prior": [], **{f"s{s}": [] for s in seeds}} for k in ("k1", "k3")}
+        for r in C.rows(str(G / f"{sp}_val.jsonl")):
+            if r["sample_id"] in EXCL: continue
+            for key, k in (("k1", 1), ("k3", 3)):
+                it = item(r, k); parts = member_probs(ms, it, dev, "entry_logits"); p = decode(parts, it, r); P[key]["ens"].append(p)
+                q = dict(p); q["entry_frame"] = int(round(max(p["_lo"], p["collision_frame"] - gfrac * (p["_hi"] - p["_lo"])))); P[key]["prior"].append(q)
+                for s in seeds:
+                    sp_ = [x for x in parts if x[0] == s]
+                    if sp_: P[key][f"s{s}"].append(decode(sp_, it, r))
+        hit = lambda p: abs(p["entry_frame"] - p["entry_gt"]) / fps[p["sample_id"]] <= .300001
+        bias = lambda ps: float(np.median([(p["entry_frame"] - p["entry_gt"]) / fps[p["sample_id"]] for p in ps]))
+        out[sp] = {key: {m: {"entry_acc": round(float(np.mean([hit(p) for p in P[key][m]])), 3), "bias_s": round(bias(P[key][m]), 3),
+                             "score": round(C.metrics(P[key][m])["score"], 4)} for m in P[key]} for key in P}
+    return out
+
+
+def gapood_main():
+    ap = argparse.ArgumentParser(); ap.add_argument("runs", nargs="+"); ap.add_argument("--seeds", type=int, nargs="+", default=[0, 1, 2]); a = ap.parse_args()
+    dev = torch.device("cuda"); RES.mkdir(parents=True, exist_ok=True)
+    for run in a.runs:
+        o = gapood(run, a.seeds, dev); C.dump(RES / f"gapood_{run}.json", o)
+        for sp in ("L", "S"):
+            for key in ("k1", "k3"):
+                d = o[sp][key]; sd = [d[f"s{s}"]["entry_acc"] for s in a.seeds if f"s{s}" in d]
+                print(f"{run:24s} gap-OOD {sp} {key}: ENTRY ens {d['ens']['entry_acc']:.3f} (seeds {sd}) bias {d['ens']['bias_s']:+.2f}s score {d['ens']['score']:.3f} "
+                      f"| prior {d['prior']['entry_acc']:.3f} bias {d['prior']['bias_s']:+.2f}s", flush=True)

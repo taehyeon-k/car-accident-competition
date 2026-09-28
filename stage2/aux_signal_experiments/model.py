@@ -39,9 +39,17 @@ class CausalEntry(nn.Module):
 
 class AuxPyramid(PhasePyramid):
     def __init__(self, phase_rep="none", risk=False, boundary="none", lane="none", motion_dim=0, hr=False, clip_norm="none",
-                 causal_entry=-1, anchor_attr=False, entry_aux=False, gap_head=False, entry_bnd="none", entry_bnd_alpha=1.0, hard_state=False, **kw):
+                 causal_entry=-1, anchor_attr=False, entry_aux=False, gap_head=False, entry_bnd="none", entry_bnd_alpha=1.0, hard_state=False, obj_branch="none", obj_k=3, obj_d=0, obj_alpha=1.0, **kw):
         super().__init__(phase_rep=phase_rep, attach="final", motion=False, **kw)
         H = self.event.in_features
+        # Exp 2: object/lane ENTRY branch. The per-object features ride at the END of the motion input (segments: [max, mean] of K x D);
+        # they feed ONLY this branch (the trunk / COLLISION / attributes see the base motion only).
+        self.obj_branch, self.obj_k, self.obj_d, self.obj_alpha = obj_branch, obj_k, obj_d, obj_alpha
+        if obj_branch != "none":
+            motion_dim = motion_dim - 2 * obj_k * obj_d
+            self.ob_in = nn.Sequential(nn.Linear(2 * obj_d, 32), nn.GELU(), nn.Dropout(0.35))
+            self.ob_t = nn.Sequential(nn.Conv1d(32, 32, 5, padding=2), nn.GELU(), nn.Dropout(0.35), nn.Conv1d(32, 1, 3, padding=1))
+            self.ob_gate = nn.Parameter(torch.tensor(-2.0))
         self.risk = nn.Sequential(nn.Linear(H, 32), nn.GELU(), nn.Linear(32, 1)) if risk else None
         self.boundary_mode = boundary
         if boundary == "bnd1": self.bnd = nn.Linear(H, 2)
@@ -73,6 +81,9 @@ class AuxPyramid(PhasePyramid):
             self.motion_proj = nn.Sequential(nn.LayerNorm(motion_dim), nn.Linear(motion_dim, H), nn.GELU(), nn.Dropout(0.35), nn.Linear(H, H))
 
     def forward(self, x, valid, motion=None, return_hidden=False, hr=None):
+        obj = None
+        if self.obj_branch != "none":
+            od = 2 * self.obj_k * self.obj_d; obj = motion[..., -od:].float(); motion = motion[..., :-od]
         if self.clip_norm != "none":
             vm = valid[..., None, None].float() if x.dim() == 4 else valid[..., None].float()
             if "x" in self.clip_norm:
@@ -116,6 +127,17 @@ class AuxPyramid(PhasePyramid):
             alpha = self.entry_bnd_alpha * (torch.sigmoid(self.ebnd_gate) if self.entry_bnd == "gate" else 1.0)
             out["entry_v8_logits"] = out["entry_logits"]; out["entry_bnd_logits"] = b
             out["entry_logits"] = (out["entry_logits"].float() + alpha * b.clamp_min(-1e4)).masked_fill(~valid, neg)
+        if obj is not None:  # per-object onset scores -> masked logsumexp over objects -> gated residual on the ENTRY logits
+            B, T, _ = obj.shape; K, D = self.obj_k, self.obj_d
+            mx, mean = obj[..., :K * D].reshape(B, T, K, D), obj[..., K * D:].reshape(B, T, K, D)
+            present = mx[..., 0] > 0
+            z = self.ob_in(torch.cat([mx, mean], -1))                                    # [B, T, K, 32]
+            sc = self.ob_t(z.permute(0, 2, 3, 1).reshape(B * K, 32, T)).reshape(B, K, T).transpose(1, 2)  # [B, T, K]
+            ob = torch.logsumexp(sc.masked_fill(~present, -1e4), -1).masked_fill(~present.any(-1), 0.0)  # no vehicle -> neutral
+            neg = torch.finfo(torch.float32).min / 4; ob = ob.masked_fill(~valid, neg)
+            out["entry_obj_logits"] = ob; out.setdefault("entry_v8_logits", out["entry_logits"])
+            alpha = self.obj_alpha * torch.sigmoid(self.ob_gate)
+            out["entry_logits"] = (out["entry_logits"].float() + alpha * ob.clamp_min(-1e4)).masked_fill(~valid, neg)
         if self.hard_state is not None:
             l0 = out["level0"] * valid[..., None]; d = l0 - torch.cat([l0[:, :1], l0[:, :-1]], 1)
             out["hard_state_logits"] = self.hard_state(self.drop(torch.cat([l0, d], -1))).float()
@@ -136,7 +158,8 @@ def build(cfg):
                       hr=cfg.get("hr", False), clip_norm=cfg.get("clip_norm", "none"), causal_entry=cfg.get("causal_entry", -1),
                       anchor_attr=cfg.get("anchor_attr", False), entry_aux=cfg.get("w_entry_aux", 0.0) > 0, feat_dim=cfg.get("feat_dim", 384), gap_head=cfg.get("w_gap", 0.0) > 0,
                       entry_bnd=cfg.get("entry_bnd", "none"), entry_bnd_alpha=cfg.get("entry_bnd_alpha", 1.0),
-                      hard_state=cfg.get("w_hard_state", 0.0) > 0)
+                      hard_state=cfg.get("w_hard_state", 0.0) > 0, obj_branch=cfg.get("obj_branch", "none"), obj_k=cfg.get("obj_k", 3),
+                      obj_d=cfg.get("obj_d", 0), obj_alpha=cfg.get("obj_alpha", 1.0))
 
 
 def load(path, device):

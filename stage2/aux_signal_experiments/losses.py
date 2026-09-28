@@ -144,6 +144,11 @@ def _hard_boundary(out, batch, cfg):
 
 
 def _aux(loss, parts, out, batch, cfg):
+    if cfg.get("obj_branch", "none") != "none" and cfg.get("w_obj_branch", 0.0) > 0:  # Exp 2: branch is a detector on its own
+        from stage2.spotting_experiments.objective import distribution_loss
+        lo = distribution_loss(out["entry_obj_logits"], batch["entry_index"], batch["time_valid"], batch["normalized_positions"].float(), "soft_index", 1.0)
+        ew = batch["entry_w"].float() if "entry_w" in batch else torch.ones_like(lo)
+        parts["entry_obj"] = (ew * lo).mean(); loss = loss + cfg["w_obj_branch"] * parts["entry_obj"]
     if cfg.get("w_hard_rank", 0.0) > 0 or cfg.get("w_hard_state", 0.0) > 0:
         hb = _hard_boundary(out, batch, cfg); parts.update(hb)
         loss = loss + cfg.get("w_hard_rank", 0.0) * hb["hb_rank"] + cfg.get("w_hard_state", 0.0) * hb.get("hb_state", 0.0)
