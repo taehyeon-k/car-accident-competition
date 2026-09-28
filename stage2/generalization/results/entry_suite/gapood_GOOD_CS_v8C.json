@@ -1,0 +1,114 @@
+{
+ "L": {
+  "k1": {
+   "ens": {
+    "entry_acc": 0.082,
+    "bias_s": 0.948,
+    "score": 0.48
+   },
+   "prior": {
+    "entry_acc": 0.082,
+    "bias_s": 0.936,
+    "score": 0.48
+   },
+   "s0": {
+    "entry_acc": 0.115,
+    "bias_s": 0.933,
+    "score": 0.4817
+   },
+   "s1": {
+    "entry_acc": 0.115,
+    "bias_s": 0.9,
+    "score": 0.4832
+   },
+   "s2": {
+    "entry_acc": 0.115,
+    "bias_s": 0.933,
+    "score": 0.4553
+   }
+  },
+  "k3": {
+   "ens": {
+    "entry_acc": 0.23,
+    "bias_s": 0.6,
+    "score": 0.5155
+   },
+   "prior": {
+    "entry_acc": 0.049,
+    "bias_s": 0.833,
+    "score": 0.4523
+   },
+   "s0": {
+    "entry_acc": 0.197,
+    "bias_s": 0.567,
+    "score": 0.4868
+   },
+   "s1": {
+    "entry_acc": 0.197,
+    "bias_s": 0.4,
+    "score": 0.4845
+   },
+   "s2": {
+    "entry_acc": 0.311,
+    "bias_s": 0.4,
+    "score": 0.5183
+   }
+  }
+ },
+ "S": {
+  "k1": {
+   "ens": {
+    "entry_acc": 0.922,
+    "bias_s": -0.1,
+    "score": 0.9007
+   },
+   "prior": {
+    "entry_acc": 0.588,
+    "bias_s": -0.267,
+    "score": 0.784
+   },
+   "s0": {
+    "entry_acc": 0.902,
+    "bias_s": -0.067,
+    "score": 0.8552
+   },
+   "s1": {
+    "entry_acc": 0.882,
+    "bias_s": -0.133,
+    "score": 0.8499
+   },
+   "s2": {
+    "entry_acc": 0.902,
+    "bias_s": -0.1,
+    "score": 0.889
+   }
+  },
+  "k3": {
+   "ens": {
+    "entry_acc": 0.451,
+    "bias_s": -0.333,
+    "score": 0.729
+   },
+   "prior": {
+    "entry_acc": 0.647,
+    "bias_s": -0.233,
+    "score": 0.7976
+   },
+   "s0": {
+    "entry_acc": 0.451,
+    "bias_s": -0.333,
+    "score": 0.6786
+   },
+   "s1": {
+    "entry_acc": 0.412,
+    "bias_s": -0.333,
+    "score": 0.6707
+   },
+   "s2": {
+    "entry_acc": 0.529,
+    "bias_s": -0.267,
+    "score": 0.7463
+   }
+  }
+ }
+}
