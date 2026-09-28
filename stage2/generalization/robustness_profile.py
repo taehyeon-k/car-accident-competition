@@ -48,6 +48,9 @@ RECIPES = {  # LB-scored: v5 0.5314, v6 0.5277, v7 0.5464, v8 0.5929, v10 0.5590
     "OAC+XN4": same(["E4_sbOAC", "E2_sbOAC", "XN4_sbuC"]),                      # object-crop E4/E2 replace v13's E4/E2
     "v8+OA": same(["E4_sa", "E2_sa", "XN4_sa", "E4_sbOA"]),                      # v8 + object-crop E4 family
     "v8+OAC": same(["E4_sa", "E2_sa", "XN4_sa", "E4_sbOAC"]),                    # v8 + object-crop E4 family with window crops
+    "OBL3": same(["OB_D", "E2_OB_D", "XN4_sa"]),                                  # object + lane ENTRY branch ensemble (E4, E2) + v8 XN4
+    "v8+ODS": same(["E4_sa", "E2_sa", "XN4_sa", "ODS"]),                           # v8 + object/lane branch with BEFORE/ONSET/AFTER state loss
+    "ODS+E2+XN4": same(["ODS", "E2_sa", "XN4_sa"]),                              # ODS replaces v8 E4
 }
 CONDITIONS = [(1, 0.0), (2, 0.0), (3, 0.0), (4, 0.0), (1, 0.5), (1, 0.25), (3, 0.5)]
 # "DACON-like" view (pre-registered before its result was seen): the known test samples are CCD clips, 10 fps, 50 frames. Each clip at the
