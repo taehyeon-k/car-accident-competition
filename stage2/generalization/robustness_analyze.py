@@ -63,6 +63,7 @@ def slice_metrics(preds):
 
 def conds(res_rec, stride_only=False):
     for key, preds in res_rec.items():
+        if not key.startswith("k") or "crop" not in key: continue  # e.g. the DACON-like view (scored separately)
         k = int(key.split("_")[0][1:]); crop = float(key.split("crop")[1])
         if stride_only and crop: continue
         yield key, k, crop, preds
