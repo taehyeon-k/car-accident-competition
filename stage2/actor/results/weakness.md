@@ -118,3 +118,10 @@
 * Fusion (expert ENTRY on the prefix before the predicted COLLISION, p = (1-a) ensemble + a expert; suite --fuse-expert):
   a .25 -> score .778/.772/.725/.752/.752/.766 vs .775/.764/.722/.746/.735/.766 (native, 1/2, 1/3, crop50, crop25, DACON view);
   crop25 ENTRY .532 -> .581, long-gap bias +.40 -> +.23 s; DACON view flat. Promising but single-seed expert -> needs 3-seed validation.
+
+## Distillation of D5H + PCE into detector-free v8 students (3 seeds; stage2/actor/kd_cache.py, train.py --kd-dir --w-kd)
+* Teacher (per fold, training clips only): 0.75 D5H (3 seeds) + 0.25 pre-collision expert, on the student's own views.
+* KDe (E4_sa + ENTRY KL, w 1) vs E4_sa: score .769/.732/.694 vs .756/.736/.689; ENTRY .658/.514 vs .630/.503; 1.5-2.5 s .45 vs .33;
+  >2.5 s .16 vs .22; bias +.27 vs +.40 s; crop25 .560 vs .514; crop50 .637 vs .599. KDec (+ COLLISION KL) weaker (dropped).
+* Ensembles: v8 with E4 distilled .761/.756/.713, forecast .607 (v8 .590); all three families distilled .775/.752/.699, ENTRY native
+  .665 / 1/3 .507, crop25 .563, forecast .605. Inference cost = v8 (no detector).

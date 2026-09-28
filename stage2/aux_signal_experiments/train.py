@@ -289,6 +289,11 @@ def collate(items, motion, lane):
         hr = torch.zeros(len(items), b["x"].shape[1], 350, 384, dtype=torch.float16)
         for j, it in enumerate(items): hr[j, :len(it["hr"])] = it["hr"]
         b["hr"] = hr
+    if any("kd_path" in it for it in items):  # distillation targets (actor/cache_kd): [B, 2, T] teacher ENTRY / COLLISION distributions
+        T = b["x"].shape[1]; b["kd"] = torch.zeros(len(items), 2, T); b["kd_has"] = torch.zeros(len(items))
+        for j, it in enumerate(items):
+            if "kd_path" in it and os.path.exists(it["kd_path"]):
+                t = torch.from_numpy(np.load(it["kd_path"]).astype(np.float32)); b["kd"][j, :, :t.shape[1]] = t; b["kd_has"][j] = 1.0
     if any("attr_w" in it for it in items):
         b["attr_w"] = torch.tensor([it.get("attr_w", 1.0) for it in items]); b["entry_w"] = torch.tensor([it.get("entry_w", 1.0) for it in items])
         b["collision_w"] = torch.tensor([it.get("collision_w", 1.0) for it in items])
@@ -397,6 +402,9 @@ def main():
     p.add_argument("--w-haz", type=float, default=0.0, help="D4: weight of the hazard-alone ENTRY distribution loss")
     p.add_argument("--dyn-label", default="", help="D2: 'r,lam,late,warmup' local dynamic ENTRY target (positions, cost/position, late factor, epochs)")
     p.add_argument("--obj-cache-val", default="", help="object/actor cache for the validation clips (actor from a predicted COLLISION)")
+    p.add_argument("--kd-dir", default="", help="distillation targets dir (cache_kd): fold{f}/k{k}/<sid>.npy teacher ENTRY / COLLISION")
+    p.add_argument("--w-kd", type=float, default=0.0, help="weight of KL(teacher ENTRY || student ENTRY)")
+    p.add_argument("--w-kd-coll", type=float, default=0.0, help="weight of KL(teacher COLLISION || student COLLISION)")
     p.add_argument("--pos-grl", type=float, default=0.0, help="Exp F: ENTRY-position probe with gradient reversal of this weight (<0: detached control probe)")
     p.add_argument("--train-split", default="train"); p.add_argument("--val-split", default="val"); p.add_argument("--output", default=None)
     a = p.parse_args()
@@ -466,6 +474,12 @@ def main():
         if a.stride_offsets:  # every start offset of each stride: views_off[k][o][i]; one offset drawn per clip per epoch
             views_off = {k: [[stride_item(it, k, o) for it in train_items] for o in range(k)] for k in views}
         if a.objmotion: views = {k: [add_obj(it, k) for it in v] for k, v in views.items()}
+    if a.kd_dir:  # teacher targets of this fold's training clips, per input view (native k1, stride views k2 / k3)
+        import re as _re
+        kdf = C.REPO / a.kd_dir / f"fold{_re.search(r'fold(\d)_train', str(a.train_split)).group(1)}"
+        for it in train_items: it["kd_path"] = str(kdf / "k1" / f"{it['sample_id']}.npy")
+        for k_, vs in views.items():
+            for it in vs: it["kd_path"] = str(kdf / f"k{k_}" / f"{it['sample_id']}.npy")
     for it in train_items + [e for e in extra if "_views" not in e]: it["phase_entry_index"], it["phase_collision_index"] = it["entry_index"], it["collision_index"]
     if a.hr:
         assert not extra, "HR tokens are not extracted for the extra NEXAR clips"
@@ -574,6 +588,14 @@ def main():
                 for j, i in enumerate(order[s:s + a.batch_size]):
                     dyn_last[f"{pool[i]['sample_id']}|{int(pool[i].get('x_shape') or len(pool[i]['frame_numbers']))}"] = dstats[before + j]
             loss, parts = total_loss(o, batch, cfg)
+            if a.kd_dir and "kd" in batch and float(batch["kd_has"].sum()) > 0:  # distillation from the detector-based teacher (training only)
+                vmask = batch["time_valid"]; has = batch["kd_has"]
+                for j_, (key_, w_) in enumerate((("entry_logits", a.w_kd), ("collision_logits", a.w_kd_coll))):
+                    if not w_: continue
+                    ls_ = o[key_].float().masked_fill(~vmask, -1e4).log_softmax(-1); t_ = batch["kd"][:, j_] * vmask
+                    t_ = t_ / t_.sum(-1, keepdim=True).clamp_min(1e-8)
+                    kl = (t_ * (t_.clamp_min(1e-8).log() - ls_)).sum(-1)
+                    parts[f"kd_{key_[:5]}"] = (kl * has).sum() / has.sum(); loss = loss + w_ * parts[f"kd_{key_[:5]}"]
             if a.consistency:  # same clips at a random lower frame rate; native-rate view (index into train_items) is the teacher
                 idx = order[s:s + a.batch_size]; lab = [i for i in idx if i < len(base)]
                 if lab:
