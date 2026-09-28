@@ -68,3 +68,19 @@ Target: forecast .63 needs S_third about +.048 over v8 at matched seeds (~.758 v
   .5912 +- .0075. Best native / 1/2 labelled-only ensembles so far, but 1/3 saturates at ~.71 for every ensemble: family-level
   1/3 gains (E4t +.021, FG2 +.025) do not add up after averaging.
 * Result: no candidate reaches a resolvable gain over v8; .63 is not reached.
+
+## 1/3-rate campaign (2026-09-29 08:08-09:00 KST; all labelled-only, 3 seeds)
+| family / ensemble | score nat / 1/2 / 1/3 | ENTRY nat / 1/3 | vs its baseline at 1/3 |
+|---|---|---|---|
+| E2t (E2, mix .25/.25/.5) | .741 / .730 / .706 | .595 / .556 | E2_sa .681 -> +.025 |
+| KDt (distilled E4, mix .25/.25/.5) | .751 / .741 / .692 | .623 / .553 | KDe .694 -> -.002 (native -.018) |
+| E4c (E4 + cross-rate consistency on labelled clips) | .735 / .732 / .705 | .592 / .549 | E4_sa .689 -> +.016 (native -.021) |
+| E4tc (consistency + 1/3-heavy mix) | .743 / .740 / .700 | .602 / .549 | worse than either alone |
+| E4q (+ 1/4-rate views) | .730 / .715 / .692 | .588 / .521 | +.003 (native -.026) |
+| E4to (1/3-heavy mix + stride offsets) | .749 / .747 / .686 | .616 / .532 | below E4t (.710) |
+| E4t + E2t | .753 / .741 / .706 | .627 / .546 | forecast .5896 +- .0067 |
+| E4t + E2t + FG2 | .761 / .758 / .704 | .637 / .535 | forecast .5883 +- .0068 |
+| E4t + E2t + FGk | .760 / .744 / .706 | .644 / .539 | forecast .5899 +- .0064 |
+Conclusion: several families gain +.016 to +.025 at 1/3 rate individually (E4t, E2t, E4c, FG2), but every ensemble saturates at
+S_third .704-.711: the families' 1/3-rate gains land on the same clips. The 1/3-rate lever inside the current architecture is exhausted;
+best forecast remains E4t + FG2 + FGk .5933 (packaged).
