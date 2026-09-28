@@ -98,3 +98,13 @@
   (+.011) and crops but hurts short sequences (DACON view -.004, w .5: -.013). Gated (views only with >= 64 sampled positions),
   v8+D5H w .25: native .775 -> .787 (ENTRY .662 -> .694), crop50 +.009, 1/2, 1/3, crop25 and DACON view unchanged. No effect on the
   50-frame test-like view or the LB-forecast inputs -> not packaged.
+
+## Deepening Exp 3 — free-space evidence for evasion (stage2/actor/freespace.py, freespace_eval.py; nested CV, 284 clips)
+* Per-frame road-head free space beside the ego lane (alternative drivable, curb, lane marking, near-field vehicles left / in / right),
+  pooled over the PREDICTED ENTRY..COLLISION window, side-relative copies.
+* Free-space only (logistic, nested C): evasion macro F1 .695 native / .698 DACON-like vs ensemble .717 / .702 — nearly as good from
+  16 geometric numbers, i.e. the signal is real.
+* Ensemble + free-space: .713 / .683 (score -.0006 / -.0028); probability average .703 / .707. Disagreements are symmetric (native:
+  free-space right & ensemble wrong 40, the reverse 46; probability correlation .48), so no combination beats the ensemble.
+  Per source, CCD improves (.606 -> .622) and NEXAR drops (.684 -> .668). Verdict: negative — evasion plateaus at ~.70-.72 with the
+  evidence tested so far (the ensemble already encodes the free-space information, or the label is partly subjective).
