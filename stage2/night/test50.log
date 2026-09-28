@@ -1,0 +1,13 @@
+v5 0.5314 {'score': 0.6978, 'entry_acc': 0.588, 'collision_acc': 0.7218, 'side_f1': 0.9295, 'evasion_f1': 0.6661} {'AIHUB': 0.626, 'CCD': 0.761, 'MMAU': 0.812, 'NEXAR': 0.576}
+v6 0.5277 {'score': 0.7221, 'entry_acc': 0.6127, 'collision_acc': 0.7606, 'side_f1': 0.9224, 'evasion_f1': 0.6875} {'AIHUB': 0.65, 'CCD': 0.766, 'MMAU': 0.808, 'NEXAR': 0.646}
+v7 0.5464 {'score': 0.7284, 'entry_acc': 0.5986, 'collision_acc': 0.7993, 'side_f1': 0.9082, 'evasion_f1': 0.6858} {'AIHUB': 0.648, 'CCD': 0.751, 'MMAU': 0.811, 'NEXAR': 0.682}
+v8 0.59293 {'score': 0.7533, 'entry_acc': 0.6514, 'collision_acc': 0.8169, 'side_f1': 0.9152, 'evasion_f1': 0.6806} {'AIHUB': 0.687, 'CCD': 0.777, 'MMAU': 0.868, 'NEXAR': 0.664}
+v10 0.559 {'score': 0.7627, 'entry_acc': 0.6408, 'collision_acc': 0.838, 'side_f1': 0.9189, 'evasion_f1': 0.7151} {'AIHUB': 0.701, 'CCD': 0.767, 'MMAU': 0.885, 'NEXAR': 0.68}
+v12 0.5635 {'score': 0.777, 'entry_acc': 0.662, 'collision_acc': 0.8556, 'side_f1': 0.9436, 'evasion_f1': 0.6955} {'AIHUB': 0.7, 'CCD': 0.788, 'MMAU': 0.892, 'NEXAR': 0.706}
+v13 0.5609 {'score': 0.7638, 'entry_acc': 0.6761, 'collision_acc': 0.8169, 'side_f1': 0.915, 'evasion_f1': 0.6937} {'AIHUB': 0.678, 'CCD': 0.783, 'MMAU': 0.894, 'NEXAR': 0.68}
+v8kde 0.5886 {'score': 0.7547, 'entry_acc': 0.6585, 'collision_acc': 0.8063, 'side_f1': 0.9223, 'evasion_f1': 0.6911} {'AIHUB': 0.702, 'CCD': 0.757, 'MMAU': 0.868, 'NEXAR': 0.677}
+score          pearson +0.68 spearman +0.60
+entry_acc      pearson +0.73 spearman +0.69
+collision_acc  pearson +0.63 spearman +0.63
+side_f1        pearson -0.10 spearman -0.14
+evasion_f1     pearson +0.23 spearman +0.19
