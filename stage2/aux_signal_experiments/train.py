@@ -346,6 +346,8 @@ def main():
     p.add_argument("--cons-entry-w", type=float, default=1.0, help="Exp 3: weight of the ENTRY term in the consistency losses (0 = COLLISION-only)")
     p.add_argument("--cons-coll-w", type=float, default=1.0, help="Exp 3: weight of the COLLISION term in the consistency losses")
     p.add_argument("--cons-entry-bins", type=int, default=64, help="Exp 3: ENTRY consistency bins (coarse, e.g. 8 = broad agreement)")
+    p.add_argument("--w-hard-rank", type=float, default=0.0, help="Exp 6: local ENTRY ranking loss weight")
+    p.add_argument("--w-hard-state", type=float, default=0.0, help="Exp 6: local BEFORE/ONSET/AFTER state CE weight (level-0 head)")
     p.add_argument("--entry-bnd", choices=["none", "fixed", "gate"], default="none", help="Exp 1: level-0 ENTRY boundary branch fused as a residual")
     p.add_argument("--entry-bnd-alpha", type=float, default=1.0, help="Exp 1: fusion weight (fixed) or its maximum (gate)")
     p.add_argument("--w-entry-bnd", type=float, default=0.5, help="Exp 1: weight of the branch-alone ENTRY loss")
@@ -439,7 +441,7 @@ def main():
     cfg = dict(vars(a), feat_dim=feat_dim, feats_dir=os.environ.get("FEATS_DIR", ""), n_unl=len(unl_ids), hr=a.hr, extra_labels=extra_name, n_extra=len(extra), soft_width=0.0, lr=1e-3, weight_decay=.05, strict_fps_blind=True, selection="direct",
                motion_dim=motion_dim, n_train=len(train_rows), n_val=len(val_rows))
     model = AuxPyramid(phase_rep=a.phase_rep, risk=a.risk != "none", boundary=a.boundary, lane=a.lane, motion_dim=motion_dim, hr=a.hr, clip_norm=a.clip_norm, causal_entry=a.causal_entry, anchor_attr=a.anchor_attr, entry_aux=a.w_entry_aux > 0, feat_dim=feat_dim, gap_head=a.w_gap > 0,
-                       entry_bnd=a.entry_bnd, entry_bnd_alpha=a.entry_bnd_alpha).to(device)
+                       entry_bnd=a.entry_bnd, entry_bnd_alpha=a.entry_bnd_alpha, hard_state=a.w_hard_state > 0).to(device)
     params = sum(x.numel() for x in model.parameters())
     import copy
     ema = copy.deepcopy(model).eval() if a.ema else None

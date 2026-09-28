@@ -39,7 +39,7 @@ class CausalEntry(nn.Module):
 
 class AuxPyramid(PhasePyramid):
     def __init__(self, phase_rep="none", risk=False, boundary="none", lane="none", motion_dim=0, hr=False, clip_norm="none",
-                 causal_entry=-1, anchor_attr=False, entry_aux=False, gap_head=False, entry_bnd="none", entry_bnd_alpha=1.0, **kw):
+                 causal_entry=-1, anchor_attr=False, entry_aux=False, gap_head=False, entry_bnd="none", entry_bnd_alpha=1.0, hard_state=False, **kw):
         super().__init__(phase_rep=phase_rep, attach="final", motion=False, **kw)
         H = self.event.in_features
         self.risk = nn.Sequential(nn.Linear(H, 32), nn.GELU(), nn.Linear(32, 1)) if risk else None
@@ -60,6 +60,9 @@ class AuxPyramid(PhasePyramid):
         if entry_bnd != "none":
             self.ebnd_in = nn.Sequential(nn.Linear(2 * H, 64), nn.GELU(), nn.Dropout(0.35)); self.ebnd_conv = nn.Conv1d(64, 1, 3, padding=1)
             if entry_bnd == "gate": self.ebnd_gate = nn.Parameter(torch.tensor(-2.0))  # alpha = alpha_max * sigmoid(g), starts ~0.12
+        # Exp 6: local transition states around GT ENTRY (BEFORE / ONSET / AFTER-but-before-COLLISION) on level-0 features [l, l - l_prev];
+        # representation training only (never decoded)
+        self.hard_state = nn.Linear(2 * H, 3) if hard_state else None
         self.gap_head = nn.Linear(H, 2) if gap_head else None  # gap prior: (mu, log sigma) of log(1 + COLLISION - ENTRY positions)
         self.entry_aux = nn.Linear(H, 1) if entry_aux else None  # P4: broad-target auxiliary ENTRY head (training only, never decoded)
         self.anchor_attr = anchor_attr  # H15: side / evasion pooled at the model's own (detached) ENTRY / COLLISION distributions
@@ -113,6 +116,9 @@ class AuxPyramid(PhasePyramid):
             alpha = self.entry_bnd_alpha * (torch.sigmoid(self.ebnd_gate) if self.entry_bnd == "gate" else 1.0)
             out["entry_v8_logits"] = out["entry_logits"]; out["entry_bnd_logits"] = b
             out["entry_logits"] = (out["entry_logits"].float() + alpha * b.clamp_min(-1e4)).masked_fill(~valid, neg)
+        if self.hard_state is not None:
+            l0 = out["level0"] * valid[..., None]; d = l0 - torch.cat([l0[:, :1], l0[:, :-1]], 1)
+            out["hard_state_logits"] = self.hard_state(self.drop(torch.cat([l0, d], -1))).float()
         if self.gap_head is not None:  # attention-pooled clip summary (same pooling as side/evasion) -> gap distribution
             hid = out["hidden"]; neg = torch.finfo(hid.dtype).min / 4
             wa = self.attn(hid).squeeze(-1).masked_fill(~valid, neg).softmax(-1)
@@ -129,7 +135,8 @@ def build(cfg):
                       boundary=cfg.get("boundary", "none"), lane=cfg.get("lane", "none"), motion_dim=cfg.get("motion_dim", 0),
                       hr=cfg.get("hr", False), clip_norm=cfg.get("clip_norm", "none"), causal_entry=cfg.get("causal_entry", -1),
                       anchor_attr=cfg.get("anchor_attr", False), entry_aux=cfg.get("w_entry_aux", 0.0) > 0, feat_dim=cfg.get("feat_dim", 384), gap_head=cfg.get("w_gap", 0.0) > 0,
-                      entry_bnd=cfg.get("entry_bnd", "none"), entry_bnd_alpha=cfg.get("entry_bnd_alpha", 1.0))
+                      entry_bnd=cfg.get("entry_bnd", "none"), entry_bnd_alpha=cfg.get("entry_bnd_alpha", 1.0),
+                      hard_state=cfg.get("w_hard_state", 0.0) > 0)
 
 
 def load(path, device):
