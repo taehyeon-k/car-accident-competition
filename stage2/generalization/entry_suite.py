@@ -55,7 +55,7 @@ def members(run, fold, seeds, dev):
 def eval_cache(cfg):
     """evaluation object cache of a member: actor caches <layout>[/fold{f}]/train -> .../eval; otherwise OBJ_CACHE (None)"""
     oc = cfg.get("obj_cache") or ""
-    if "cache_flowgrid" in oc: return oc   # per-frame feature cache already in the k-view layout (night campaign flow grid)
+    if "cache_flowgrid" in oc or "cache_op" in oc: return oc   # per-frame caches already in the k-view layout (flow grid, openpilot)
     if "cache_actorfeat" not in oc: return None
     parts = oc.rstrip("/").split("/"); parts[-1] = "eval"
     if parts[-2].startswith("fold"): parts[-2] = "fold{fold}"
