@@ -1,0 +1,86 @@
+{
+  "coefficient_jackknife": {
+    "v5": {
+      "intercept": -0.7095885955508968,
+      "score@k3_crop0.0": 1.2459425411967038,
+      "entry@k1_crop0.25": 0.8102234265542749
+    },
+    "v6": {
+      "intercept": -0.5910924157464005,
+      "score@k3_crop0.0": 1.10184320006715,
+      "entry@k1_crop0.25": 0.7786357951817753
+    },
+    "v7": {
+      "intercept": -0.6183853534186227,
+      "score@k3_crop0.0": 1.1610181524002041,
+      "entry@k1_crop0.25": 0.7454079475518118
+    },
+    "v8": {
+      "intercept": 0.3650359237968999,
+      "score@k3_crop0.0": 0.2670105451981703,
+      "entry@k1_crop0.25": 0.0035636081930504964
+    },
+    "v10": {
+      "intercept": -0.5661162147208103,
+      "score@k3_crop0.0": 1.1175453134945479,
+      "entry@k1_crop0.25": 0.7061621401012118
+    },
+    "v12": {
+      "intercept": -0.5922354087670048,
+      "score@k3_crop0.0": 1.1286349325700198,
+      "entry@k1_crop0.25": 0.7397958675457913
+    }
+  },
+  "coefficients": {
+    "intercept": -0.5879604369300698,
+    "score@k3_crop0.0": 1.1262492153240016,
+    "entry@k1_crop0.25": 0.7348669657270792
+  },
+  "warning": "Retrospective selected model; intervals exclude feature selection, proxy mismatch and domain shift. Not validated leaderboard coverage.",
+  "forecasts": {
+    "v9": {
+      "prediction": 0.5609060017693588,
+      "conditional_95_interval": [
+        0.5296426314354223,
+        0.5921693721032952
+      ],
+      "leave_one_out_fit_range": [
+        0.5502766957621287,
+        0.5633552157862521
+      ]
+    },
+    "v11": {
+      "prediction": 0.5501290528797581,
+      "conditional_95_interval": [
+        0.5097266547440777,
+        0.5905314510154385
+      ],
+      "leave_one_out_fit_range": [
+        0.5473469051873776,
+        0.5633453450902747
+      ]
+    },
+    "v13": {
+      "prediction": 0.589114695681463,
+      "conditional_95_interval": [
+        0.5507309556571174,
+        0.6274984357058087
+      ],
+      "leave_one_out_fit_range": [
+        0.5557625787667191,
+        0.5913729993505241
+      ]
+    },
+    "v13nc": {
+      "prediction": 0.5752475261975522,
+      "conditional_95_interval": [
+        0.5418238702485572,
+        0.6086711821465471
+      ],
+      "leave_one_out_fit_range": [
+        0.5590849604191909,
+        0.5770758718470549
+      ]
+    }
+  }
+}

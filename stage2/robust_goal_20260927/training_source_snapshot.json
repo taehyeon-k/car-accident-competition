@@ -1,0 +1,15 @@
+{
+  "sha256_original": {
+    "stage2/aux_signal_experiments/model.py": "d613328cb7996a1ea749bc91cd69bc937f4f6dcd2345dbc30d1f9aa00fae40de",
+    "stage2/aux_signal_experiments/losses.py": "b5ba8d2fbee39b83a1b231a254ea959670ca25409c7c69cb059aa6aed38db2c0",
+    "stage2/aux_signal_experiments/nexar_labels.py": "9f5ec3c1c760b62a2cce455266bf11135dda18d46e975a2ff6d865c79206fb86",
+    "stage2/aux_signal_experiments/train.py": "8cc33cc7448176d870b962017c87bdb11869ec569bdc282287feb91d8a0ffc8d"
+  },
+  "patches": [
+    "CPU only, torch threads1",
+    "RAM guard before data preparation12.5GiB and each training batch10.5GiB",
+    "Snapshot nexar_labels imports nexar_expand from original package and segments from local train_cpu; fixed before training epochs.",
+    "Future grouped folds2-4 use two CPU threads consistently across all arms; folds0/1 remain one. Explicit cpu_threads stored in future configs. Active process untouched."
+  ],
+  "note": "Shared lower-level modules imported at process start; active originals never modified."
+}

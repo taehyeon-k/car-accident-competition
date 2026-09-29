@@ -1,0 +1,183 @@
+{
+  "protocol": "284 duplicate-clean OOF clips; seeds0-2; fixed equal model weights; CPU plain decoder; no fitted recipe weights",
+  "conditions": {
+    "k1": {
+      "n_clips": 284,
+      "n_groups": 283,
+      "recipes": {
+        "v8_plain": {
+          "overall": 0.7644413227180703,
+          "source:AIHUB": 0.69701165476951,
+          "source:CCD": 0.7823548314398132,
+          "source:MMAU": 0.8786107313738892,
+          "source:NEXAR": 0.6896342619219572,
+          "bin:>1000": 0.6774149377634219
+        },
+        "v8_plus_vits": {
+          "overall": 0.7677277267562016,
+          "source:AIHUB": 0.6997181027333109,
+          "source:CCD": 0.7819158917104654,
+          "source:MMAU": 0.8846429067064496,
+          "source:NEXAR": 0.6935526688710438,
+          "bin:>1000": 0.6815354449297357
+        },
+        "v8_plus_vitb": {
+          "overall": 0.767890808254138,
+          "source:AIHUB": 0.6875622682260777,
+          "source:CCD": 0.7895761259610523,
+          "source:MMAU": 0.8870796308954203,
+          "source:NEXAR": 0.6953584677972823,
+          "bin:>1000": 0.681492106827175
+        }
+      },
+      "comparisons": {
+        "v8_plus_vits_minus_v8_plain": {
+          "delta": 0.0032864040381312964,
+          "ci95": [
+            -0.008614742503388683,
+            0.014937518218238946
+          ],
+          "nexar_delta": 0.003918406949086628,
+          "long_delta": 0.004120507166313847
+        },
+        "v8_plus_vitb_minus_v8_plain": {
+          "delta": 0.00344948553606772,
+          "ci95": [
+            -0.007358420856607445,
+            0.01476181461049459
+          ],
+          "nexar_delta": 0.005724205875325072,
+          "long_delta": 0.0040771690637531055
+        },
+        "v8_plus_vitb_minus_v8_plus_vits": {
+          "delta": 0.00016308149793642368,
+          "ci95": [
+            -0.010662219864315522,
+            0.011214634694786185
+          ],
+          "nexar_delta": 0.0018057989262384444,
+          "long_delta": -4.3338102560741554e-05
+        }
+      }
+    },
+    "k2": {
+      "n_clips": 284,
+      "n_groups": 283,
+      "recipes": {
+        "v8_plain": {
+          "overall": 0.7495626494944331,
+          "source:AIHUB": 0.6943716355905758,
+          "source:CCD": 0.6954435226629624,
+          "source:MMAU": 0.9033007454915964,
+          "source:NEXAR": 0.6877216375620346,
+          "bin:>1000": 0.6782243813827631
+        },
+        "v8_plus_vits": {
+          "overall": 0.7540541530887818,
+          "source:AIHUB": 0.6943716355905757,
+          "source:CCD": 0.6950530303030303,
+          "source:MMAU": 0.9004309257993469,
+          "source:NEXAR": 0.7104948647229987,
+          "bin:>1000": 0.6973505092430174
+        },
+        "v8_plus_vitb": {
+          "overall": 0.7550399185585499,
+          "source:AIHUB": 0.6978842009283819,
+          "source:CCD": 0.7060514446513406,
+          "source:MMAU": 0.9058861168071694,
+          "source:NEXAR": 0.6984197056538515,
+          "bin:>1000": 0.6782722907904286
+        }
+      },
+      "comparisons": {
+        "v8_plus_vits_minus_v8_plain": {
+          "delta": 0.004491503594348689,
+          "ci95": [
+            -0.004024700220217403,
+            0.01385876850425392
+          ],
+          "nexar_delta": 0.022773227160964082,
+          "long_delta": 0.01912612786025436
+        },
+        "v8_plus_vitb_minus_v8_plain": {
+          "delta": 0.00547726906411683,
+          "ci95": [
+            -0.003979200160381532,
+            0.015881160452321002
+          ],
+          "nexar_delta": 0.010698068091816837,
+          "long_delta": 4.7909407665525094e-05
+        },
+        "v8_plus_vitb_minus_v8_plus_vits": {
+          "delta": 0.0009857654697681406,
+          "ci95": [
+            -0.008239655648700986,
+            0.010201569039635783
+          ],
+          "nexar_delta": -0.012075159069147245,
+          "long_delta": -0.019078218452588835
+        }
+      }
+    },
+    "k3": {
+      "n_clips": 284,
+      "n_groups": 283,
+      "recipes": {
+        "v8_plain": {
+          "overall": 0.7103875693093474,
+          "source:AIHUB": 0.6510360430644405,
+          "source:CCD": 0.5838493197644117,
+          "source:MMAU": 0.893760943004364,
+          "source:NEXAR": 0.6851961302532525,
+          "bin:>1000": 0.6756729203848763
+        },
+        "v8_plus_vits": {
+          "overall": 0.7117592098060022,
+          "source:AIHUB": 0.6658524633328132,
+          "source:CCD": 0.5789094948324157,
+          "source:MMAU": 0.8901531669617029,
+          "source:NEXAR": 0.6823820333553793,
+          "bin:>1000": 0.6772306486131522
+        },
+        "v8_plus_vitb": {
+          "overall": 0.7151105448535534,
+          "source:AIHUB": 0.6814536870250827,
+          "source:CCD": 0.5911688755256067,
+          "source:MMAU": 0.9008734675179243,
+          "source:NEXAR": 0.6684103071576109,
+          "bin:>1000": 0.65815501518326
+        }
+      },
+      "comparisons": {
+        "v8_plus_vits_minus_v8_plain": {
+          "delta": 0.0013716404966547247,
+          "ci95": [
+            -0.007981301660401318,
+            0.010880701074252907
+          ],
+          "nexar_delta": -0.002814096897873264,
+          "long_delta": 0.0015577282282759342
+        },
+        "v8_plus_vitb_minus_v8_plain": {
+          "delta": 0.004722975544205976,
+          "ci95": [
+            -0.005575968452793375,
+            0.015573120356188854
+          ],
+          "nexar_delta": -0.016785823095641694,
+          "long_delta": -0.017517905201616224
+        },
+        "v8_plus_vitb_minus_v8_plus_vits": {
+          "delta": 0.0033513350475512516,
+          "ci95": [
+            -0.007728513412402621,
+            0.015231657917358041
+          ],
+          "nexar_delta": -0.01397172619776843,
+          "long_delta": -0.019075633429892158
+        }
+      }
+    }
+  },
+  "limitations": "Fixed equal-weight CV screen; descriptive group bootstrap conditional on earlier model search; not a leaderboard forecast."
+}

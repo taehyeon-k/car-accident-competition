@@ -1,0 +1,19 @@
+{
+  "candidate": "aux_sharp",
+  "comparison": "matched base vs sharp auxiliary ENTRY loss",
+  "seeds": [
+    1,
+    2
+  ],
+  "folds": [
+    0,
+    1,
+    2,
+    3,
+    4
+  ],
+  "jobs": 20,
+  "rationale": "Full seed0 grouped CV sharp-base deltas +0.031449/+0.017199/+0.036014 native/half/third, larger than transport +0.017187/+0.007173/+0.025122; broad has no significant advantage over sharp and weaker reduced-rate results.",
+  "resources": "One CPU trainer/evaluator at a time, CUDA hidden, nice15, 12.5GiB pre-data and 10.5GiB training/evaluation guards; no shared queue/service changes.",
+  "selection": "No candidate promotion until complete matched seed1/2 results, per-source/rate and tail checks, then deployment-equivalent ensemble and runtime parity. LB estimate remains uncalibrated."
+}

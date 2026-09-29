@@ -1,0 +1,28 @@
+[
+  {
+    "sample_id": "ccd_000339",
+    "frames": 50,
+    "shape": [
+      50,
+      384
+    ],
+    "decode_seconds": 0.17757919058203697,
+    "total_seconds": 0.31866181269288063,
+    "peak_gpu_mib": 349.24560546875,
+    "finite": true,
+    "mean_abs": 0.10614013671875
+  },
+  {
+    "sample_id": "nexar_00100",
+    "frames": 320,
+    "shape": [
+      320,
+      384
+    ],
+    "decode_seconds": 1.1607555598020554,
+    "total_seconds": 1.2094251848757267,
+    "peak_gpu_mib": 411.34033203125,
+    "finite": true,
+    "mean_abs": 0.104736328125
+  }
+]

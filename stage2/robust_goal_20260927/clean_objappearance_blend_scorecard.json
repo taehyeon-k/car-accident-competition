@@ -1,0 +1,183 @@
+{
+  "protocol": "284 duplicate-clean OOF clips; seeds0-2; fixed equal model weights; cuda plain decoder; no fitted recipe weights",
+  "conditions": {
+    "k1": {
+      "n_clips": 284,
+      "n_groups": 283,
+      "recipes": {
+        "v8_plain": {
+          "overall": 0.7644413227180703,
+          "source:AIHUB": 0.69701165476951,
+          "source:CCD": 0.7823548314398132,
+          "source:MMAU": 0.8786107313738892,
+          "source:NEXAR": 0.6896342619219572,
+          "bin:>1000": 0.6774149377634219
+        },
+        "v8_plus_vits": {
+          "overall": 0.7677277267562016,
+          "source:AIHUB": 0.6997181027333109,
+          "source:CCD": 0.7819158917104654,
+          "source:MMAU": 0.8846429067064496,
+          "source:NEXAR": 0.6935526688710438,
+          "bin:>1000": 0.6815354449297357
+        },
+        "v8_plus_objappearance": {
+          "overall": 0.7663998606931259,
+          "source:AIHUB": 0.6963031989484992,
+          "source:CCD": 0.7828178258919597,
+          "source:MMAU": 0.8878212576896787,
+          "source:NEXAR": 0.6885189346323067,
+          "bin:>1000": 0.6762984699583301
+        }
+      },
+      "comparisons": {
+        "v8_plus_vits_minus_v8_plain": {
+          "delta": 0.0032864040381312964,
+          "ci95": [
+            -0.008614742503388683,
+            0.014937518218238946
+          ],
+          "nexar_delta": 0.003918406949086628,
+          "long_delta": 0.004120507166313847
+        },
+        "v8_plus_objappearance_minus_v8_plain": {
+          "delta": 0.0019585379750556298,
+          "ci95": [
+            -0.01035646277639855,
+            0.01339010907050586
+          ],
+          "nexar_delta": -0.0011153272896504696,
+          "long_delta": -0.001116467805091781
+        },
+        "v8_plus_objappearance_minus_v8_plus_vits": {
+          "delta": -0.0013278660630756667,
+          "ci95": [
+            -0.011875881559600654,
+            0.009616775813428062
+          ],
+          "nexar_delta": -0.005033734238737098,
+          "long_delta": -0.005236974971405628
+        }
+      }
+    },
+    "k2": {
+      "n_clips": 284,
+      "n_groups": 283,
+      "recipes": {
+        "v8_plain": {
+          "overall": 0.7495626494944331,
+          "source:AIHUB": 0.6943716355905758,
+          "source:CCD": 0.6954435226629624,
+          "source:MMAU": 0.9033007454915964,
+          "source:NEXAR": 0.6877216375620346,
+          "bin:>1000": 0.6782243813827631
+        },
+        "v8_plus_vits": {
+          "overall": 0.7540541530887818,
+          "source:AIHUB": 0.6943716355905757,
+          "source:CCD": 0.6950530303030303,
+          "source:MMAU": 0.9004309257993469,
+          "source:NEXAR": 0.7104948647229987,
+          "bin:>1000": 0.6973505092430174
+        },
+        "v8_plus_objappearance": {
+          "overall": 0.7626484170378225,
+          "source:AIHUB": 0.7039186836870026,
+          "source:CCD": 0.7126820673386959,
+          "source:MMAU": 0.9058034103951467,
+          "source:NEXAR": 0.7097918730190464,
+          "bin:>1000": 0.7010950023007135
+        }
+      },
+      "comparisons": {
+        "v8_plus_vits_minus_v8_plain": {
+          "delta": 0.004491503594348689,
+          "ci95": [
+            -0.004024700220217403,
+            0.01385876850425392
+          ],
+          "nexar_delta": 0.022773227160964082,
+          "long_delta": 0.01912612786025436
+        },
+        "v8_plus_objappearance_minus_v8_plain": {
+          "delta": 0.013085767543389415,
+          "ci95": [
+            0.00043388088985029397,
+            0.025731137656292112
+          ],
+          "nexar_delta": 0.02207023545701181,
+          "long_delta": 0.022870620917950446
+        },
+        "v8_plus_objappearance_minus_v8_plus_vits": {
+          "delta": 0.008594263949040726,
+          "ci95": [
+            -0.003662446594681215,
+            0.020864346312695528
+          ],
+          "nexar_delta": -0.0007029917039522715,
+          "long_delta": 0.0037444930576960855
+        }
+      }
+    },
+    "k3": {
+      "n_clips": 284,
+      "n_groups": 283,
+      "recipes": {
+        "v8_plain": {
+          "overall": 0.7103875693093474,
+          "source:AIHUB": 0.6510360430644405,
+          "source:CCD": 0.5838493197644117,
+          "source:MMAU": 0.893760943004364,
+          "source:NEXAR": 0.6851961302532525,
+          "bin:>1000": 0.6756729203848763
+        },
+        "v8_plus_vits": {
+          "overall": 0.7117592098060022,
+          "source:AIHUB": 0.6658524633328132,
+          "source:CCD": 0.5789094948324157,
+          "source:MMAU": 0.8901531669617029,
+          "source:NEXAR": 0.6823820333553793,
+          "bin:>1000": 0.6772306486131522
+        },
+        "v8_plus_objappearance": {
+          "overall": 0.7120974232742959,
+          "source:AIHUB": 0.6595518092455211,
+          "source:CCD": 0.5818159702616224,
+          "source:MMAU": 0.9086394492821244,
+          "source:NEXAR": 0.6724948039678791,
+          "bin:>1000": 0.6624095053882287
+        }
+      },
+      "comparisons": {
+        "v8_plus_vits_minus_v8_plain": {
+          "delta": 0.0013716404966547247,
+          "ci95": [
+            -0.007981301660401318,
+            0.010880701074252907
+          ],
+          "nexar_delta": -0.002814096897873264,
+          "long_delta": 0.0015577282282759342
+        },
+        "v8_plus_objappearance_minus_v8_plain": {
+          "delta": 0.0017098539649484934,
+          "ci95": [
+            -0.008413040756096663,
+            0.012215132461039209
+          ],
+          "nexar_delta": -0.01270132628537346,
+          "long_delta": -0.013263414996647516
+        },
+        "v8_plus_objappearance_minus_v8_plus_vits": {
+          "delta": 0.00033821346829376875,
+          "ci95": [
+            -0.01070119657153985,
+            0.01142523895942986
+          ],
+          "nexar_delta": -0.009887229387500196,
+          "long_delta": -0.01482114322492345
+        }
+      }
+    }
+  },
+  "limitations": "Fixed equal-weight CV screen; descriptive group bootstrap conditional on earlier model search; not a leaderboard forecast."
+}

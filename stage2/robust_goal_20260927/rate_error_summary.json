@@ -1,0 +1,107 @@
+{
+  "ALL": {
+    "n": 284,
+    "entry": {
+      "patterns": {
+        "all_miss": 63,
+        "rate_sensitive": 108,
+        "all_hit": 113
+      },
+      "native_miss_recovered_at_lower_rate": 39,
+      "native_miss_recovered_with_crop": 20
+    },
+    "collision": {
+      "patterns": {
+        "all_miss": 27,
+        "all_hit": 207,
+        "rate_sensitive": 50
+      },
+      "native_miss_recovered_at_lower_rate": 18,
+      "native_miss_recovered_with_crop": 9
+    }
+  },
+  "AIHUB": {
+    "n": 58,
+    "entry": {
+      "patterns": {
+        "all_miss": 11,
+        "rate_sensitive": 39,
+        "all_hit": 8
+      },
+      "native_miss_recovered_at_lower_rate": 21,
+      "native_miss_recovered_with_crop": 4
+    },
+    "collision": {
+      "patterns": {
+        "all_miss": 8,
+        "all_hit": 34,
+        "rate_sensitive": 16
+      },
+      "native_miss_recovered_at_lower_rate": 5,
+      "native_miss_recovered_with_crop": 1
+    }
+  },
+  "CCD": {
+    "n": 69,
+    "entry": {
+      "patterns": {
+        "rate_sensitive": 34,
+        "all_miss": 17,
+        "all_hit": 18
+      },
+      "native_miss_recovered_at_lower_rate": 2,
+      "native_miss_recovered_with_crop": 8
+    },
+    "collision": {
+      "patterns": {
+        "rate_sensitive": 18,
+        "all_hit": 45,
+        "all_miss": 6
+      },
+      "native_miss_recovered_at_lower_rate": 3,
+      "native_miss_recovered_with_crop": 4
+    }
+  },
+  "MMAU": {
+    "n": 76,
+    "entry": {
+      "patterns": {
+        "all_hit": 60,
+        "rate_sensitive": 11,
+        "all_miss": 5
+      },
+      "native_miss_recovered_at_lower_rate": 6,
+      "native_miss_recovered_with_crop": 2
+    },
+    "collision": {
+      "patterns": {
+        "all_hit": 72,
+        "rate_sensitive": 3,
+        "all_miss": 1
+      },
+      "native_miss_recovered_at_lower_rate": 3,
+      "native_miss_recovered_with_crop": 0
+    }
+  },
+  "NEXAR": {
+    "n": 80,
+    "entry": {
+      "patterns": {
+        "all_hit": 27,
+        "all_miss": 30,
+        "rate_sensitive": 23
+      },
+      "native_miss_recovered_at_lower_rate": 9,
+      "native_miss_recovered_with_crop": 6
+    },
+    "collision": {
+      "patterns": {
+        "all_hit": 56,
+        "all_miss": 11,
+        "rate_sensitive": 13
+      },
+      "native_miss_recovered_at_lower_rate": 7,
+      "native_miss_recovered_with_crop": 3
+    }
+  }
+}

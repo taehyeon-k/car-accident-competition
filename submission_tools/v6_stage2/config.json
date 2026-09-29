@@ -1,0 +1,225 @@
+{
+ "model": "Stage 2 v6: event-specific ensemble (event_select_7, CV-ES 0.7884 / NEXAR 0.7103) of 18 LCPyramid/AuxPyramid heads",
+ "members": [
+  {
+   "file": "members/C0_avg_seed0.pt",
+   "run": "C0_avg",
+   "seed": "seed0",
+   "arch": "lc",
+   "pool": "avg",
+   "phase": 0,
+   "coarse": "none",
+   "phase_refine": 0,
+   "motion": "none",
+   "source": "stage2/long_context_v2_experiments/results/C0_avg/seed0/checkpoint.pt"
+  },
+  {
+   "file": "members/C0_avg_seed1.pt",
+   "run": "C0_avg",
+   "seed": "seed1",
+   "arch": "lc",
+   "pool": "avg",
+   "phase": 0,
+   "coarse": "none",
+   "phase_refine": 0,
+   "motion": "none",
+   "source": "stage2/long_context_v2_experiments/results/C0_avg/seed1/checkpoint.pt"
+  },
+  {
+   "file": "members/X_ema_seed0.pt",
+   "run": "X_ema",
+   "seed": "seed0",
+   "arch": "lc",
+   "pool": "avg",
+   "phase": 0,
+   "coarse": "none",
+   "phase_refine": 0,
+   "motion": "none",
+   "source": "stage2/long_context_v2_experiments/results/X_ema/seed0/checkpoint.pt"
+  },
+  {
+   "file": "members/X_ema_seed1.pt",
+   "run": "X_ema",
+   "seed": "seed1",
+   "arch": "lc",
+   "pool": "avg",
+   "phase": 0,
+   "coarse": "none",
+   "phase_refine": 0,
+   "motion": "none",
+   "source": "stage2/long_context_v2_experiments/results/X_ema/seed1/checkpoint.pt"
+  },
+  {
+   "file": "members/M_motion_seed0.pt",
+   "run": "M_motion",
+   "seed": "seed0",
+   "arch": "lc",
+   "pool": "avg",
+   "phase": 0,
+   "coarse": "none",
+   "phase_refine": 0,
+   "motion": "global",
+   "source": "stage2/long_context_v2_experiments/results/M_motion/seed0/checkpoint.pt"
+  },
+  {
+   "file": "members/M_motion_seed1.pt",
+   "run": "M_motion",
+   "seed": "seed1",
+   "arch": "lc",
+   "pool": "avg",
+   "phase": 0,
+   "coarse": "none",
+   "phase_refine": 0,
+   "motion": "global",
+   "source": "stage2/long_context_v2_experiments/results/M_motion/seed1/checkpoint.pt"
+  },
+  {
+   "file": "members/PH_phase_seed0.pt",
+   "run": "PH_phase",
+   "seed": "seed0",
+   "arch": "lc",
+   "pool": "avg",
+   "phase": 3,
+   "coarse": "none",
+   "phase_refine": 0,
+   "motion": "none",
+   "source": "stage2/long_context_v2_experiments/results/PH_phase/seed0/checkpoint.pt"
+  },
+  {
+   "file": "members/PH_phase_seed1.pt",
+   "run": "PH_phase",
+   "seed": "seed1",
+   "arch": "lc",
+   "pool": "avg",
+   "phase": 3,
+   "coarse": "none",
+   "phase_refine": 0,
+   "motion": "none",
+   "source": "stage2/long_context_v2_experiments/results/PH_phase/seed1/checkpoint.pt"
+  },
+  {
+   "file": "members/E4_NT_both_seed0.pt",
+   "run": "E4_NT_both",
+   "seed": "seed0",
+   "arch": "aux",
+   "motion": "both",
+   "motion_dim": 100,
+   "boundary": "none",
+   "source": "stage2/aux_signal_experiments/results/E4_NT_both/seed0/checkpoint.pt"
+  },
+  {
+   "file": "members/E4_NT_both_seed1.pt",
+   "run": "E4_NT_both",
+   "seed": "seed1",
+   "arch": "aux",
+   "motion": "both",
+   "motion_dim": 100,
+   "boundary": "none",
+   "source": "stage2/aux_signal_experiments/results/E4_NT_both/seed1/checkpoint.pt"
+  },
+  {
+   "file": "members/E4_NT_both_seed2.pt",
+   "run": "E4_NT_both",
+   "seed": "seed2",
+   "arch": "aux",
+   "motion": "both",
+   "motion_dim": 100,
+   "boundary": "none",
+   "source": "stage2/aux_signal_experiments/results/E4_NT_both/seed2/checkpoint.pt"
+  },
+  {
+   "file": "members/E2_NT_both_bnd2_seed0.pt",
+   "run": "E2_NT_both_bnd2",
+   "seed": "seed0",
+   "arch": "aux",
+   "motion": "both",
+   "motion_dim": 100,
+   "boundary": "bnd2",
+   "source": "stage2/aux_signal_experiments/results/E2_NT_both_bnd2/seed0/checkpoint.pt"
+  },
+  {
+   "file": "members/E2_NT_both_bnd2_seed1.pt",
+   "run": "E2_NT_both_bnd2",
+   "seed": "seed1",
+   "arch": "aux",
+   "motion": "both",
+   "motion_dim": 100,
+   "boundary": "bnd2",
+   "source": "stage2/aux_signal_experiments/results/E2_NT_both_bnd2/seed1/checkpoint.pt"
+  },
+  {
+   "file": "members/E2_NT_both_bnd2_seed2.pt",
+   "run": "E2_NT_both_bnd2",
+   "seed": "seed2",
+   "arch": "aux",
+   "motion": "both",
+   "motion_dim": 100,
+   "boundary": "bnd2",
+   "source": "stage2/aux_signal_experiments/results/E2_NT_both_bnd2/seed2/checkpoint.pt"
+  },
+  {
+   "file": "members/M1_both_seed0.pt",
+   "run": "M1_both",
+   "seed": "seed0",
+   "arch": "aux",
+   "motion": "both",
+   "motion_dim": 100,
+   "boundary": "none",
+   "source": "stage2/aux_signal_experiments/results/M1_both/seed0/checkpoint.pt"
+  },
+  {
+   "file": "members/M1_both_seed1.pt",
+   "run": "M1_both",
+   "seed": "seed1",
+   "arch": "aux",
+   "motion": "both",
+   "motion_dim": 100,
+   "boundary": "none",
+   "source": "stage2/aux_signal_experiments/results/M1_both/seed1/checkpoint.pt"
+  },
+  {
+   "file": "members/M1_both_seed2.pt",
+   "run": "M1_both",
+   "seed": "seed2",
+   "arch": "aux",
+   "motion": "both",
+   "motion_dim": 100,
+   "boundary": "none",
+   "source": "stage2/aux_signal_experiments/results/M1_both/seed2/checkpoint.pt"
+  },
+  {
+   "file": "members/M1_both_seed3.pt",
+   "run": "M1_both",
+   "seed": "seed3",
+   "arch": "aux",
+   "motion": "both",
+   "motion_dim": 100,
+   "boundary": "none",
+   "source": "stage2/aux_signal_experiments/results/M1_both/seed3/checkpoint.pt"
+  }
+ ],
+ "backbone_variant": "phase1_partial_noanchor",
+ "grid": [
+  7,
+  10
+ ],
+ "batch_size": 16,
+ "workers": 2,
+ "motion_workers": 4,
+ "decoding": {
+  "entry_families": [
+   "E2_NT_both_bnd2",
+   "M1_both",
+   "PH_phase",
+   "E4_NT_both",
+   "M_motion"
+  ],
+  "collision_families": [
+   "E2_NT_both_bnd2"
+  ],
+  "beta": 0.5,
+  "zmax": 6.0,
+  "snap": true
+ },
+ "sampling": "adaptive: N<=128 all, <=256:128, <=512:192, <=768:256, else 320 from 192/383 normalized grids"
+}

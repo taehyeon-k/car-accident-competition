@@ -1,0 +1,111 @@
+{
+  "started_utc": "2026-09-27T21:55:21.715215+00:00",
+  "phase": "complete",
+  "jobs": {
+    "fold1_seed0": {
+      "status": "complete",
+      "command": [
+        "/venv/main/bin/python",
+        "-m",
+        "stage2.robust_goal_20260927.train_transport",
+        "--run-id",
+        "RG_transport",
+        "--output",
+        "/workspace/car-accident/stage2/robust_goal_20260927/training/transport/cv/fold1_seed0",
+        "--train-split",
+        "/workspace/car-accident/stage2/robust_goal_20260927/group_folds/fold1_train.jsonl",
+        "--val-split",
+        "/workspace/car-accident/stage2/robust_goal_20260927/group_folds/fold1_val.jsonl",
+        "--seed",
+        "0",
+        "--motion",
+        "both",
+        "--stride-aug",
+        "0.5,0.25,0.25",
+        "--epochs",
+        "30",
+        "--patience",
+        "7"
+      ]
+    },
+    "fold2_seed0": {
+      "status": "complete",
+      "command": [
+        "/venv/main/bin/python",
+        "-m",
+        "stage2.robust_goal_20260927.train_transport",
+        "--run-id",
+        "RG_transport",
+        "--output",
+        "/workspace/car-accident/stage2/robust_goal_20260927/training/transport/cv/fold2_seed0",
+        "--train-split",
+        "/workspace/car-accident/stage2/robust_goal_20260927/group_folds/fold2_train.jsonl",
+        "--val-split",
+        "/workspace/car-accident/stage2/robust_goal_20260927/group_folds/fold2_val.jsonl",
+        "--seed",
+        "0",
+        "--motion",
+        "both",
+        "--stride-aug",
+        "0.5,0.25,0.25",
+        "--epochs",
+        "30",
+        "--patience",
+        "7"
+      ]
+    },
+    "fold3_seed0": {
+      "status": "complete",
+      "command": [
+        "/venv/main/bin/python",
+        "-m",
+        "stage2.robust_goal_20260927.train_transport",
+        "--run-id",
+        "RG_transport",
+        "--output",
+        "/workspace/car-accident/stage2/robust_goal_20260927/training/transport/cv/fold3_seed0",
+        "--train-split",
+        "/workspace/car-accident/stage2/robust_goal_20260927/group_folds/fold3_train.jsonl",
+        "--val-split",
+        "/workspace/car-accident/stage2/robust_goal_20260927/group_folds/fold3_val.jsonl",
+        "--seed",
+        "0",
+        "--motion",
+        "both",
+        "--stride-aug",
+        "0.5,0.25,0.25",
+        "--epochs",
+        "30",
+        "--patience",
+        "7"
+      ]
+    },
+    "fold4_seed0": {
+      "status": "complete",
+      "command": [
+        "/venv/main/bin/python",
+        "-m",
+        "stage2.robust_goal_20260927.train_transport",
+        "--run-id",
+        "RG_transport",
+        "--output",
+        "/workspace/car-accident/stage2/robust_goal_20260927/training/transport/cv/fold4_seed0",
+        "--train-split",
+        "/workspace/car-accident/stage2/robust_goal_20260927/group_folds/fold4_train.jsonl",
+        "--val-split",
+        "/workspace/car-accident/stage2/robust_goal_20260927/group_folds/fold4_val.jsonl",
+        "--seed",
+        "0",
+        "--motion",
+        "both",
+        "--stride-aug",
+        "0.5,0.25,0.25",
+        "--epochs",
+        "30",
+        "--patience",
+        "7"
+      ]
+    }
+  },
+  "current": "fold4_seed0"
+}

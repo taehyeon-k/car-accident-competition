@@ -1,0 +1,34 @@
+{
+  "hypothesis": "Broad auxiliary ENTRY supervision can improve robustness without widening the decoded head; same-capacity sharp auxiliary control isolates target width.",
+  "protocol": "Initial one-fold seed0 feasibility screen on known-duplicate-grouped splits; no selection/promotion from this single fold. Extend to five folds and three seeds only if resource budget and first-screen behavior justify it.",
+  "arms": {
+    "base": [],
+    "aux_sharp": [
+      "--w-entry-aux",
+      "0.25",
+      "--sigma-entry-aux",
+      "1"
+    ],
+    "aux_broad": [
+      "--w-entry-aux",
+      "0.25",
+      "--sigma-entry-aux",
+      "2"
+    ]
+  },
+  "shared_args": [
+    "--seed",
+    "0",
+    "--motion",
+    "both",
+    "--stride-aug",
+    "0.5,0.25,0.25",
+    "--epochs",
+    "30",
+    "--patience",
+    "7"
+  ],
+  "training": "CPU only; sequential; nice15; one thread; RAM backpressure; no extra pseudo labels or GPU use",
+  "primary_gate": "No candidate adoption from one fold. Confirm on grouped five-fold matched seeds; target robust source/rate gains with <=0.005 native regression. Broad vs sharp control required.",
+  "status": "running first matched fold screen"
+}

@@ -1,0 +1,23 @@
+{
+  "objective": "Improve robustness beyond v8 toward real leaderboard 0.63–0.65; no calibrated leaderboard forecast is available",
+  "baseline_lb": 0.59293,
+  "code_revision": "710f7a60b9ccd524f7c7ce00a8fab0a251c39cd5",
+  "resources": "CPU only, one numerical thread, nice 15, CUDA hidden; no shared queue or training-file changes",
+  "seeds": [0, 1, 2],
+  "folds": [0, 1, 2, 3, 4],
+  "decoder": {"beta": 0.5, "snap": true, "prior": false},
+  "hypotheses": {
+    "arithmetic": "Frozen deployment decoder provides an honest baseline against which to measure inference changes",
+    "geometric": "Agreement across members suppresses isolated false event peaks, but may suppress correct minority evidence",
+    "median": "Pointwise median probabilities resist unusually confident members, but may lose useful diversity"
+  },
+  "recipes": {
+    "v8": ["E4_sa", "E2_sa", "XN4_sa"],
+    "clean_expansion": ["XS_E4", "XS_E2", "XS_XN4"],
+    "retain_base_E4": ["E4_sa", "XS_E2", "XS_XN4"],
+    "collision_only_E4": ["XC_E4", "XS_E2", "XS_XN4"]
+  },
+  "protocol": "All recipes have nine members per fold. Require every seed/fold. Report original349 and common duplicate-excluded subset. Attributes remain arithmetic averaged. No parameter fitting. Leave-one-seed-out stability uses all three predeclared two-seed subsets.",
+  "promotion_gate": "Screen only: clean pooled delta >=0.005; no major source loss >0.01; gain in >=2/3 seed subsets. Before adoption require matched rate/crop stress, source holdout and runtime parity. No arithmetic conversion from CV gain to expected LB.",
+  "limitations": "Existing folds contain cross-fold duplicates; exclusion is diagnostic, not a substitute for grouped retraining. Checkpoints were selected on validation. Multiple candidate screening remains optimistic. No GPU work until existing jobs permit it."
+}

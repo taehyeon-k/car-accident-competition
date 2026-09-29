@@ -1,0 +1,32 @@
+{
+  "protocol": "Synthetic worst-length batch4 x320 positions x70 tokens x384 channels, forward/backward; one warmup plus three timed steps; active machine; low priority; no GPU",
+  "results": {
+    "1": {
+      "seconds": [
+        0.4836273491382599,
+        0.4594796672463417,
+        0.43920353800058365
+      ],
+      "median_seconds": 0.4594796672463417,
+      "process_peak_rss_mib": 1038.4140625
+    },
+    "2": {
+      "seconds": [
+        0.29166288673877716,
+        0.2708701230585575,
+        0.2613856717944145
+      ],
+      "median_seconds": 0.2708701230585575,
+      "process_peak_rss_mib": 1044.3671875
+    },
+    "4": {
+      "seconds": [
+        0.23580164089798927,
+        0.24624627456068993,
+        0.2094268500804901
+      ],
+      "median_seconds": 0.23580164089798927,
+      "process_peak_rss_mib": 1051.91796875
+    }
+  }
+}

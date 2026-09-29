@@ -1,0 +1,9 @@
+name,fixed_all,fixed_nexar,cv_all,cv_nexar,leaderboard,provenance
+v1 ASFormer,0.6893,0.522,,,0.441,reports/stage2_leaderboard_vs_nexar.md; same submitted head
+v3 P2 refit,0.7567,0.5004,,,0.4618,batch-1 279-clip proxy; submitted model refit on 349
+NEXAR specialist,0.6701,0.7438,,,0.437,nexar65 REPORT first_three_prior; recorded LB
+Length hybrid,0.8017,0.7104,,,0.4154,length_gated REPORT all-seed candidate; recorded LB
+v5 motion ensemble,0.767,0.619,0.7688,0.6702,0.5314,recorded submitted-recipe validation; reports and HANDOFF
+v6 event-specific,0.7928311627495733,0.6403869047619047,0.7884,0.7103,0.5277,fixed package parity; CV config label; LB supplied by user 2026-09-27
+v7 residual+expansion,0.7843119235332389,0.6891666666666667,0.7994531183574896,0.7207396149568668,0.5464,HANDOFF user-reported LB; offline recipe proxy differs in seed count from full-data package
+v8 stride augmentation,,,0.7874193962706539,0.7071342619219573,0.59293,LB supplied by user 2026-09-27; three-family seeds 0-2 OOF proxy; package uses four seeds per family refit on all 349; in-sample parity excluded

@@ -1,0 +1,21 @@
+{
+  "sample_id": "nexar_00456",
+  "frame_grid_identical": true,
+  "member_differences": [
+    {
+      "seed": 0,
+      "entry_max_abs_logit_difference": 0.00061798095703125
+    },
+    {
+      "seed": 1,
+      "entry_max_abs_logit_difference": 0.00035953521728515625
+    },
+    {
+      "seed": 2,
+      "entry_max_abs_logit_difference": 0.000835418701171875
+    }
+  ],
+  "fresh_logits_float64_pool_entry": 543,
+  "fresh_torch_pool_entry": 543,
+  "gt": 548
+}

@@ -1,0 +1,5603 @@
+{
+  "interpretation": "Candidate road-user boxes at annotated event frames for offline diagnostics only; no true-opponent identity labels. Area below1/70 is a coarse spatial-resolution warning, not proof an ROI has no information. No GT actor selection is proposed at inference. Area is now measured after the exact 448x800 rounded letterbox scaling from extract_features.py; earlier raw-image area counts were approximate.",
+  "summary": {
+    "entry": {
+      "clips": 349,
+      "clips_without_candidate_box": 5,
+      "top4_boxes": 1175,
+      "top4_boxes_smaller_than_one_grid_cell": 609
+    },
+    "collision": {
+      "clips": 349,
+      "clips_without_candidate_box": 82,
+      "top4_boxes": 760,
+      "top4_boxes_smaller_than_one_grid_cell": 324
+    }
+  },
+  "rows": [
+    {
+      "sample_id": "aihub_bb_1_120222_vehicle_253_34046",
+      "event": "entry",
+      "candidate_boxes": 6,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 3,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "aihub_bb_1_120222_vehicle_253_34046",
+      "event": "collision",
+      "candidate_boxes": 1,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 1
+    },
+    {
+      "sample_id": "aihub_bb_1_130420_vehicle_194_070",
+      "event": "entry",
+      "candidate_boxes": 10,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 2,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "aihub_bb_1_130420_vehicle_194_070",
+      "event": "collision",
+      "candidate_boxes": 9,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 1,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "aihub_bb_1_130731_vehicle_214_26510",
+      "event": "entry",
+      "candidate_boxes": 5,
+      "letterbox_area_factor": 0.8616071428571429,
+      "top4_sub_one_grid_cell": 3,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "aihub_bb_1_130731_vehicle_214_26510",
+      "event": "collision",
+      "candidate_boxes": 4,
+      "letterbox_area_factor": 0.8616071428571429,
+      "top4_sub_one_grid_cell": 3,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "aihub_bb_1_140128_vehicle_235_55613",
+      "event": "entry",
+      "candidate_boxes": 4,
+      "letterbox_area_factor": 0.8616071428571429,
+      "top4_sub_one_grid_cell": 4,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "aihub_bb_1_140128_vehicle_235_55613",
+      "event": "collision",
+      "candidate_boxes": 1,
+      "letterbox_area_factor": 0.8616071428571429,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 1
+    },
+    {
+      "sample_id": "aihub_bb_1_150221_vehicle_187_026",
+      "event": "entry",
+      "candidate_boxes": 7,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 3,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "aihub_bb_1_150221_vehicle_187_026",
+      "event": "collision",
+      "candidate_boxes": 1,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 1,
+      "top4_count": 1
+    },
+    {
+      "sample_id": "aihub_bb_1_150301_vehicle_121_157",
+      "event": "entry",
+      "candidate_boxes": 9,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 1,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "aihub_bb_1_150301_vehicle_121_157",
+      "event": "collision",
+      "candidate_boxes": 7,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 1,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "aihub_bb_1_150304_vehicle_27_098",
+      "event": "entry",
+      "candidate_boxes": 5,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 2,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "aihub_bb_1_150304_vehicle_27_098",
+      "event": "collision",
+      "candidate_boxes": 3,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 2,
+      "top4_count": 3
+    },
+    {
+      "sample_id": "aihub_bb_1_161221_vehicle_119_068",
+      "event": "entry",
+      "candidate_boxes": 12,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "aihub_bb_1_161221_vehicle_119_068",
+      "event": "collision",
+      "candidate_boxes": 10,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 1,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "aihub_bb_1_170316_vehicle_191_054",
+      "event": "entry",
+      "candidate_boxes": 11,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "aihub_bb_1_170316_vehicle_191_054",
+      "event": "collision",
+      "candidate_boxes": 13,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 1,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "aihub_bb_1_171129_vehicle_255_21545",
+      "event": "entry",
+      "candidate_boxes": 9,
+      "letterbox_area_factor": 0.8616071428571429,
+      "top4_sub_one_grid_cell": 1,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "aihub_bb_1_171129_vehicle_255_21545",
+      "event": "collision",
+      "candidate_boxes": 17,
+      "letterbox_area_factor": 0.8616071428571429,
+      "top4_sub_one_grid_cell": 1,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "aihub_bb_1_180925_vehicle_229_53797",
+      "event": "entry",
+      "candidate_boxes": 5,
+      "letterbox_area_factor": 0.8616071428571429,
+      "top4_sub_one_grid_cell": 3,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "aihub_bb_1_180925_vehicle_229_53797",
+      "event": "collision",
+      "candidate_boxes": 0,
+      "letterbox_area_factor": 0.8616071428571429,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 0
+    },
+    {
+      "sample_id": "aihub_bb_1_180928_vehicle_246_51527",
+      "event": "entry",
+      "candidate_boxes": 8,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 4,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "aihub_bb_1_180928_vehicle_246_51527",
+      "event": "collision",
+      "candidate_boxes": 3,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 2,
+      "top4_count": 3
+    },
+    {
+      "sample_id": "aihub_bb_1_190227_vehicle_126_194",
+      "event": "entry",
+      "candidate_boxes": 7,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 2,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "aihub_bb_1_190227_vehicle_126_194",
+      "event": "collision",
+      "candidate_boxes": 6,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 2,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "aihub_bb_1_191112_vehicle_125_056",
+      "event": "entry",
+      "candidate_boxes": 7,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 2,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "aihub_bb_1_191112_vehicle_125_056",
+      "event": "collision",
+      "candidate_boxes": 4,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 2,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "aihub_bb_1_200731_vehicle_259_28258",
+      "event": "entry",
+      "candidate_boxes": 4,
+      "letterbox_area_factor": 0.8616071428571429,
+      "top4_sub_one_grid_cell": 2,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "aihub_bb_1_200731_vehicle_259_28258",
+      "event": "collision",
+      "candidate_boxes": 0,
+      "letterbox_area_factor": 0.8616071428571429,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 0
+    },
+    {
+      "sample_id": "aihub_bb_1_210402_vehicle_46_338",
+      "event": "entry",
+      "candidate_boxes": 7,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 2,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "aihub_bb_1_210402_vehicle_46_338",
+      "event": "collision",
+      "candidate_boxes": 3,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 1,
+      "top4_count": 3
+    },
+    {
+      "sample_id": "aihub_bb_1_210520_vehicle_200_53002",
+      "event": "entry",
+      "candidate_boxes": 2,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 1,
+      "top4_count": 2
+    },
+    {
+      "sample_id": "aihub_bb_1_210520_vehicle_200_53002",
+      "event": "collision",
+      "candidate_boxes": 0,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 0
+    },
+    {
+      "sample_id": "aihub_bb_1_210914_vehicle_125_162",
+      "event": "entry",
+      "candidate_boxes": 2,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 2,
+      "top4_count": 2
+    },
+    {
+      "sample_id": "aihub_bb_1_210914_vehicle_125_162",
+      "event": "collision",
+      "candidate_boxes": 0,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 0
+    },
+    {
+      "sample_id": "aihub_bb_1_220521_vehicle_143_027",
+      "event": "entry",
+      "candidate_boxes": 10,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "aihub_bb_1_220521_vehicle_143_027",
+      "event": "collision",
+      "candidate_boxes": 10,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "ccd_000005",
+      "event": "entry",
+      "candidate_boxes": 5,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 4,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "ccd_000005",
+      "event": "collision",
+      "candidate_boxes": 1,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 1,
+      "top4_count": 1
+    },
+    {
+      "sample_id": "ccd_000053",
+      "event": "entry",
+      "candidate_boxes": 1,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 1
+    },
+    {
+      "sample_id": "ccd_000053",
+      "event": "collision",
+      "candidate_boxes": 1,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 1
+    },
+    {
+      "sample_id": "ccd_000061",
+      "event": "entry",
+      "candidate_boxes": 3,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 3
+    },
+    {
+      "sample_id": "ccd_000061",
+      "event": "collision",
+      "candidate_boxes": 1,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 1
+    },
+    {
+      "sample_id": "ccd_000062",
+      "event": "entry",
+      "candidate_boxes": 6,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 1,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "ccd_000062",
+      "event": "collision",
+      "candidate_boxes": 2,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 1,
+      "top4_count": 2
+    },
+    {
+      "sample_id": "ccd_000116",
+      "event": "entry",
+      "candidate_boxes": 1,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 1,
+      "top4_count": 1
+    },
+    {
+      "sample_id": "ccd_000116",
+      "event": "collision",
+      "candidate_boxes": 0,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 0
+    },
+    {
+      "sample_id": "ccd_000234",
+      "event": "entry",
+      "candidate_boxes": 4,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 3,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "ccd_000234",
+      "event": "collision",
+      "candidate_boxes": 5,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 2,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "ccd_000246",
+      "event": "entry",
+      "candidate_boxes": 6,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 2,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "ccd_000246",
+      "event": "collision",
+      "candidate_boxes": 2,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 2
+    },
+    {
+      "sample_id": "ccd_000430",
+      "event": "entry",
+      "candidate_boxes": 5,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 2,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "ccd_000430",
+      "event": "collision",
+      "candidate_boxes": 1,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 1
+    },
+    {
+      "sample_id": "ccd_000475",
+      "event": "entry",
+      "candidate_boxes": 5,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 4,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "ccd_000475",
+      "event": "collision",
+      "candidate_boxes": 0,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 0
+    },
+    {
+      "sample_id": "ccd_000535",
+      "event": "entry",
+      "candidate_boxes": 0,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 0
+    },
+    {
+      "sample_id": "ccd_000535",
+      "event": "collision",
+      "candidate_boxes": 0,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 0
+    },
+    {
+      "sample_id": "ccd_000664",
+      "event": "entry",
+      "candidate_boxes": 5,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 4,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "ccd_000664",
+      "event": "collision",
+      "candidate_boxes": 0,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 0
+    },
+    {
+      "sample_id": "ccd_000728",
+      "event": "entry",
+      "candidate_boxes": 3,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 2,
+      "top4_count": 3
+    },
+    {
+      "sample_id": "ccd_000728",
+      "event": "collision",
+      "candidate_boxes": 0,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 0
+    },
+    {
+      "sample_id": "ccd_000919",
+      "event": "entry",
+      "candidate_boxes": 6,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 3,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "ccd_000919",
+      "event": "collision",
+      "candidate_boxes": 3,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 3,
+      "top4_count": 3
+    },
+    {
+      "sample_id": "ccd_000992",
+      "event": "entry",
+      "candidate_boxes": 7,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 2,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "ccd_000992",
+      "event": "collision",
+      "candidate_boxes": 6,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 2,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "ccd_001011",
+      "event": "entry",
+      "candidate_boxes": 2,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 2
+    },
+    {
+      "sample_id": "ccd_001011",
+      "event": "collision",
+      "candidate_boxes": 0,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 0
+    },
+    {
+      "sample_id": "ccd_001171",
+      "event": "entry",
+      "candidate_boxes": 1,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 1
+    },
+    {
+      "sample_id": "ccd_001171",
+      "event": "collision",
+      "candidate_boxes": 0,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 0
+    },
+    {
+      "sample_id": "ccd_001182",
+      "event": "entry",
+      "candidate_boxes": 1,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 1
+    },
+    {
+      "sample_id": "ccd_001182",
+      "event": "collision",
+      "candidate_boxes": 0,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 0
+    },
+    {
+      "sample_id": "ccd_001188",
+      "event": "entry",
+      "candidate_boxes": 5,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 2,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "ccd_001188",
+      "event": "collision",
+      "candidate_boxes": 7,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 1,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "mmau_002258",
+      "event": "entry",
+      "candidate_boxes": 4,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 3,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "mmau_002258",
+      "event": "collision",
+      "candidate_boxes": 2,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 1,
+      "top4_count": 2
+    },
+    {
+      "sample_id": "mmau_002333",
+      "event": "entry",
+      "candidate_boxes": 5,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 2,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "mmau_002333",
+      "event": "collision",
+      "candidate_boxes": 2,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 1,
+      "top4_count": 2
+    },
+    {
+      "sample_id": "mmau_002347",
+      "event": "entry",
+      "candidate_boxes": 11,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 3,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "mmau_002347",
+      "event": "collision",
+      "candidate_boxes": 1,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 1
+    },
+    {
+      "sample_id": "mmau_002394",
+      "event": "entry",
+      "candidate_boxes": 4,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 2,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "mmau_002394",
+      "event": "collision",
+      "candidate_boxes": 1,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 1
+    },
+    {
+      "sample_id": "mmau_003205",
+      "event": "entry",
+      "candidate_boxes": 9,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 3,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "mmau_003205",
+      "event": "collision",
+      "candidate_boxes": 1,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 1
+    },
+    {
+      "sample_id": "mmau_003482",
+      "event": "entry",
+      "candidate_boxes": 5,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 3,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "mmau_003482",
+      "event": "collision",
+      "candidate_boxes": 3,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 2,
+      "top4_count": 3
+    },
+    {
+      "sample_id": "mmau_004058",
+      "event": "entry",
+      "candidate_boxes": 9,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 3,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "mmau_004058",
+      "event": "collision",
+      "candidate_boxes": 1,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 1
+    },
+    {
+      "sample_id": "mmau_005362",
+      "event": "entry",
+      "candidate_boxes": 9,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 2,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "mmau_005362",
+      "event": "collision",
+      "candidate_boxes": 11,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 1,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "mmau_005535",
+      "event": "entry",
+      "candidate_boxes": 2,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 2
+    },
+    {
+      "sample_id": "mmau_005535",
+      "event": "collision",
+      "candidate_boxes": 3,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 1,
+      "top4_count": 3
+    },
+    {
+      "sample_id": "mmau_006557",
+      "event": "entry",
+      "candidate_boxes": 7,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 3,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "mmau_006557",
+      "event": "collision",
+      "candidate_boxes": 9,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 3,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "mmau_006864",
+      "event": "entry",
+      "candidate_boxes": 5,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 1,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "mmau_006864",
+      "event": "collision",
+      "candidate_boxes": 6,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 3,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "mmau_007708",
+      "event": "entry",
+      "candidate_boxes": 4,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 1,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "mmau_007708",
+      "event": "collision",
+      "candidate_boxes": 3,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 1,
+      "top4_count": 3
+    },
+    {
+      "sample_id": "mmau_008742",
+      "event": "entry",
+      "candidate_boxes": 8,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 3,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "mmau_008742",
+      "event": "collision",
+      "candidate_boxes": 4,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 3,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "mmau_009553",
+      "event": "entry",
+      "candidate_boxes": 13,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 3,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "mmau_009553",
+      "event": "collision",
+      "candidate_boxes": 8,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 2,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "mmau_009805",
+      "event": "entry",
+      "candidate_boxes": 6,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 1,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "mmau_009805",
+      "event": "collision",
+      "candidate_boxes": 6,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 1,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "mmau_009949",
+      "event": "entry",
+      "candidate_boxes": 0,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 0
+    },
+    {
+      "sample_id": "mmau_009949",
+      "event": "collision",
+      "candidate_boxes": 1,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 1
+    },
+    {
+      "sample_id": "mmau_010526",
+      "event": "entry",
+      "candidate_boxes": 5,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 1,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "mmau_010526",
+      "event": "collision",
+      "candidate_boxes": 0,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 0
+    },
+    {
+      "sample_id": "mmau_010689",
+      "event": "entry",
+      "candidate_boxes": 0,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 0
+    },
+    {
+      "sample_id": "mmau_010689",
+      "event": "collision",
+      "candidate_boxes": 0,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 0
+    },
+    {
+      "sample_id": "mmau_010933",
+      "event": "entry",
+      "candidate_boxes": 2,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 2,
+      "top4_count": 2
+    },
+    {
+      "sample_id": "mmau_010933",
+      "event": "collision",
+      "candidate_boxes": 0,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 0
+    },
+    {
+      "sample_id": "mmau_011563",
+      "event": "entry",
+      "candidate_boxes": 5,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 2,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "mmau_011563",
+      "event": "collision",
+      "candidate_boxes": 1,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 1
+    },
+    {
+      "sample_id": "nexar_00022",
+      "event": "entry",
+      "candidate_boxes": 6,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 2,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "nexar_00022",
+      "event": "collision",
+      "candidate_boxes": 6,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 1,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "nexar_00025",
+      "event": "entry",
+      "candidate_boxes": 5,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 3,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "nexar_00025",
+      "event": "collision",
+      "candidate_boxes": 4,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 2,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "nexar_00077",
+      "event": "entry",
+      "candidate_boxes": 7,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 3,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "nexar_00077",
+      "event": "collision",
+      "candidate_boxes": 2,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 1,
+      "top4_count": 2
+    },
+    {
+      "sample_id": "nexar_00084",
+      "event": "entry",
+      "candidate_boxes": 7,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "nexar_00084",
+      "event": "collision",
+      "candidate_boxes": 11,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "nexar_00103",
+      "event": "entry",
+      "candidate_boxes": 4,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 3,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "nexar_00103",
+      "event": "collision",
+      "candidate_boxes": 1,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 1
+    },
+    {
+      "sample_id": "nexar_00127",
+      "event": "entry",
+      "candidate_boxes": 7,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 3,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "nexar_00127",
+      "event": "collision",
+      "candidate_boxes": 2,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 2,
+      "top4_count": 2
+    },
+    {
+      "sample_id": "nexar_00142",
+      "event": "entry",
+      "candidate_boxes": 10,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 1,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "nexar_00142",
+      "event": "collision",
+      "candidate_boxes": 1,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 1
+    },
+    {
+      "sample_id": "nexar_00148",
+      "event": "entry",
+      "candidate_boxes": 12,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 1,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "nexar_00148",
+      "event": "collision",
+      "candidate_boxes": 7,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 2,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "nexar_00152",
+      "event": "entry",
+      "candidate_boxes": 12,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 2,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "nexar_00152",
+      "event": "collision",
+      "candidate_boxes": 13,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "nexar_00190",
+      "event": "entry",
+      "candidate_boxes": 6,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 3,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "nexar_00190",
+      "event": "collision",
+      "candidate_boxes": 2,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 1,
+      "top4_count": 2
+    },
+    {
+      "sample_id": "nexar_00225",
+      "event": "entry",
+      "candidate_boxes": 9,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 2,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "nexar_00225",
+      "event": "collision",
+      "candidate_boxes": 14,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "nexar_00348",
+      "event": "entry",
+      "candidate_boxes": 5,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 4,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "nexar_00348",
+      "event": "collision",
+      "candidate_boxes": 6,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 3,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "nexar_00373",
+      "event": "entry",
+      "candidate_boxes": 6,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 2,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "nexar_00373",
+      "event": "collision",
+      "candidate_boxes": 5,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 2,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "nexar_00487",
+      "event": "entry",
+      "candidate_boxes": 4,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 3,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "nexar_00487",
+      "event": "collision",
+      "candidate_boxes": 0,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 0
+    },
+    {
+      "sample_id": "nexar_00516",
+      "event": "entry",
+      "candidate_boxes": 10,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 1,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "nexar_00516",
+      "event": "collision",
+      "candidate_boxes": 8,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 1,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "nexar_00523",
+      "event": "entry",
+      "candidate_boxes": 10,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "nexar_00523",
+      "event": "collision",
+      "candidate_boxes": 3,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 3
+    },
+    {
+      "sample_id": "aihub_bb_1_100826_vehicle_233_35549",
+      "event": "entry",
+      "candidate_boxes": 9,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 4,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "aihub_bb_1_100826_vehicle_233_35549",
+      "event": "collision",
+      "candidate_boxes": 2,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 1,
+      "top4_count": 2
+    },
+    {
+      "sample_id": "aihub_bb_1_120524_vehicle_157_002",
+      "event": "entry",
+      "candidate_boxes": 2,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 2
+    },
+    {
+      "sample_id": "aihub_bb_1_120524_vehicle_157_002",
+      "event": "collision",
+      "candidate_boxes": 0,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 0
+    },
+    {
+      "sample_id": "aihub_bb_1_130207_vehicle_108_085",
+      "event": "entry",
+      "candidate_boxes": 3,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 2,
+      "top4_count": 3
+    },
+    {
+      "sample_id": "aihub_bb_1_130207_vehicle_108_085",
+      "event": "collision",
+      "candidate_boxes": 6,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 3,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "aihub_bb_1_141102_vehicle_126_317",
+      "event": "entry",
+      "candidate_boxes": 1,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 1
+    },
+    {
+      "sample_id": "aihub_bb_1_141102_vehicle_126_317",
+      "event": "collision",
+      "candidate_boxes": 1,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 1,
+      "top4_count": 1
+    },
+    {
+      "sample_id": "aihub_bb_1_150730_vehicle_123_199",
+      "event": "entry",
+      "candidate_boxes": 4,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 1,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "aihub_bb_1_150730_vehicle_123_199",
+      "event": "collision",
+      "candidate_boxes": 3,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 2,
+      "top4_count": 3
+    },
+    {
+      "sample_id": "aihub_bb_1_170110_vehicle_39_152",
+      "event": "entry",
+      "candidate_boxes": 4,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 3,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "aihub_bb_1_170110_vehicle_39_152",
+      "event": "collision",
+      "candidate_boxes": 4,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 2,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "aihub_bb_1_170423_vehicle_252_53585",
+      "event": "entry",
+      "candidate_boxes": 9,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 2,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "aihub_bb_1_170423_vehicle_252_53585",
+      "event": "collision",
+      "candidate_boxes": 10,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 1,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "aihub_bb_1_170504_vehicle_127_193",
+      "event": "entry",
+      "candidate_boxes": 4,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 3,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "aihub_bb_1_170504_vehicle_127_193",
+      "event": "collision",
+      "candidate_boxes": 6,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 2,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "aihub_bb_1_170619_vehicle_111_058",
+      "event": "entry",
+      "candidate_boxes": 9,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 2,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "aihub_bb_1_170619_vehicle_111_058",
+      "event": "collision",
+      "candidate_boxes": 0,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 0
+    },
+    {
+      "sample_id": "aihub_bb_1_171101_vehicle_200_148",
+      "event": "entry",
+      "candidate_boxes": 4,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 3,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "aihub_bb_1_171101_vehicle_200_148",
+      "event": "collision",
+      "candidate_boxes": 3,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 2,
+      "top4_count": 3
+    },
+    {
+      "sample_id": "aihub_bb_1_180827_vehicle_126_097",
+      "event": "entry",
+      "candidate_boxes": 4,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 2,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "aihub_bb_1_180827_vehicle_126_097",
+      "event": "collision",
+      "candidate_boxes": 3,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 2,
+      "top4_count": 3
+    },
+    {
+      "sample_id": "aihub_bb_1_181004_vehicle_192_029",
+      "event": "entry",
+      "candidate_boxes": 4,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 3,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "aihub_bb_1_181004_vehicle_192_029",
+      "event": "collision",
+      "candidate_boxes": 2,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 1,
+      "top4_count": 2
+    },
+    {
+      "sample_id": "aihub_bb_1_200207_vehicle_114_059",
+      "event": "entry",
+      "candidate_boxes": 7,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "aihub_bb_1_200207_vehicle_114_059",
+      "event": "collision",
+      "candidate_boxes": 0,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 0
+    },
+    {
+      "sample_id": "aihub_bb_1_200303_vehicle_311_091",
+      "event": "entry",
+      "candidate_boxes": 7,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "aihub_bb_1_200303_vehicle_311_091",
+      "event": "collision",
+      "candidate_boxes": 5,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 3,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "aihub_bb_1_200421_vehicle_116_257",
+      "event": "entry",
+      "candidate_boxes": 4,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 3,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "aihub_bb_1_200421_vehicle_116_257",
+      "event": "collision",
+      "candidate_boxes": 10,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 3,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "aihub_bb_1_200427_vehicle_258_45117",
+      "event": "entry",
+      "candidate_boxes": 9,
+      "letterbox_area_factor": 0.87375,
+      "top4_sub_one_grid_cell": 1,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "aihub_bb_1_200427_vehicle_258_45117",
+      "event": "collision",
+      "candidate_boxes": 4,
+      "letterbox_area_factor": 0.87375,
+      "top4_sub_one_grid_cell": 2,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "aihub_bb_1_210621_vehicle_245_21554",
+      "event": "entry",
+      "candidate_boxes": 3,
+      "letterbox_area_factor": 0.8616071428571429,
+      "top4_sub_one_grid_cell": 2,
+      "top4_count": 3
+    },
+    {
+      "sample_id": "aihub_bb_1_210621_vehicle_245_21554",
+      "event": "collision",
+      "candidate_boxes": 1,
+      "letterbox_area_factor": 0.8616071428571429,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 1
+    },
+    {
+      "sample_id": "aihub_bb_1_210822_vehicle_204_45267",
+      "event": "entry",
+      "candidate_boxes": 7,
+      "letterbox_area_factor": 0.8616071428571429,
+      "top4_sub_one_grid_cell": 2,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "aihub_bb_1_210822_vehicle_204_45267",
+      "event": "collision",
+      "candidate_boxes": 3,
+      "letterbox_area_factor": 0.8616071428571429,
+      "top4_sub_one_grid_cell": 2,
+      "top4_count": 3
+    },
+    {
+      "sample_id": "aihub_bb_1_220506_vehicle_193_201",
+      "event": "entry",
+      "candidate_boxes": 7,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 2,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "aihub_bb_1_220506_vehicle_193_201",
+      "event": "collision",
+      "candidate_boxes": 10,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 3,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "ccd_000001",
+      "event": "entry",
+      "candidate_boxes": 0,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 0
+    },
+    {
+      "sample_id": "ccd_000001",
+      "event": "collision",
+      "candidate_boxes": 0,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 0
+    },
+    {
+      "sample_id": "ccd_000027",
+      "event": "entry",
+      "candidate_boxes": 3,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 2,
+      "top4_count": 3
+    },
+    {
+      "sample_id": "ccd_000027",
+      "event": "collision",
+      "candidate_boxes": 0,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 0
+    },
+    {
+      "sample_id": "ccd_000178",
+      "event": "entry",
+      "candidate_boxes": 2,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 1,
+      "top4_count": 2
+    },
+    {
+      "sample_id": "ccd_000178",
+      "event": "collision",
+      "candidate_boxes": 0,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 0
+    },
+    {
+      "sample_id": "ccd_000318",
+      "event": "entry",
+      "candidate_boxes": 1,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 1
+    },
+    {
+      "sample_id": "ccd_000318",
+      "event": "collision",
+      "candidate_boxes": 0,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 0
+    },
+    {
+      "sample_id": "ccd_000334",
+      "event": "entry",
+      "candidate_boxes": 1,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 1,
+      "top4_count": 1
+    },
+    {
+      "sample_id": "ccd_000334",
+      "event": "collision",
+      "candidate_boxes": 1,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 1
+    },
+    {
+      "sample_id": "ccd_000393",
+      "event": "entry",
+      "candidate_boxes": 0,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 0
+    },
+    {
+      "sample_id": "ccd_000393",
+      "event": "collision",
+      "candidate_boxes": 0,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 0
+    },
+    {
+      "sample_id": "ccd_000517",
+      "event": "entry",
+      "candidate_boxes": 3,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 2,
+      "top4_count": 3
+    },
+    {
+      "sample_id": "ccd_000517",
+      "event": "collision",
+      "candidate_boxes": 3,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 3,
+      "top4_count": 3
+    },
+    {
+      "sample_id": "ccd_000586",
+      "event": "entry",
+      "candidate_boxes": 3,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 2,
+      "top4_count": 3
+    },
+    {
+      "sample_id": "ccd_000586",
+      "event": "collision",
+      "candidate_boxes": 1,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 1
+    },
+    {
+      "sample_id": "ccd_000641",
+      "event": "entry",
+      "candidate_boxes": 1,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 1
+    },
+    {
+      "sample_id": "ccd_000641",
+      "event": "collision",
+      "candidate_boxes": 0,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 0
+    },
+    {
+      "sample_id": "ccd_000734",
+      "event": "entry",
+      "candidate_boxes": 4,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 3,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "ccd_000734",
+      "event": "collision",
+      "candidate_boxes": 2,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 2
+    },
+    {
+      "sample_id": "ccd_000926",
+      "event": "entry",
+      "candidate_boxes": 7,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 3,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "ccd_000926",
+      "event": "collision",
+      "candidate_boxes": 2,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 2,
+      "top4_count": 2
+    },
+    {
+      "sample_id": "ccd_000978",
+      "event": "entry",
+      "candidate_boxes": 4,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 2,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "ccd_000978",
+      "event": "collision",
+      "candidate_boxes": 0,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 0
+    },
+    {
+      "sample_id": "ccd_001072",
+      "event": "entry",
+      "candidate_boxes": 2,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 1,
+      "top4_count": 2
+    },
+    {
+      "sample_id": "ccd_001072",
+      "event": "collision",
+      "candidate_boxes": 3,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 2,
+      "top4_count": 3
+    },
+    {
+      "sample_id": "ccd_001121",
+      "event": "entry",
+      "candidate_boxes": 3,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 2,
+      "top4_count": 3
+    },
+    {
+      "sample_id": "ccd_001121",
+      "event": "collision",
+      "candidate_boxes": 0,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 0
+    },
+    {
+      "sample_id": "ccd_001362",
+      "event": "entry",
+      "candidate_boxes": 8,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 2,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "ccd_001362",
+      "event": "collision",
+      "candidate_boxes": 3,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 2,
+      "top4_count": 3
+    },
+    {
+      "sample_id": "ccd_001405",
+      "event": "entry",
+      "candidate_boxes": 1,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 1
+    },
+    {
+      "sample_id": "ccd_001405",
+      "event": "collision",
+      "candidate_boxes": 0,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 0
+    },
+    {
+      "sample_id": "mmau_002780",
+      "event": "entry",
+      "candidate_boxes": 7,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "mmau_002780",
+      "event": "collision",
+      "candidate_boxes": 0,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 0
+    },
+    {
+      "sample_id": "mmau_002796",
+      "event": "entry",
+      "candidate_boxes": 7,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 4,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "mmau_002796",
+      "event": "collision",
+      "candidate_boxes": 1,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 1
+    },
+    {
+      "sample_id": "mmau_003449",
+      "event": "entry",
+      "candidate_boxes": 6,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 3,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "mmau_003449",
+      "event": "collision",
+      "candidate_boxes": 2,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 1,
+      "top4_count": 2
+    },
+    {
+      "sample_id": "mmau_003527",
+      "event": "entry",
+      "candidate_boxes": 8,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 2,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "mmau_003527",
+      "event": "collision",
+      "candidate_boxes": 0,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 0
+    },
+    {
+      "sample_id": "mmau_005008",
+      "event": "entry",
+      "candidate_boxes": 1,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 1
+    },
+    {
+      "sample_id": "mmau_005008",
+      "event": "collision",
+      "candidate_boxes": 1,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 1
+    },
+    {
+      "sample_id": "mmau_005060",
+      "event": "entry",
+      "candidate_boxes": 7,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 4,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "mmau_005060",
+      "event": "collision",
+      "candidate_boxes": 5,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 2,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "mmau_005147",
+      "event": "entry",
+      "candidate_boxes": 12,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 2,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "mmau_005147",
+      "event": "collision",
+      "candidate_boxes": 11,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 3,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "mmau_005382",
+      "event": "entry",
+      "candidate_boxes": 4,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 3,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "mmau_005382",
+      "event": "collision",
+      "candidate_boxes": 4,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 2,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "mmau_005536",
+      "event": "entry",
+      "candidate_boxes": 1,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 1
+    },
+    {
+      "sample_id": "mmau_005536",
+      "event": "collision",
+      "candidate_boxes": 0,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 0
+    },
+    {
+      "sample_id": "mmau_005723",
+      "event": "entry",
+      "candidate_boxes": 9,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 3,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "mmau_005723",
+      "event": "collision",
+      "candidate_boxes": 5,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "mmau_007219",
+      "event": "entry",
+      "candidate_boxes": 11,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 3,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "mmau_007219",
+      "event": "collision",
+      "candidate_boxes": 3,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 2,
+      "top4_count": 3
+    },
+    {
+      "sample_id": "mmau_007433",
+      "event": "entry",
+      "candidate_boxes": 5,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 3,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "mmau_007433",
+      "event": "collision",
+      "candidate_boxes": 5,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 3,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "mmau_009646",
+      "event": "entry",
+      "candidate_boxes": 2,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 1,
+      "top4_count": 2
+    },
+    {
+      "sample_id": "mmau_009646",
+      "event": "collision",
+      "candidate_boxes": 1,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 1
+    },
+    {
+      "sample_id": "mmau_009862",
+      "event": "entry",
+      "candidate_boxes": 3,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 3,
+      "top4_count": 3
+    },
+    {
+      "sample_id": "mmau_009862",
+      "event": "collision",
+      "candidate_boxes": 6,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 2,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "mmau_009891",
+      "event": "entry",
+      "candidate_boxes": 2,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 1,
+      "top4_count": 2
+    },
+    {
+      "sample_id": "mmau_009891",
+      "event": "collision",
+      "candidate_boxes": 0,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 0
+    },
+    {
+      "sample_id": "mmau_010705",
+      "event": "entry",
+      "candidate_boxes": 3,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 3,
+      "top4_count": 3
+    },
+    {
+      "sample_id": "mmau_010705",
+      "event": "collision",
+      "candidate_boxes": 0,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 0
+    },
+    {
+      "sample_id": "mmau_011034",
+      "event": "entry",
+      "candidate_boxes": 1,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 1
+    },
+    {
+      "sample_id": "mmau_011034",
+      "event": "collision",
+      "candidate_boxes": 0,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 0
+    },
+    {
+      "sample_id": "nexar_00114",
+      "event": "entry",
+      "candidate_boxes": 4,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 3,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "nexar_00114",
+      "event": "collision",
+      "candidate_boxes": 2,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 2
+    },
+    {
+      "sample_id": "nexar_00157",
+      "event": "entry",
+      "candidate_boxes": 7,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 2,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "nexar_00157",
+      "event": "collision",
+      "candidate_boxes": 9,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 2,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "nexar_00162",
+      "event": "entry",
+      "candidate_boxes": 6,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 2,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "nexar_00162",
+      "event": "collision",
+      "candidate_boxes": 4,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 3,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "nexar_00291",
+      "event": "entry",
+      "candidate_boxes": 5,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 2,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "nexar_00291",
+      "event": "collision",
+      "candidate_boxes": 2,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 1,
+      "top4_count": 2
+    },
+    {
+      "sample_id": "nexar_00318",
+      "event": "entry",
+      "candidate_boxes": 10,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 1,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "nexar_00318",
+      "event": "collision",
+      "candidate_boxes": 9,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 2,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "nexar_00328",
+      "event": "entry",
+      "candidate_boxes": 2,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 2
+    },
+    {
+      "sample_id": "nexar_00328",
+      "event": "collision",
+      "candidate_boxes": 5,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 3,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "nexar_00334",
+      "event": "entry",
+      "candidate_boxes": 10,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 3,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "nexar_00334",
+      "event": "collision",
+      "candidate_boxes": 9,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 1,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "nexar_00381",
+      "event": "entry",
+      "candidate_boxes": 8,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "nexar_00381",
+      "event": "collision",
+      "candidate_boxes": 3,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 3
+    },
+    {
+      "sample_id": "nexar_00398",
+      "event": "entry",
+      "candidate_boxes": 6,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 3,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "nexar_00398",
+      "event": "collision",
+      "candidate_boxes": 13,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 1,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "nexar_00405",
+      "event": "entry",
+      "candidate_boxes": 14,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "nexar_00405",
+      "event": "collision",
+      "candidate_boxes": 13,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 1,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "nexar_00408",
+      "event": "entry",
+      "candidate_boxes": 8,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 2,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "nexar_00408",
+      "event": "collision",
+      "candidate_boxes": 3,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 1,
+      "top4_count": 3
+    },
+    {
+      "sample_id": "nexar_00483",
+      "event": "entry",
+      "candidate_boxes": 1,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 1
+    },
+    {
+      "sample_id": "nexar_00483",
+      "event": "collision",
+      "candidate_boxes": 1,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 1
+    },
+    {
+      "sample_id": "nexar_00506",
+      "event": "entry",
+      "candidate_boxes": 16,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 4,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "nexar_00506",
+      "event": "collision",
+      "candidate_boxes": 2,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 2
+    },
+    {
+      "sample_id": "nexar_00553",
+      "event": "entry",
+      "candidate_boxes": 4,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 4,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "nexar_00553",
+      "event": "collision",
+      "candidate_boxes": 0,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 0
+    },
+    {
+      "sample_id": "nexar_00763",
+      "event": "entry",
+      "candidate_boxes": 6,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 3,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "nexar_00763",
+      "event": "collision",
+      "candidate_boxes": 11,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 2,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "nexar_00998",
+      "event": "entry",
+      "candidate_boxes": 9,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 1,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "nexar_00998",
+      "event": "collision",
+      "candidate_boxes": 11,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "aihub_bb_1_120520_vehicle_240_54207",
+      "event": "entry",
+      "candidate_boxes": 6,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 3,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "aihub_bb_1_120520_vehicle_240_54207",
+      "event": "collision",
+      "candidate_boxes": 9,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 3,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "aihub_bb_1_130120_vehicle_46_140",
+      "event": "entry",
+      "candidate_boxes": 4,
+      "letterbox_area_factor": 0.74625,
+      "top4_sub_one_grid_cell": 4,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "aihub_bb_1_130120_vehicle_46_140",
+      "event": "collision",
+      "candidate_boxes": 4,
+      "letterbox_area_factor": 0.74625,
+      "top4_sub_one_grid_cell": 3,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "aihub_bb_1_130427_vehicle_213_44963",
+      "event": "entry",
+      "candidate_boxes": 1,
+      "letterbox_area_factor": 0.8616071428571429,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 1
+    },
+    {
+      "sample_id": "aihub_bb_1_130427_vehicle_213_44963",
+      "event": "collision",
+      "candidate_boxes": 0,
+      "letterbox_area_factor": 0.8616071428571429,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 0
+    },
+    {
+      "sample_id": "aihub_bb_1_131003_vehicle_213_44963",
+      "event": "entry",
+      "candidate_boxes": 1,
+      "letterbox_area_factor": 0.8616071428571429,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 1
+    },
+    {
+      "sample_id": "aihub_bb_1_131003_vehicle_213_44963",
+      "event": "collision",
+      "candidate_boxes": 0,
+      "letterbox_area_factor": 0.8616071428571429,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 0
+    },
+    {
+      "sample_id": "aihub_bb_1_150125_vehicle_195_042",
+      "event": "entry",
+      "candidate_boxes": 8,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 2,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "aihub_bb_1_150125_vehicle_195_042",
+      "event": "collision",
+      "candidate_boxes": 10,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 2,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "aihub_bb_1_150218_vehicle_219_52553",
+      "event": "entry",
+      "candidate_boxes": 9,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 2,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "aihub_bb_1_150218_vehicle_219_52553",
+      "event": "collision",
+      "candidate_boxes": 9,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 3,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "aihub_bb_1_160716_vehicle_247_51894",
+      "event": "entry",
+      "candidate_boxes": 10,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 2,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "aihub_bb_1_160716_vehicle_247_51894",
+      "event": "collision",
+      "candidate_boxes": 10,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 1,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "aihub_bb_1_160820_vehicle_112_285",
+      "event": "entry",
+      "candidate_boxes": 7,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 3,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "aihub_bb_1_160820_vehicle_112_285",
+      "event": "collision",
+      "candidate_boxes": 1,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 1
+    },
+    {
+      "sample_id": "aihub_bb_1_180325_vehicle_210_46122",
+      "event": "entry",
+      "candidate_boxes": 9,
+      "letterbox_area_factor": 0.8616071428571429,
+      "top4_sub_one_grid_cell": 2,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "aihub_bb_1_180325_vehicle_210_46122",
+      "event": "collision",
+      "candidate_boxes": 11,
+      "letterbox_area_factor": 0.8616071428571429,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "aihub_bb_1_180528_vehicle_196_021",
+      "event": "entry",
+      "candidate_boxes": 6,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 2,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "aihub_bb_1_180528_vehicle_196_021",
+      "event": "collision",
+      "candidate_boxes": 2,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 2
+    },
+    {
+      "sample_id": "aihub_bb_1_181103_vehicle_240_27006",
+      "event": "entry",
+      "candidate_boxes": 14,
+      "letterbox_area_factor": 0.859375,
+      "top4_sub_one_grid_cell": 2,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "aihub_bb_1_181103_vehicle_240_27006",
+      "event": "collision",
+      "candidate_boxes": 7,
+      "letterbox_area_factor": 0.859375,
+      "top4_sub_one_grid_cell": 1,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "aihub_bb_1_190216_vehicle_123_306",
+      "event": "entry",
+      "candidate_boxes": 3,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 3,
+      "top4_count": 3
+    },
+    {
+      "sample_id": "aihub_bb_1_190216_vehicle_123_306",
+      "event": "collision",
+      "candidate_boxes": 2,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 2,
+      "top4_count": 2
+    },
+    {
+      "sample_id": "aihub_bb_1_200626_vehicle_130_265",
+      "event": "entry",
+      "candidate_boxes": 6,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 1,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "aihub_bb_1_200626_vehicle_130_265",
+      "event": "collision",
+      "candidate_boxes": 2,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 2
+    },
+    {
+      "sample_id": "aihub_bb_1_201116_vehicle_199_036",
+      "event": "entry",
+      "candidate_boxes": 7,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 3,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "aihub_bb_1_201116_vehicle_199_036",
+      "event": "collision",
+      "candidate_boxes": 7,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 2,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "aihub_bb_1_210327_vehicle_244_53998",
+      "event": "entry",
+      "candidate_boxes": 8,
+      "letterbox_area_factor": 0.8616071428571429,
+      "top4_sub_one_grid_cell": 2,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "aihub_bb_1_210327_vehicle_244_53998",
+      "event": "collision",
+      "candidate_boxes": 4,
+      "letterbox_area_factor": 0.8616071428571429,
+      "top4_sub_one_grid_cell": 3,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "aihub_bb_1_210818_vehicle_315_043",
+      "event": "entry",
+      "candidate_boxes": 6,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 2,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "aihub_bb_1_210818_vehicle_315_043",
+      "event": "collision",
+      "candidate_boxes": 5,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 3,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "aihub_bb_1_210929_vehicle_127_178",
+      "event": "entry",
+      "candidate_boxes": 10,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 2,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "aihub_bb_1_210929_vehicle_127_178",
+      "event": "collision",
+      "candidate_boxes": 6,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 2,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "aihub_bb_1_211026_vehicle_144_301",
+      "event": "entry",
+      "candidate_boxes": 9,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "aihub_bb_1_211026_vehicle_144_301",
+      "event": "collision",
+      "candidate_boxes": 3,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 2,
+      "top4_count": 3
+    },
+    {
+      "sample_id": "ccd_000003",
+      "event": "entry",
+      "candidate_boxes": 6,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 4,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "ccd_000003",
+      "event": "collision",
+      "candidate_boxes": 0,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 0
+    },
+    {
+      "sample_id": "ccd_000018",
+      "event": "entry",
+      "candidate_boxes": 11,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 1,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "ccd_000018",
+      "event": "collision",
+      "candidate_boxes": 9,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 3,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "ccd_000039",
+      "event": "entry",
+      "candidate_boxes": 12,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 2,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "ccd_000039",
+      "event": "collision",
+      "candidate_boxes": 6,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 1,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "ccd_000176",
+      "event": "entry",
+      "candidate_boxes": 3,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 2,
+      "top4_count": 3
+    },
+    {
+      "sample_id": "ccd_000176",
+      "event": "collision",
+      "candidate_boxes": 1,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 1
+    },
+    {
+      "sample_id": "ccd_000283",
+      "event": "entry",
+      "candidate_boxes": 3,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 2,
+      "top4_count": 3
+    },
+    {
+      "sample_id": "ccd_000283",
+      "event": "collision",
+      "candidate_boxes": 2,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 2,
+      "top4_count": 2
+    },
+    {
+      "sample_id": "ccd_000339",
+      "event": "entry",
+      "candidate_boxes": 8,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "ccd_000339",
+      "event": "collision",
+      "candidate_boxes": 0,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 0
+    },
+    {
+      "sample_id": "ccd_000471",
+      "event": "entry",
+      "candidate_boxes": 1,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 1,
+      "top4_count": 1
+    },
+    {
+      "sample_id": "ccd_000471",
+      "event": "collision",
+      "candidate_boxes": 0,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 0
+    },
+    {
+      "sample_id": "ccd_000563",
+      "event": "entry",
+      "candidate_boxes": 3,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 2,
+      "top4_count": 3
+    },
+    {
+      "sample_id": "ccd_000563",
+      "event": "collision",
+      "candidate_boxes": 0,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 0
+    },
+    {
+      "sample_id": "ccd_000853",
+      "event": "entry",
+      "candidate_boxes": 2,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 1,
+      "top4_count": 2
+    },
+    {
+      "sample_id": "ccd_000853",
+      "event": "collision",
+      "candidate_boxes": 1,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 1
+    },
+    {
+      "sample_id": "ccd_000854",
+      "event": "entry",
+      "candidate_boxes": 3,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 1,
+      "top4_count": 3
+    },
+    {
+      "sample_id": "ccd_000854",
+      "event": "collision",
+      "candidate_boxes": 8,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 2,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "ccd_001008",
+      "event": "entry",
+      "candidate_boxes": 2,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 1,
+      "top4_count": 2
+    },
+    {
+      "sample_id": "ccd_001008",
+      "event": "collision",
+      "candidate_boxes": 1,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 1
+    },
+    {
+      "sample_id": "ccd_001027",
+      "event": "entry",
+      "candidate_boxes": 1,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 1
+    },
+    {
+      "sample_id": "ccd_001027",
+      "event": "collision",
+      "candidate_boxes": 0,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 0
+    },
+    {
+      "sample_id": "ccd_001050",
+      "event": "entry",
+      "candidate_boxes": 2,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 1,
+      "top4_count": 2
+    },
+    {
+      "sample_id": "ccd_001050",
+      "event": "collision",
+      "candidate_boxes": 0,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 0
+    },
+    {
+      "sample_id": "ccd_001146",
+      "event": "entry",
+      "candidate_boxes": 4,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 4,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "ccd_001146",
+      "event": "collision",
+      "candidate_boxes": 6,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 3,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "ccd_001298",
+      "event": "entry",
+      "candidate_boxes": 1,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 1
+    },
+    {
+      "sample_id": "ccd_001298",
+      "event": "collision",
+      "candidate_boxes": 0,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 0
+    },
+    {
+      "sample_id": "ccd_001430",
+      "event": "entry",
+      "candidate_boxes": 3,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 1,
+      "top4_count": 3
+    },
+    {
+      "sample_id": "ccd_001430",
+      "event": "collision",
+      "candidate_boxes": 0,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 0
+    },
+    {
+      "sample_id": "mmau_002359",
+      "event": "entry",
+      "candidate_boxes": 6,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 2,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "mmau_002359",
+      "event": "collision",
+      "candidate_boxes": 3,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 1,
+      "top4_count": 3
+    },
+    {
+      "sample_id": "mmau_002567",
+      "event": "entry",
+      "candidate_boxes": 2,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 1,
+      "top4_count": 2
+    },
+    {
+      "sample_id": "mmau_002567",
+      "event": "collision",
+      "candidate_boxes": 0,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 0
+    },
+    {
+      "sample_id": "mmau_002923",
+      "event": "entry",
+      "candidate_boxes": 3,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 1,
+      "top4_count": 3
+    },
+    {
+      "sample_id": "mmau_002923",
+      "event": "collision",
+      "candidate_boxes": 0,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 0
+    },
+    {
+      "sample_id": "mmau_003280",
+      "event": "entry",
+      "candidate_boxes": 7,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 4,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "mmau_003280",
+      "event": "collision",
+      "candidate_boxes": 9,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 2,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "mmau_003719",
+      "event": "entry",
+      "candidate_boxes": 2,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 1,
+      "top4_count": 2
+    },
+    {
+      "sample_id": "mmau_003719",
+      "event": "collision",
+      "candidate_boxes": 1,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 1
+    },
+    {
+      "sample_id": "mmau_004100",
+      "event": "entry",
+      "candidate_boxes": 5,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 2,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "mmau_004100",
+      "event": "collision",
+      "candidate_boxes": 4,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 2,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "mmau_004175",
+      "event": "entry",
+      "candidate_boxes": 2,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 2
+    },
+    {
+      "sample_id": "mmau_004175",
+      "event": "collision",
+      "candidate_boxes": 1,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 1
+    },
+    {
+      "sample_id": "mmau_005342",
+      "event": "entry",
+      "candidate_boxes": 7,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 3,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "mmau_005342",
+      "event": "collision",
+      "candidate_boxes": 5,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 3,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "mmau_005359",
+      "event": "entry",
+      "candidate_boxes": 6,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 4,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "mmau_005359",
+      "event": "collision",
+      "candidate_boxes": 2,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 1,
+      "top4_count": 2
+    },
+    {
+      "sample_id": "mmau_005730",
+      "event": "entry",
+      "candidate_boxes": 9,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 3,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "mmau_005730",
+      "event": "collision",
+      "candidate_boxes": 4,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 2,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "mmau_006760",
+      "event": "entry",
+      "candidate_boxes": 9,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 3,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "mmau_006760",
+      "event": "collision",
+      "candidate_boxes": 4,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 3,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "mmau_007322",
+      "event": "entry",
+      "candidate_boxes": 2,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 2
+    },
+    {
+      "sample_id": "mmau_007322",
+      "event": "collision",
+      "candidate_boxes": 1,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 1
+    },
+    {
+      "sample_id": "mmau_007660",
+      "event": "entry",
+      "candidate_boxes": 7,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 2,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "mmau_007660",
+      "event": "collision",
+      "candidate_boxes": 6,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 1,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "mmau_008318",
+      "event": "entry",
+      "candidate_boxes": 2,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 2
+    },
+    {
+      "sample_id": "mmau_008318",
+      "event": "collision",
+      "candidate_boxes": 3,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 1,
+      "top4_count": 3
+    },
+    {
+      "sample_id": "mmau_008779",
+      "event": "entry",
+      "candidate_boxes": 2,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 2
+    },
+    {
+      "sample_id": "mmau_008779",
+      "event": "collision",
+      "candidate_boxes": 3,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 3
+    },
+    {
+      "sample_id": "mmau_009261",
+      "event": "entry",
+      "candidate_boxes": 1,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 1
+    },
+    {
+      "sample_id": "mmau_009261",
+      "event": "collision",
+      "candidate_boxes": 1,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 1
+    },
+    {
+      "sample_id": "mmau_009625",
+      "event": "entry",
+      "candidate_boxes": 4,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 3,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "mmau_009625",
+      "event": "collision",
+      "candidate_boxes": 1,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 1
+    },
+    {
+      "sample_id": "mmau_009749",
+      "event": "entry",
+      "candidate_boxes": 15,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "mmau_009749",
+      "event": "collision",
+      "candidate_boxes": 2,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 2
+    },
+    {
+      "sample_id": "mmau_009888",
+      "event": "entry",
+      "candidate_boxes": 1,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 1
+    },
+    {
+      "sample_id": "mmau_009888",
+      "event": "collision",
+      "candidate_boxes": 0,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 0
+    },
+    {
+      "sample_id": "mmau_010463",
+      "event": "entry",
+      "candidate_boxes": 2,
+      "letterbox_area_factor": 0.74625,
+      "top4_sub_one_grid_cell": 1,
+      "top4_count": 2
+    },
+    {
+      "sample_id": "mmau_010463",
+      "event": "collision",
+      "candidate_boxes": 1,
+      "letterbox_area_factor": 0.74625,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 1
+    },
+    {
+      "sample_id": "mmau_010693",
+      "event": "entry",
+      "candidate_boxes": 3,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 1,
+      "top4_count": 3
+    },
+    {
+      "sample_id": "mmau_010693",
+      "event": "collision",
+      "candidate_boxes": 0,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 0
+    },
+    {
+      "sample_id": "nexar_00013",
+      "event": "entry",
+      "candidate_boxes": 12,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 1,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "nexar_00013",
+      "event": "collision",
+      "candidate_boxes": 13,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "nexar_00042",
+      "event": "entry",
+      "candidate_boxes": 7,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "nexar_00042",
+      "event": "collision",
+      "candidate_boxes": 6,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 1,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "nexar_00047",
+      "event": "entry",
+      "candidate_boxes": 14,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "nexar_00047",
+      "event": "collision",
+      "candidate_boxes": 0,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 0
+    },
+    {
+      "sample_id": "nexar_00155",
+      "event": "entry",
+      "candidate_boxes": 9,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 3,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "nexar_00155",
+      "event": "collision",
+      "candidate_boxes": 0,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 0
+    },
+    {
+      "sample_id": "nexar_00208",
+      "event": "entry",
+      "candidate_boxes": 7,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 3,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "nexar_00208",
+      "event": "collision",
+      "candidate_boxes": 5,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 3,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "nexar_00223",
+      "event": "entry",
+      "candidate_boxes": 5,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 3,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "nexar_00223",
+      "event": "collision",
+      "candidate_boxes": 2,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 1,
+      "top4_count": 2
+    },
+    {
+      "sample_id": "nexar_00264",
+      "event": "entry",
+      "candidate_boxes": 5,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 2,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "nexar_00264",
+      "event": "collision",
+      "candidate_boxes": 7,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "nexar_00310",
+      "event": "entry",
+      "candidate_boxes": 12,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 3,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "nexar_00310",
+      "event": "collision",
+      "candidate_boxes": 6,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 1,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "nexar_00313",
+      "event": "entry",
+      "candidate_boxes": 7,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 1,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "nexar_00313",
+      "event": "collision",
+      "candidate_boxes": 5,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 2,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "nexar_00324",
+      "event": "entry",
+      "candidate_boxes": 2,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 1,
+      "top4_count": 2
+    },
+    {
+      "sample_id": "nexar_00324",
+      "event": "collision",
+      "candidate_boxes": 1,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 1
+    },
+    {
+      "sample_id": "nexar_00332",
+      "event": "entry",
+      "candidate_boxes": 5,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 2,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "nexar_00332",
+      "event": "collision",
+      "candidate_boxes": 2,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 1,
+      "top4_count": 2
+    },
+    {
+      "sample_id": "nexar_00335",
+      "event": "entry",
+      "candidate_boxes": 7,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 1,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "nexar_00335",
+      "event": "collision",
+      "candidate_boxes": 6,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 1,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "nexar_00340",
+      "event": "entry",
+      "candidate_boxes": 9,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 2,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "nexar_00340",
+      "event": "collision",
+      "candidate_boxes": 12,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 4,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "nexar_00355",
+      "event": "entry",
+      "candidate_boxes": 5,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 3,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "nexar_00355",
+      "event": "collision",
+      "candidate_boxes": 0,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 0
+    },
+    {
+      "sample_id": "nexar_00415",
+      "event": "entry",
+      "candidate_boxes": 11,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 3,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "nexar_00415",
+      "event": "collision",
+      "candidate_boxes": 6,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "nexar_00466",
+      "event": "entry",
+      "candidate_boxes": 16,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "nexar_00466",
+      "event": "collision",
+      "candidate_boxes": 8,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "aihub_bb_1_010220_vehicle_142_130",
+      "event": "entry",
+      "candidate_boxes": 13,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 3,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "aihub_bb_1_010220_vehicle_142_130",
+      "event": "collision",
+      "candidate_boxes": 4,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 4,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "aihub_bb_1_130317_vehicle_257_27164",
+      "event": "entry",
+      "candidate_boxes": 7,
+      "letterbox_area_factor": 0.8616071428571429,
+      "top4_sub_one_grid_cell": 2,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "aihub_bb_1_130317_vehicle_257_27164",
+      "event": "collision",
+      "candidate_boxes": 5,
+      "letterbox_area_factor": 0.8616071428571429,
+      "top4_sub_one_grid_cell": 3,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "aihub_bb_1_130413_vehicle_125_241",
+      "event": "entry",
+      "candidate_boxes": 5,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 2,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "aihub_bb_1_130413_vehicle_125_241",
+      "event": "collision",
+      "candidate_boxes": 3,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 3
+    },
+    {
+      "sample_id": "aihub_bb_1_150124_vehicle_45_229",
+      "event": "entry",
+      "candidate_boxes": 2,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 1,
+      "top4_count": 2
+    },
+    {
+      "sample_id": "aihub_bb_1_150124_vehicle_45_229",
+      "event": "collision",
+      "candidate_boxes": 2,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 2,
+      "top4_count": 2
+    },
+    {
+      "sample_id": "aihub_bb_1_150420_vehicle_194_062",
+      "event": "entry",
+      "candidate_boxes": 3,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 1,
+      "top4_count": 3
+    },
+    {
+      "sample_id": "aihub_bb_1_150420_vehicle_194_062",
+      "event": "collision",
+      "candidate_boxes": 1,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 1
+    },
+    {
+      "sample_id": "aihub_bb_1_160306_vehicle_112_181",
+      "event": "entry",
+      "candidate_boxes": 11,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 1,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "aihub_bb_1_160306_vehicle_112_181",
+      "event": "collision",
+      "candidate_boxes": 2,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 2
+    },
+    {
+      "sample_id": "aihub_bb_1_160729_vehicle_112_276",
+      "event": "entry",
+      "candidate_boxes": 5,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 2,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "aihub_bb_1_160729_vehicle_112_276",
+      "event": "collision",
+      "candidate_boxes": 0,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 0
+    },
+    {
+      "sample_id": "aihub_bb_1_170124_vehicle_212_54681",
+      "event": "entry",
+      "candidate_boxes": 6,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 3,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "aihub_bb_1_170124_vehicle_212_54681",
+      "event": "collision",
+      "candidate_boxes": 6,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 4,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "aihub_bb_1_170731_vehicle_240_53229",
+      "event": "entry",
+      "candidate_boxes": 13,
+      "letterbox_area_factor": 0.8616071428571429,
+      "top4_sub_one_grid_cell": 1,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "aihub_bb_1_170731_vehicle_240_53229",
+      "event": "collision",
+      "candidate_boxes": 2,
+      "letterbox_area_factor": 0.8616071428571429,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 2
+    },
+    {
+      "sample_id": "aihub_bb_1_200127_vehicle_157_031",
+      "event": "entry",
+      "candidate_boxes": 11,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 1,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "aihub_bb_1_200127_vehicle_157_031",
+      "event": "collision",
+      "candidate_boxes": 2,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 2
+    },
+    {
+      "sample_id": "aihub_bb_1_200520_vehicle_213_22252",
+      "event": "entry",
+      "candidate_boxes": 17,
+      "letterbox_area_factor": 0.8616071428571429,
+      "top4_sub_one_grid_cell": 2,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "aihub_bb_1_200520_vehicle_213_22252",
+      "event": "collision",
+      "candidate_boxes": 14,
+      "letterbox_area_factor": 0.8616071428571429,
+      "top4_sub_one_grid_cell": 1,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "aihub_bb_1_201024_vehicle_149_092",
+      "event": "entry",
+      "candidate_boxes": 6,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 2,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "aihub_bb_1_201024_vehicle_149_092",
+      "event": "collision",
+      "candidate_boxes": 6,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 2,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "aihub_bb_1_210729_vehicle_44_252",
+      "event": "entry",
+      "candidate_boxes": 4,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 3,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "aihub_bb_1_210729_vehicle_44_252",
+      "event": "collision",
+      "candidate_boxes": 0,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 0
+    },
+    {
+      "sample_id": "aihub_bb_1_210821_vehicle_127_036",
+      "event": "entry",
+      "candidate_boxes": 5,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 2,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "aihub_bb_1_210821_vehicle_127_036",
+      "event": "collision",
+      "candidate_boxes": 0,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 0
+    },
+    {
+      "sample_id": "aihub_bb_1_211030_vehicle_208_55965",
+      "event": "entry",
+      "candidate_boxes": 5,
+      "letterbox_area_factor": 0.8616071428571429,
+      "top4_sub_one_grid_cell": 4,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "aihub_bb_1_211030_vehicle_208_55965",
+      "event": "collision",
+      "candidate_boxes": 0,
+      "letterbox_area_factor": 0.8616071428571429,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 0
+    },
+    {
+      "sample_id": "causalcrash_wHGX-QJqb4I",
+      "event": "entry",
+      "candidate_boxes": 5,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 1,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "causalcrash_wHGX-QJqb4I",
+      "event": "collision",
+      "candidate_boxes": 3,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 1,
+      "top4_count": 3
+    },
+    {
+      "sample_id": "ccd_000195",
+      "event": "entry",
+      "candidate_boxes": 3,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 2,
+      "top4_count": 3
+    },
+    {
+      "sample_id": "ccd_000195",
+      "event": "collision",
+      "candidate_boxes": 2,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 2
+    },
+    {
+      "sample_id": "ccd_000265",
+      "event": "entry",
+      "candidate_boxes": 3,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 2,
+      "top4_count": 3
+    },
+    {
+      "sample_id": "ccd_000265",
+      "event": "collision",
+      "candidate_boxes": 1,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 1,
+      "top4_count": 1
+    },
+    {
+      "sample_id": "ccd_000306",
+      "event": "entry",
+      "candidate_boxes": 8,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 2,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "ccd_000306",
+      "event": "collision",
+      "candidate_boxes": 4,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 3,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "ccd_000405",
+      "event": "entry",
+      "candidate_boxes": 1,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 1,
+      "top4_count": 1
+    },
+    {
+      "sample_id": "ccd_000405",
+      "event": "collision",
+      "candidate_boxes": 0,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 0
+    },
+    {
+      "sample_id": "ccd_000433",
+      "event": "entry",
+      "candidate_boxes": 5,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 2,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "ccd_000433",
+      "event": "collision",
+      "candidate_boxes": 4,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 2,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "ccd_000443",
+      "event": "entry",
+      "candidate_boxes": 1,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 1,
+      "top4_count": 1
+    },
+    {
+      "sample_id": "ccd_000443",
+      "event": "collision",
+      "candidate_boxes": 0,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 0
+    },
+    {
+      "sample_id": "ccd_000584",
+      "event": "entry",
+      "candidate_boxes": 3,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 2,
+      "top4_count": 3
+    },
+    {
+      "sample_id": "ccd_000584",
+      "event": "collision",
+      "candidate_boxes": 0,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 0
+    },
+    {
+      "sample_id": "ccd_000638",
+      "event": "entry",
+      "candidate_boxes": 1,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 1
+    },
+    {
+      "sample_id": "ccd_000638",
+      "event": "collision",
+      "candidate_boxes": 1,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 1
+    },
+    {
+      "sample_id": "ccd_000733",
+      "event": "entry",
+      "candidate_boxes": 2,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 1,
+      "top4_count": 2
+    },
+    {
+      "sample_id": "ccd_000733",
+      "event": "collision",
+      "candidate_boxes": 0,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 0
+    },
+    {
+      "sample_id": "ccd_000840",
+      "event": "entry",
+      "candidate_boxes": 3,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 2,
+      "top4_count": 3
+    },
+    {
+      "sample_id": "ccd_000840",
+      "event": "collision",
+      "candidate_boxes": 1,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 1
+    },
+    {
+      "sample_id": "ccd_000923",
+      "event": "entry",
+      "candidate_boxes": 4,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 3,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "ccd_000923",
+      "event": "collision",
+      "candidate_boxes": 0,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 0
+    },
+    {
+      "sample_id": "ccd_001068",
+      "event": "entry",
+      "candidate_boxes": 4,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 2,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "ccd_001068",
+      "event": "collision",
+      "candidate_boxes": 0,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 0
+    },
+    {
+      "sample_id": "ccd_001073",
+      "event": "entry",
+      "candidate_boxes": 8,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 3,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "ccd_001073",
+      "event": "collision",
+      "candidate_boxes": 1,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 1
+    },
+    {
+      "sample_id": "ccd_001181",
+      "event": "entry",
+      "candidate_boxes": 4,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 3,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "ccd_001181",
+      "event": "collision",
+      "candidate_boxes": 0,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 0
+    },
+    {
+      "sample_id": "ccd_001192",
+      "event": "entry",
+      "candidate_boxes": 1,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 1
+    },
+    {
+      "sample_id": "ccd_001192",
+      "event": "collision",
+      "candidate_boxes": 1,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 1
+    },
+    {
+      "sample_id": "ccd_001332",
+      "event": "entry",
+      "candidate_boxes": 2,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 2
+    },
+    {
+      "sample_id": "ccd_001332",
+      "event": "collision",
+      "candidate_boxes": 1,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 1
+    },
+    {
+      "sample_id": "mmau_002001",
+      "event": "entry",
+      "candidate_boxes": 9,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 1,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "mmau_002001",
+      "event": "collision",
+      "candidate_boxes": 6,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 2,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "mmau_002083",
+      "event": "entry",
+      "candidate_boxes": 7,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 2,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "mmau_002083",
+      "event": "collision",
+      "candidate_boxes": 6,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 2,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "mmau_002307",
+      "event": "entry",
+      "candidate_boxes": 3,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 2,
+      "top4_count": 3
+    },
+    {
+      "sample_id": "mmau_002307",
+      "event": "collision",
+      "candidate_boxes": 1,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 1
+    },
+    {
+      "sample_id": "mmau_002429",
+      "event": "entry",
+      "candidate_boxes": 1,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 1
+    },
+    {
+      "sample_id": "mmau_002429",
+      "event": "collision",
+      "candidate_boxes": 0,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 0
+    },
+    {
+      "sample_id": "mmau_002436",
+      "event": "entry",
+      "candidate_boxes": 3,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 2,
+      "top4_count": 3
+    },
+    {
+      "sample_id": "mmau_002436",
+      "event": "collision",
+      "candidate_boxes": 1,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 1
+    },
+    {
+      "sample_id": "mmau_002484",
+      "event": "entry",
+      "candidate_boxes": 3,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 1,
+      "top4_count": 3
+    },
+    {
+      "sample_id": "mmau_002484",
+      "event": "collision",
+      "candidate_boxes": 1,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 1
+    },
+    {
+      "sample_id": "mmau_002926",
+      "event": "entry",
+      "candidate_boxes": 5,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 3,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "mmau_002926",
+      "event": "collision",
+      "candidate_boxes": 4,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 2,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "mmau_003267",
+      "event": "entry",
+      "candidate_boxes": 1,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 1,
+      "top4_count": 1
+    },
+    {
+      "sample_id": "mmau_003267",
+      "event": "collision",
+      "candidate_boxes": 5,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 2,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "mmau_003619",
+      "event": "entry",
+      "candidate_boxes": 4,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 2,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "mmau_003619",
+      "event": "collision",
+      "candidate_boxes": 0,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 0
+    },
+    {
+      "sample_id": "mmau_003667",
+      "event": "entry",
+      "candidate_boxes": 4,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 3,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "mmau_003667",
+      "event": "collision",
+      "candidate_boxes": 3,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 3
+    },
+    {
+      "sample_id": "mmau_005778",
+      "event": "entry",
+      "candidate_boxes": 3,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 1,
+      "top4_count": 3
+    },
+    {
+      "sample_id": "mmau_005778",
+      "event": "collision",
+      "candidate_boxes": 1,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 1
+    },
+    {
+      "sample_id": "mmau_006502",
+      "event": "entry",
+      "candidate_boxes": 1,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 1
+    },
+    {
+      "sample_id": "mmau_006502",
+      "event": "collision",
+      "candidate_boxes": 1,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 1
+    },
+    {
+      "sample_id": "mmau_006685",
+      "event": "entry",
+      "candidate_boxes": 7,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 1,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "mmau_006685",
+      "event": "collision",
+      "candidate_boxes": 1,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 1
+    },
+    {
+      "sample_id": "mmau_007731",
+      "event": "entry",
+      "candidate_boxes": 6,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 3,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "mmau_007731",
+      "event": "collision",
+      "candidate_boxes": 5,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "mmau_007992",
+      "event": "entry",
+      "candidate_boxes": 3,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 1,
+      "top4_count": 3
+    },
+    {
+      "sample_id": "mmau_007992",
+      "event": "collision",
+      "candidate_boxes": 1,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 1
+    },
+    {
+      "sample_id": "mmau_009332",
+      "event": "entry",
+      "candidate_boxes": 2,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 2
+    },
+    {
+      "sample_id": "mmau_009332",
+      "event": "collision",
+      "candidate_boxes": 1,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 1
+    },
+    {
+      "sample_id": "mmau_009398",
+      "event": "entry",
+      "candidate_boxes": 15,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 3,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "mmau_009398",
+      "event": "collision",
+      "candidate_boxes": 12,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 4,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "mmau_009618",
+      "event": "entry",
+      "candidate_boxes": 9,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 2,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "mmau_009618",
+      "event": "collision",
+      "candidate_boxes": 8,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 2,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "mmau_009829",
+      "event": "entry",
+      "candidate_boxes": 5,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 2,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "mmau_009829",
+      "event": "collision",
+      "candidate_boxes": 2,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 2
+    },
+    {
+      "sample_id": "mmau_010645",
+      "event": "entry",
+      "candidate_boxes": 2,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 2
+    },
+    {
+      "sample_id": "mmau_010645",
+      "event": "collision",
+      "candidate_boxes": 0,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 0
+    },
+    {
+      "sample_id": "nexar_00031",
+      "event": "entry",
+      "candidate_boxes": 9,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 3,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "nexar_00031",
+      "event": "collision",
+      "candidate_boxes": 2,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 1,
+      "top4_count": 2
+    },
+    {
+      "sample_id": "nexar_00036",
+      "event": "entry",
+      "candidate_boxes": 8,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 3,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "nexar_00036",
+      "event": "collision",
+      "candidate_boxes": 3,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 2,
+      "top4_count": 3
+    },
+    {
+      "sample_id": "nexar_00082",
+      "event": "entry",
+      "candidate_boxes": 13,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 2,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "nexar_00082",
+      "event": "collision",
+      "candidate_boxes": 11,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "nexar_00099",
+      "event": "entry",
+      "candidate_boxes": 10,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 2,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "nexar_00099",
+      "event": "collision",
+      "candidate_boxes": 3,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 2,
+      "top4_count": 3
+    },
+    {
+      "sample_id": "nexar_00100",
+      "event": "entry",
+      "candidate_boxes": 2,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 2
+    },
+    {
+      "sample_id": "nexar_00100",
+      "event": "collision",
+      "candidate_boxes": 1,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 1
+    },
+    {
+      "sample_id": "nexar_00143",
+      "event": "entry",
+      "candidate_boxes": 9,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 3,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "nexar_00143",
+      "event": "collision",
+      "candidate_boxes": 2,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 1,
+      "top4_count": 2
+    },
+    {
+      "sample_id": "nexar_00199",
+      "event": "entry",
+      "candidate_boxes": 4,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 2,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "nexar_00199",
+      "event": "collision",
+      "candidate_boxes": 2,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 1,
+      "top4_count": 2
+    },
+    {
+      "sample_id": "nexar_00200",
+      "event": "entry",
+      "candidate_boxes": 9,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 3,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "nexar_00200",
+      "event": "collision",
+      "candidate_boxes": 9,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 1,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "nexar_00202",
+      "event": "entry",
+      "candidate_boxes": 6,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "nexar_00202",
+      "event": "collision",
+      "candidate_boxes": 7,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 1,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "nexar_00247",
+      "event": "entry",
+      "candidate_boxes": 8,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 1,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "nexar_00247",
+      "event": "collision",
+      "candidate_boxes": 1,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 1,
+      "top4_count": 1
+    },
+    {
+      "sample_id": "nexar_00354",
+      "event": "entry",
+      "candidate_boxes": 12,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 3,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "nexar_00354",
+      "event": "collision",
+      "candidate_boxes": 8,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 4,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "nexar_00392",
+      "event": "entry",
+      "candidate_boxes": 3,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 2,
+      "top4_count": 3
+    },
+    {
+      "sample_id": "nexar_00392",
+      "event": "collision",
+      "candidate_boxes": 1,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 1
+    },
+    {
+      "sample_id": "nexar_00434",
+      "event": "entry",
+      "candidate_boxes": 11,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 3,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "nexar_00434",
+      "event": "collision",
+      "candidate_boxes": 10,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 4,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "nexar_00474",
+      "event": "entry",
+      "candidate_boxes": 8,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "nexar_00474",
+      "event": "collision",
+      "candidate_boxes": 10,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "nexar_00475",
+      "event": "entry",
+      "candidate_boxes": 3,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 1,
+      "top4_count": 3
+    },
+    {
+      "sample_id": "nexar_00475",
+      "event": "collision",
+      "candidate_boxes": 0,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 0
+    },
+    {
+      "sample_id": "nexar_00497",
+      "event": "entry",
+      "candidate_boxes": 7,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 2,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "nexar_00497",
+      "event": "collision",
+      "candidate_boxes": 1,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 1
+    },
+    {
+      "sample_id": "aihub_bb_1_000606_vehicle_142_131",
+      "event": "entry",
+      "candidate_boxes": 7,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 2,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "aihub_bb_1_000606_vehicle_142_131",
+      "event": "collision",
+      "candidate_boxes": 8,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 1,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "aihub_bb_1_070110_vehicle_46_380",
+      "event": "entry",
+      "candidate_boxes": 8,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 3,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "aihub_bb_1_070110_vehicle_46_380",
+      "event": "collision",
+      "candidate_boxes": 1,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 1
+    },
+    {
+      "sample_id": "aihub_bb_1_110129_vehicle_211_28584",
+      "event": "entry",
+      "candidate_boxes": 2,
+      "letterbox_area_factor": 0.8616071428571429,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 2
+    },
+    {
+      "sample_id": "aihub_bb_1_110129_vehicle_211_28584",
+      "event": "collision",
+      "candidate_boxes": 0,
+      "letterbox_area_factor": 0.8616071428571429,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 0
+    },
+    {
+      "sample_id": "aihub_bb_1_111027_vehicle_149_132",
+      "event": "entry",
+      "candidate_boxes": 4,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 1,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "aihub_bb_1_111027_vehicle_149_132",
+      "event": "collision",
+      "candidate_boxes": 6,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 1,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "aihub_bb_1_141023_vehicle_143_036",
+      "event": "entry",
+      "candidate_boxes": 7,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 2,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "aihub_bb_1_141023_vehicle_143_036",
+      "event": "collision",
+      "candidate_boxes": 7,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 3,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "aihub_bb_1_150112_vehicle_116_184",
+      "event": "entry",
+      "candidate_boxes": 5,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 3,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "aihub_bb_1_150112_vehicle_116_184",
+      "event": "collision",
+      "candidate_boxes": 6,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 2,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "aihub_bb_1_150802_vehicle_149_273",
+      "event": "entry",
+      "candidate_boxes": 11,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 2,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "aihub_bb_1_150802_vehicle_149_273",
+      "event": "collision",
+      "candidate_boxes": 13,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "aihub_bb_1_160928_vehicle_47_158",
+      "event": "entry",
+      "candidate_boxes": 3,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 2,
+      "top4_count": 3
+    },
+    {
+      "sample_id": "aihub_bb_1_160928_vehicle_47_158",
+      "event": "collision",
+      "candidate_boxes": 0,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 0
+    },
+    {
+      "sample_id": "aihub_bb_1_161008_vehicle_202_22198",
+      "event": "entry",
+      "candidate_boxes": 15,
+      "letterbox_area_factor": 0.8616071428571429,
+      "top4_sub_one_grid_cell": 4,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "aihub_bb_1_161008_vehicle_202_22198",
+      "event": "collision",
+      "candidate_boxes": 4,
+      "letterbox_area_factor": 0.8616071428571429,
+      "top4_sub_one_grid_cell": 1,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "aihub_bb_1_161016_vehicle_45_203",
+      "event": "entry",
+      "candidate_boxes": 8,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "aihub_bb_1_161016_vehicle_45_203",
+      "event": "collision",
+      "candidate_boxes": 8,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 1,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "aihub_bb_1_171111_vehicle_149_034",
+      "event": "entry",
+      "candidate_boxes": 12,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 2,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "aihub_bb_1_171111_vehicle_149_034",
+      "event": "collision",
+      "candidate_boxes": 11,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "aihub_bb_1_180505_vehicle_110_161",
+      "event": "entry",
+      "candidate_boxes": 4,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 1,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "aihub_bb_1_180505_vehicle_110_161",
+      "event": "collision",
+      "candidate_boxes": 2,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 1,
+      "top4_count": 2
+    },
+    {
+      "sample_id": "aihub_bb_1_190123_vehicle_142_013",
+      "event": "entry",
+      "candidate_boxes": 9,
+      "letterbox_area_factor": 0.74625,
+      "top4_sub_one_grid_cell": 2,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "aihub_bb_1_190123_vehicle_142_013",
+      "event": "collision",
+      "candidate_boxes": 2,
+      "letterbox_area_factor": 0.74625,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 2
+    },
+    {
+      "sample_id": "aihub_bb_1_191102_vehicle_38_083",
+      "event": "entry",
+      "candidate_boxes": 9,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "aihub_bb_1_191102_vehicle_38_083",
+      "event": "collision",
+      "candidate_boxes": 10,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "aihub_bb_1_200401_vehicle_195_003",
+      "event": "entry",
+      "candidate_boxes": 2,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 1,
+      "top4_count": 2
+    },
+    {
+      "sample_id": "aihub_bb_1_200401_vehicle_195_003",
+      "event": "collision",
+      "candidate_boxes": 1,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 1
+    },
+    {
+      "sample_id": "aihub_bb_1_220214_vehicle_44_214",
+      "event": "entry",
+      "candidate_boxes": 2,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 1,
+      "top4_count": 2
+    },
+    {
+      "sample_id": "aihub_bb_1_220214_vehicle_44_214",
+      "event": "collision",
+      "candidate_boxes": 2,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 2
+    },
+    {
+      "sample_id": "aihub_bb_1_220504_vehicle_130_188",
+      "event": "entry",
+      "candidate_boxes": 6,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 2,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "aihub_bb_1_220504_vehicle_130_188",
+      "event": "collision",
+      "candidate_boxes": 7,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "ccd_000016",
+      "event": "entry",
+      "candidate_boxes": 1,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 1,
+      "top4_count": 1
+    },
+    {
+      "sample_id": "ccd_000016",
+      "event": "collision",
+      "candidate_boxes": 0,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 0
+    },
+    {
+      "sample_id": "ccd_000028",
+      "event": "entry",
+      "candidate_boxes": 6,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 3,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "ccd_000028",
+      "event": "collision",
+      "candidate_boxes": 0,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 0
+    },
+    {
+      "sample_id": "ccd_000136",
+      "event": "entry",
+      "candidate_boxes": 6,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 2,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "ccd_000136",
+      "event": "collision",
+      "candidate_boxes": 3,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 2,
+      "top4_count": 3
+    },
+    {
+      "sample_id": "ccd_000150",
+      "event": "entry",
+      "candidate_boxes": 3,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 1,
+      "top4_count": 3
+    },
+    {
+      "sample_id": "ccd_000150",
+      "event": "collision",
+      "candidate_boxes": 6,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 2,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "ccd_000237",
+      "event": "entry",
+      "candidate_boxes": 9,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "ccd_000237",
+      "event": "collision",
+      "candidate_boxes": 3,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 2,
+      "top4_count": 3
+    },
+    {
+      "sample_id": "ccd_000413",
+      "event": "entry",
+      "candidate_boxes": 2,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 1,
+      "top4_count": 2
+    },
+    {
+      "sample_id": "ccd_000413",
+      "event": "collision",
+      "candidate_boxes": 0,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 0
+    },
+    {
+      "sample_id": "ccd_000434",
+      "event": "entry",
+      "candidate_boxes": 1,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 1
+    },
+    {
+      "sample_id": "ccd_000434",
+      "event": "collision",
+      "candidate_boxes": 0,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 0
+    },
+    {
+      "sample_id": "ccd_000562",
+      "event": "entry",
+      "candidate_boxes": 6,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 2,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "ccd_000562",
+      "event": "collision",
+      "candidate_boxes": 0,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 0
+    },
+    {
+      "sample_id": "ccd_000595",
+      "event": "entry",
+      "candidate_boxes": 7,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 2,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "ccd_000595",
+      "event": "collision",
+      "candidate_boxes": 4,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 2,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "ccd_000681",
+      "event": "entry",
+      "candidate_boxes": 4,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 2,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "ccd_000681",
+      "event": "collision",
+      "candidate_boxes": 1,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 1
+    },
+    {
+      "sample_id": "ccd_000721",
+      "event": "entry",
+      "candidate_boxes": 2,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 1,
+      "top4_count": 2
+    },
+    {
+      "sample_id": "ccd_000721",
+      "event": "collision",
+      "candidate_boxes": 1,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 1,
+      "top4_count": 1
+    },
+    {
+      "sample_id": "ccd_000744",
+      "event": "entry",
+      "candidate_boxes": 2,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 2,
+      "top4_count": 2
+    },
+    {
+      "sample_id": "ccd_000744",
+      "event": "collision",
+      "candidate_boxes": 1,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 1
+    },
+    {
+      "sample_id": "ccd_000982",
+      "event": "entry",
+      "candidate_boxes": 4,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 2,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "ccd_000982",
+      "event": "collision",
+      "candidate_boxes": 0,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 0
+    },
+    {
+      "sample_id": "ccd_001007",
+      "event": "entry",
+      "candidate_boxes": 3,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 2,
+      "top4_count": 3
+    },
+    {
+      "sample_id": "ccd_001007",
+      "event": "collision",
+      "candidate_boxes": 3,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 2,
+      "top4_count": 3
+    },
+    {
+      "sample_id": "ccd_001096",
+      "event": "entry",
+      "candidate_boxes": 5,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 1,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "ccd_001096",
+      "event": "collision",
+      "candidate_boxes": 4,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 3,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "ccd_001248",
+      "event": "entry",
+      "candidate_boxes": 1,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 1
+    },
+    {
+      "sample_id": "ccd_001248",
+      "event": "collision",
+      "candidate_boxes": 0,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 0
+    },
+    {
+      "sample_id": "ccd_001424",
+      "event": "entry",
+      "candidate_boxes": 4,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 3,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "ccd_001424",
+      "event": "collision",
+      "candidate_boxes": 1,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 1
+    },
+    {
+      "sample_id": "mmau_002108",
+      "event": "entry",
+      "candidate_boxes": 7,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 2,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "mmau_002108",
+      "event": "collision",
+      "candidate_boxes": 6,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 4,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "mmau_002116",
+      "event": "entry",
+      "candidate_boxes": 6,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 3,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "mmau_002116",
+      "event": "collision",
+      "candidate_boxes": 0,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 0
+    },
+    {
+      "sample_id": "mmau_002346",
+      "event": "entry",
+      "candidate_boxes": 5,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 3,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "mmau_002346",
+      "event": "collision",
+      "candidate_boxes": 1,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 1
+    },
+    {
+      "sample_id": "mmau_002547",
+      "event": "entry",
+      "candidate_boxes": 8,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 1,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "mmau_002547",
+      "event": "collision",
+      "candidate_boxes": 0,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 0
+    },
+    {
+      "sample_id": "mmau_003028",
+      "event": "entry",
+      "candidate_boxes": 2,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 1,
+      "top4_count": 2
+    },
+    {
+      "sample_id": "mmau_003028",
+      "event": "collision",
+      "candidate_boxes": 1,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 1
+    },
+    {
+      "sample_id": "mmau_003126",
+      "event": "entry",
+      "candidate_boxes": 4,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 2,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "mmau_003126",
+      "event": "collision",
+      "candidate_boxes": 2,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 1,
+      "top4_count": 2
+    },
+    {
+      "sample_id": "mmau_003134",
+      "event": "entry",
+      "candidate_boxes": 6,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 2,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "mmau_003134",
+      "event": "collision",
+      "candidate_boxes": 0,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 0
+    },
+    {
+      "sample_id": "mmau_003500",
+      "event": "entry",
+      "candidate_boxes": 6,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "mmau_003500",
+      "event": "collision",
+      "candidate_boxes": 2,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 2
+    },
+    {
+      "sample_id": "mmau_003807",
+      "event": "entry",
+      "candidate_boxes": 3,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 3,
+      "top4_count": 3
+    },
+    {
+      "sample_id": "mmau_003807",
+      "event": "collision",
+      "candidate_boxes": 0,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 0
+    },
+    {
+      "sample_id": "mmau_005170",
+      "event": "entry",
+      "candidate_boxes": 9,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "mmau_005170",
+      "event": "collision",
+      "candidate_boxes": 3,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 1,
+      "top4_count": 3
+    },
+    {
+      "sample_id": "mmau_005176",
+      "event": "entry",
+      "candidate_boxes": 2,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 2
+    },
+    {
+      "sample_id": "mmau_005176",
+      "event": "collision",
+      "candidate_boxes": 0,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 0
+    },
+    {
+      "sample_id": "mmau_005218",
+      "event": "entry",
+      "candidate_boxes": 5,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 3,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "mmau_005218",
+      "event": "collision",
+      "candidate_boxes": 3,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 2,
+      "top4_count": 3
+    },
+    {
+      "sample_id": "mmau_005331",
+      "event": "entry",
+      "candidate_boxes": 7,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 3,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "mmau_005331",
+      "event": "collision",
+      "candidate_boxes": 3,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 2,
+      "top4_count": 3
+    },
+    {
+      "sample_id": "mmau_005531",
+      "event": "entry",
+      "candidate_boxes": 13,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 1,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "mmau_005531",
+      "event": "collision",
+      "candidate_boxes": 8,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 2,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "mmau_007438",
+      "event": "entry",
+      "candidate_boxes": 3,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 2,
+      "top4_count": 3
+    },
+    {
+      "sample_id": "mmau_007438",
+      "event": "collision",
+      "candidate_boxes": 3,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 2,
+      "top4_count": 3
+    },
+    {
+      "sample_id": "mmau_007714",
+      "event": "entry",
+      "candidate_boxes": 2,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 2,
+      "top4_count": 2
+    },
+    {
+      "sample_id": "mmau_007714",
+      "event": "collision",
+      "candidate_boxes": 2,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 1,
+      "top4_count": 2
+    },
+    {
+      "sample_id": "mmau_008965",
+      "event": "entry",
+      "candidate_boxes": 6,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 3,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "mmau_008965",
+      "event": "collision",
+      "candidate_boxes": 4,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 3,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "mmau_010358",
+      "event": "entry",
+      "candidate_boxes": 15,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 3,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "mmau_010358",
+      "event": "collision",
+      "candidate_boxes": 10,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 3,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "mmau_010811",
+      "event": "entry",
+      "candidate_boxes": 5,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 3,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "mmau_010811",
+      "event": "collision",
+      "candidate_boxes": 0,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 0
+    },
+    {
+      "sample_id": "nexar_00000",
+      "event": "entry",
+      "candidate_boxes": 5,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 2,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "nexar_00000",
+      "event": "collision",
+      "candidate_boxes": 1,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 1
+    },
+    {
+      "sample_id": "nexar_00096",
+      "event": "entry",
+      "candidate_boxes": 8,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 3,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "nexar_00096",
+      "event": "collision",
+      "candidate_boxes": 6,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 3,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "nexar_00110",
+      "event": "entry",
+      "candidate_boxes": 10,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "nexar_00110",
+      "event": "collision",
+      "candidate_boxes": 7,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "nexar_00125",
+      "event": "entry",
+      "candidate_boxes": 11,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 3,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "nexar_00125",
+      "event": "collision",
+      "candidate_boxes": 4,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 3,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "nexar_00128",
+      "event": "entry",
+      "candidate_boxes": 8,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "nexar_00128",
+      "event": "collision",
+      "candidate_boxes": 6,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "nexar_00129",
+      "event": "entry",
+      "candidate_boxes": 9,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 2,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "nexar_00129",
+      "event": "collision",
+      "candidate_boxes": 4,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 3,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "nexar_00136",
+      "event": "entry",
+      "candidate_boxes": 7,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "nexar_00136",
+      "event": "collision",
+      "candidate_boxes": 5,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 2,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "nexar_00166",
+      "event": "entry",
+      "candidate_boxes": 13,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 1,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "nexar_00166",
+      "event": "collision",
+      "candidate_boxes": 14,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 2,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "nexar_00168",
+      "event": "entry",
+      "candidate_boxes": 7,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "nexar_00168",
+      "event": "collision",
+      "candidate_boxes": 1,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 1,
+      "top4_count": 1
+    },
+    {
+      "sample_id": "nexar_00217",
+      "event": "entry",
+      "candidate_boxes": 2,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 1,
+      "top4_count": 2
+    },
+    {
+      "sample_id": "nexar_00217",
+      "event": "collision",
+      "candidate_boxes": 3,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 1,
+      "top4_count": 3
+    },
+    {
+      "sample_id": "nexar_00260",
+      "event": "entry",
+      "candidate_boxes": 12,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 3,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "nexar_00260",
+      "event": "collision",
+      "candidate_boxes": 8,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 3,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "nexar_00369",
+      "event": "entry",
+      "candidate_boxes": 6,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 2,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "nexar_00369",
+      "event": "collision",
+      "candidate_boxes": 2,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 2
+    },
+    {
+      "sample_id": "nexar_00456",
+      "event": "entry",
+      "candidate_boxes": 6,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 2,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "nexar_00456",
+      "event": "collision",
+      "candidate_boxes": 8,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 2,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "nexar_00522",
+      "event": "entry",
+      "candidate_boxes": 5,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 3,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "nexar_00522",
+      "event": "collision",
+      "candidate_boxes": 1,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 1,
+      "top4_count": 1
+    },
+    {
+      "sample_id": "nexar_00675",
+      "event": "entry",
+      "candidate_boxes": 4,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 1,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "nexar_00675",
+      "event": "collision",
+      "candidate_boxes": 1,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 0,
+      "top4_count": 1
+    },
+    {
+      "sample_id": "nexar_00927",
+      "event": "entry",
+      "candidate_boxes": 4,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 3,
+      "top4_count": 4
+    },
+    {
+      "sample_id": "nexar_00927",
+      "event": "collision",
+      "candidate_boxes": 6,
+      "letterbox_area_factor": 0.995,
+      "top4_sub_one_grid_cell": 2,
+      "top4_count": 4
+    }
+  ]
+}

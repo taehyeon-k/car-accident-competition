@@ -1,0 +1,117 @@
+{
+ "fold": 0,
+ "stride": 1,
+ "crop": 0.0,
+ "predictions": {
+  "arithmetic": [
+   {
+    "sample_id": "aihub_bb_1_130420_vehicle_194_070",
+    "source_id": "AIHUB:bb_1_130420_vehicle_194_070",
+    "entry_frame": 105,
+    "collision_frame": 119,
+    "entry_side": 0,
+    "evasion_space": 0,
+    "entry_gt": 88,
+    "collision_gt": 119,
+    "entry_side_gt": 0,
+    "evasion_gt": 1,
+    "num_available_frames": 150
+   },
+   {
+    "sample_id": "aihub_bb_1_150221_vehicle_187_026",
+    "source_id": "AIHUB:bb_1_150221_vehicle_187_026",
+    "entry_frame": 51,
+    "collision_frame": 70,
+    "entry_side": 1,
+    "evasion_space": 0,
+    "entry_gt": 50,
+    "collision_gt": 72,
+    "entry_side_gt": 1,
+    "evasion_gt": 0,
+    "num_available_frames": 150
+   },
+   {
+    "sample_id": "aihub_bb_1_150304_vehicle_27_098",
+    "source_id": "AIHUB:bb_1_150304_vehicle_27_098",
+    "entry_frame": 65,
+    "collision_frame": 77,
+    "entry_side": 0,
+    "evasion_space": 1,
+    "entry_gt": 61,
+    "collision_gt": 77,
+    "entry_side_gt": 0,
+    "evasion_gt": 1,
+    "num_available_frames": 150
+   }
+  ],
+  "median": [
+   {
+    "sample_id": "aihub_bb_1_130420_vehicle_194_070",
+    "source_id": "AIHUB:bb_1_130420_vehicle_194_070",
+    "entry_frame": 105,
+    "collision_frame": 119,
+    "entry_side": 0,
+    "evasion_space": 0,
+    "entry_gt": 88,
+    "collision_gt": 119,
+    "entry_side_gt": 0,
+    "evasion_gt": 1,
+    "num_available_frames": 150
+   },
+   {
+    "sample_id": "aihub_bb_1_150221_vehicle_187_026",
+    "source_id": "AIHUB:bb_1_150221_vehicle_187_026",
+    "entry_frame": 54,
+    "collision_frame": 70,
+    "entry_side": 1,
+    "evasion_space": 0,
+    "entry_gt": 50,
+    "collision_gt": 72,
+    "entry_side_gt": 1,
+    "evasion_gt": 0,
+    "num_available_frames": 150
+   },
+   {
+    "sample_id": "aihub_bb_1_150304_vehicle_27_098",
+    "source_id": "AIHUB:bb_1_150304_vehicle_27_098",
+    "entry_frame": 65,
+    "collision_frame": 77,
+    "entry_side": 0,
+    "evasion_space": 1,
+    "entry_gt": 61,
+    "collision_gt": 77,
+    "entry_side_gt": 0,
+    "evasion_gt": 1,
+    "num_available_frames": 150
+   }
+  ]
+ },
+ "timings": [
+  {
+   "sample_id": "aihub_bb_1_130420_vehicle_194_070",
+   "sampled_frames": 128,
+   "seconds": 0.2455824390053749
+  },
+  {
+   "sample_id": "aihub_bb_1_150221_vehicle_187_026",
+   "sampled_frames": 128,
+   "seconds": 0.1843678131699562
+  },
+  {
+   "sample_id": "aihub_bb_1_150304_vehicle_27_098",
+   "sampled_frames": 128,
+   "seconds": 0.19175221771001816
+  }
+ ],
+ "checkpoints": [
+  "stage2/generalization/results/E4_sa/cv/fold0_seed0/checkpoint.pt",
+  "stage2/generalization/results/E4_sa/cv/fold0_seed1/checkpoint.pt",
+  "stage2/generalization/results/E4_sa/cv/fold0_seed2/checkpoint.pt",
+  "stage2/generalization/results/E2_sa/cv/fold0_seed0/checkpoint.pt",
+  "stage2/generalization/results/E2_sa/cv/fold0_seed1/checkpoint.pt",
+  "stage2/generalization/results/E2_sa/cv/fold0_seed2/checkpoint.pt",
+  "stage2/generalization/results/XN4_sa/cv/fold0_seed0/checkpoint.pt",
+  "stage2/generalization/results/XN4_sa/cv/fold0_seed1/checkpoint.pt",
+  "stage2/generalization/results/XN4_sa/cv/fold0_seed2/checkpoint.pt"
+ ]
+}

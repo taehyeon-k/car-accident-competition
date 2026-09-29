@@ -1,0 +1,167 @@
+{
+  "snapshot_utc": "2026-09-27T10:29:08.960451+00:00",
+  "rows": [
+    {
+      "name": "v1 ASFormer",
+      "fixed_all": 0.6893,
+      "fixed_nexar": 0.522,
+      "cv_all": null,
+      "cv_nexar": null,
+      "leaderboard": 0.441,
+      "provenance": "reports/stage2_leaderboard_vs_nexar.md; same submitted head"
+    },
+    {
+      "name": "v3 P2 refit",
+      "fixed_all": 0.7567,
+      "fixed_nexar": 0.5004,
+      "cv_all": null,
+      "cv_nexar": null,
+      "leaderboard": 0.4618,
+      "provenance": "batch-1 279-clip proxy; submitted model refit on 349"
+    },
+    {
+      "name": "NEXAR specialist",
+      "fixed_all": 0.6701,
+      "fixed_nexar": 0.7438,
+      "cv_all": null,
+      "cv_nexar": null,
+      "leaderboard": 0.437,
+      "provenance": "nexar65 REPORT first_three_prior; recorded LB"
+    },
+    {
+      "name": "Length hybrid",
+      "fixed_all": 0.8017,
+      "fixed_nexar": 0.7104,
+      "cv_all": null,
+      "cv_nexar": null,
+      "leaderboard": 0.4154,
+      "provenance": "length_gated REPORT all-seed candidate; recorded LB"
+    },
+    {
+      "name": "v5 motion ensemble",
+      "fixed_all": 0.767,
+      "fixed_nexar": 0.619,
+      "cv_all": 0.7688,
+      "cv_nexar": 0.6702,
+      "leaderboard": 0.5314,
+      "provenance": "recorded submitted-recipe validation; reports and HANDOFF"
+    },
+    {
+      "name": "v6 event-specific",
+      "fixed_all": 0.7928311627495733,
+      "fixed_nexar": 0.6403869047619047,
+      "cv_all": 0.7884,
+      "cv_nexar": 0.7103,
+      "leaderboard": 0.5277,
+      "provenance": "fixed package parity; CV config label; LB supplied by user 2026-09-27"
+    },
+    {
+      "name": "v7 residual+expansion",
+      "fixed_all": 0.7843119235332389,
+      "fixed_nexar": 0.6891666666666667,
+      "cv_all": 0.7994531183574896,
+      "cv_nexar": 0.7207396149568668,
+      "leaderboard": 0.5464,
+      "provenance": "HANDOFF user-reported LB; offline recipe proxy differs in seed count from full-data package"
+    },
+    {
+      "name": "v8 stride augmentation",
+      "fixed_all": null,
+      "fixed_nexar": null,
+      "cv_all": 0.7874193962706539,
+      "cv_nexar": 0.7071342619219573,
+      "leaderboard": 0.59293,
+      "provenance": "LB supplied by user 2026-09-27; three-family seeds 0-2 OOF proxy; package uses four seeds per family refit on all 349; in-sample parity excluded"
+    }
+  ],
+  "correlations": {
+    "fixed_all": {
+      "n": 7,
+      "models": [
+        "v1 ASFormer",
+        "v3 P2 refit",
+        "NEXAR specialist",
+        "Length hybrid",
+        "v5 motion ensemble",
+        "v6 event-specific",
+        "v7 residual+expansion"
+      ],
+      "pearson": 0.4532735279543707,
+      "spearman": 0.14285714285714288,
+      "leave_one_out_pearson_range": [
+        0.3072731746076652,
+        0.8885801219650673
+      ],
+      "warning": "descriptive only; non-independent selected submissions; mixed recipe/proxy protocols; not predictive calibration"
+    },
+    "fixed_nexar": {
+      "n": 7,
+      "models": [
+        "v1 ASFormer",
+        "v3 P2 refit",
+        "NEXAR specialist",
+        "Length hybrid",
+        "v5 motion ensemble",
+        "v6 event-specific",
+        "v7 residual+expansion"
+      ],
+      "pearson": 0.011438762824234368,
+      "spearman": -0.3214285714285715,
+      "leave_one_out_pearson_range": [
+        -0.1950612138388803,
+        0.2670065780661275
+      ],
+      "warning": "descriptive only; non-independent selected submissions; mixed recipe/proxy protocols; not predictive calibration"
+    },
+    "cv_all": {
+      "n": 4,
+      "models": [
+        "v5 motion ensemble",
+        "v6 event-specific",
+        "v7 residual+expansion",
+        "v8 stride augmentation"
+      ],
+      "pearson": 0.2439153158885562,
+      "spearman": 0.0,
+      "leave_one_out_pearson_range": [
+        -0.3097698128507544,
+        0.6439612336728608
+      ],
+      "warning": "descriptive only; non-independent selected submissions; mixed recipe/proxy protocols; not predictive calibration"
+    },
+    "cv_nexar": {
+      "n": 4,
+      "models": [
+        "v5 motion ensemble",
+        "v6 event-specific",
+        "v7 residual+expansion",
+        "v8 stride augmentation"
+      ],
+      "pearson": 0.2820978339000977,
+      "spearman": 0.0,
+      "leave_one_out_pearson_range": [
+        -0.44906744575785257,
+        0.5077616103074497
+      ],
+      "warning": "descriptive only; non-independent selected submissions; mixed recipe/proxy protocols; not predictive calibration"
+    },
+    "fixed_all_without_specialists": {
+      "n": 5,
+      "models": [
+        "v1 ASFormer",
+        "v3 P2 refit",
+        "v5 motion ensemble",
+        "v6 event-specific",
+        "v7 residual+expansion"
+      ],
+      "pearson": 0.853676401483929,
+      "spearman": 0.7,
+      "leave_one_out_pearson_range": [
+        0.7373000880037346,
+        0.9600069742580755
+      ],
+      "warning": "descriptive only; non-independent selected submissions; mixed recipe/proxy protocols; not predictive calibration"
+    }
+  },
+  "leaderboard_updated_utc": "2026-09-27T10:45:39.327499+00:00"
+}

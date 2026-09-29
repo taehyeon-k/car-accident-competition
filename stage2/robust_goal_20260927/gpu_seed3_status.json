@@ -1,0 +1,38 @@
+{
+  "started_utc": "2026-09-27T22:51:58.236158+00:00",
+  "seed": 3,
+  "folds": [
+    1,
+    2,
+    3,
+    4
+  ],
+  "phase": "complete",
+  "jobs": {
+    "gpu_base/fold1_seed3": {
+      "status": "complete"
+    },
+    "gpu_aux_sharp/fold1_seed3": {
+      "status": "complete"
+    },
+    "gpu_base/fold2_seed3": {
+      "status": "complete"
+    },
+    "gpu_aux_sharp/fold2_seed3": {
+      "status": "complete"
+    },
+    "gpu_base/fold3_seed3": {
+      "status": "complete"
+    },
+    "gpu_aux_sharp/fold3_seed3": {
+      "status": "complete"
+    },
+    "gpu_base/fold4_seed3": {
+      "status": "complete"
+    },
+    "gpu_aux_sharp/fold4_seed3": {
+      "status": "complete"
+    }
+  },
+  "current": "gpu_aux_sharp/fold4_seed3"
+}

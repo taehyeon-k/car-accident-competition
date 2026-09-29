@@ -1,0 +1,34 @@
+{
+  "review_type": "unblinded diagnostic interpretation, not ground truth",
+  "reviewed_examples": [
+    {
+      "sample_id": "aihub_bb_1_210929_vehicle_127_178",
+      "observation": "Native and third-rate predictions are frame51, before annotated57. A light car is entering from the left; annotated collision72 shows it close to the ego front. Contact sheet cannot establish a unique correct onset."
+    },
+    {
+      "sample_id": "ccd_001121",
+      "observation": "Predictions24 precede annotated29. A crossing white car is visible at both points and grows as it crosses the road. Supports checking the operational lane-entry definition, not applying an automatic offset."
+    },
+    {
+      "sample_id": "mmau_007660",
+      "observation": "Predictions78-79 follow annotated63. At predicted time the crossing car is much more visually prominent. Consistent with weak early-actor evidence, but six stills cannot distinguish representation failure from annotation ambiguity."
+    },
+    {
+      "sample_id": "nexar_00100",
+      "observation": "Night clip: predictions529-534 follow annotated518. The adjacent dark car is already nearby and moving across the ego view; low visibility and onset ambiguity are plausible. No relabeling performed."
+    }
+  ],
+  "aggregate": {
+    "entry": {
+      "persistent_misses": 63,
+      "closest_rate_error_0p3_to_0p6": 36,
+      "closest_rate_error_above_1s": 15
+    },
+    "collision": {
+      "persistent_misses": 27,
+      "closest_rate_error_0p3_to_0p6": 14,
+      "closest_rate_error_above_1s": 3
+    }
+  },
+  "action": "Retain unchanged labels. Continue broad-versus-sharp auxiliary training; large residual failures will require richer evidence or independent annotation review rather than a global timing correction."
+}

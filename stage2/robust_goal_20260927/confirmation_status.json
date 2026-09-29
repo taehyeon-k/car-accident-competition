@@ -1,0 +1,46 @@
+{
+  "started_utc": "2026-09-27T14:00:01.750978+00:00",
+  "phase": "complete",
+  "jobs": {
+    "base/fold1_seed0": {
+      "status": "complete"
+    },
+    "aux_sharp/fold1_seed0": {
+      "status": "complete"
+    },
+    "aux_broad/fold1_seed0": {
+      "status": "complete"
+    },
+    "base/fold2_seed0": {
+      "status": "complete"
+    },
+    "aux_sharp/fold2_seed0": {
+      "status": "complete"
+    },
+    "aux_broad/fold2_seed0": {
+      "status": "complete"
+    },
+    "base/fold3_seed0": {
+      "status": "complete"
+    },
+    "aux_sharp/fold3_seed0": {
+      "status": "complete"
+    },
+    "aux_broad/fold3_seed0": {
+      "status": "complete"
+    },
+    "base/fold4_seed0": {
+      "status": "complete"
+    },
+    "aux_sharp/fold4_seed0": {
+      "status": "complete"
+    },
+    "aux_broad/fold4_seed0": {
+      "status": "complete"
+    }
+  },
+  "waiting_for_pids": [
+    78261
+  ],
+  "current": "aux_broad/fold4_seed0"
+}

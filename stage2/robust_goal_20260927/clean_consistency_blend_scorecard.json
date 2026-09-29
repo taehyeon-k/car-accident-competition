@@ -1,0 +1,65 @@
+{
+  "protocol": "284 duplicate-clean OOF clips; seeds0-2; fixed equal model weights; cuda plain decoder; no fitted recipe weights",
+  "conditions": {
+    "k3": {
+      "n_clips": 284,
+      "n_groups": 283,
+      "recipes": {
+        "v8_plain": {
+          "overall": 0.7103875693093474,
+          "source:AIHUB": 0.6510360430644405,
+          "source:CCD": 0.5838493197644117,
+          "source:MMAU": 0.893760943004364,
+          "source:NEXAR": 0.6851961302532525,
+          "bin:>1000": 0.6756729203848763
+        },
+        "v8_plus_vits": {
+          "overall": 0.7117592098060022,
+          "source:AIHUB": 0.6658524633328132,
+          "source:CCD": 0.5789094948324157,
+          "source:MMAU": 0.8901531669617029,
+          "source:NEXAR": 0.6823820333553793,
+          "bin:>1000": 0.6772306486131522
+        },
+        "v8_plus_consistency": {
+          "overall": 0.715023624396383,
+          "source:AIHUB": 0.6742862159392331,
+          "source:CCD": 0.5917792832586004,
+          "source:MMAU": 0.896731089039625,
+          "source:NEXAR": 0.6744151477058453,
+          "bin:>1000": 0.6644041237005122
+        }
+      },
+      "comparisons": {
+        "v8_plus_vits_minus_v8_plain": {
+          "delta": 0.0013716404966547247,
+          "ci95": [
+            -0.007981301660401318,
+            0.010880701074252907
+          ],
+          "nexar_delta": -0.002814096897873264,
+          "long_delta": 0.0015577282282759342
+        },
+        "v8_plus_consistency_minus_v8_plain": {
+          "delta": 0.004636055087035573,
+          "ci95": [
+            -0.00439186217804863,
+            0.014363783738709146
+          ],
+          "nexar_delta": -0.010780982547407225,
+          "long_delta": -0.01126879668436409
+        },
+        "v8_plus_consistency_minus_v8_plus_vits": {
+          "delta": 0.0032644145903808486,
+          "ci95": [
+            -0.005914525401019549,
+            0.012804068556501872
+          ],
+          "nexar_delta": -0.007966885649533961,
+          "long_delta": -0.012826524912640025
+        }
+      }
+    }
+  },
+  "limitations": "Fixed equal-weight CV screen; descriptive group bootstrap conditional on earlier model search; not a leaderboard forecast."
+}

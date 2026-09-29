@@ -1,0 +1,28 @@
+{
+  "purpose": "Confirm base, sharp auxiliary, broad auxiliary across remaining grouped folds before any candidate promotion",
+  "folds": [
+    1,
+    2,
+    3,
+    4
+  ],
+  "seeds": [
+    0
+  ],
+  "arms": [
+    "base",
+    "aux_sharp",
+    "aux_broad"
+  ],
+  "jobs": 12,
+  "ordering": "Wait for current campaign transport trainer to exit, evaluate transport, then one CPU training/evaluation job at a time",
+  "resources": "CPU only, nice15, one active job; matched CPU thread count within each fold; RAM guards unchanged; no shared queue edits",
+  "promotion": "Pool all five out-of-fold partitions, report per-source and rate metrics, paired duplicate-group bootstrap and fold deltas. Extend matched seeds only if broad-vs-sharp mechanism and broad-vs-base robustness survive. One seed is still insufficient for final promotion.",
+  "cpu_threads_by_fold": {
+    "0": 1,
+    "1": 1,
+    "2": 2,
+    "3": 2,
+    "4": 2
+  }
+}

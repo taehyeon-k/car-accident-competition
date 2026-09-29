@@ -1,0 +1,17 @@
+{
+  "hypothesis": "Fold-trained selected heads may transfer better than fixed-epoch full refits despite fewer training clips per head.",
+  "outer_fold": 0,
+  "outer_val_labels_used_for_training_or_selection": false,
+  "inner_folds": [
+    1,
+    2,
+    3,
+    4
+  ],
+  "members_each": 4,
+  "full_refit_epochs": 7,
+  "stride_aug": "0.5,0.25,0.25",
+  "control": "Four seed-matched full refits on the same 276 outer-train clips, each fixed at v8's epoch7.",
+  "candidate": "Four inner-fold heads, each trained on three quarters of the 276 outer-train clips and selected only on its inner holdout.",
+  "promotion_gate": "Duplicate-clean outer score gain >=0.01 at both native and third rate; no source score loss >0.02. Confirm on all outer folds before a package."
+}

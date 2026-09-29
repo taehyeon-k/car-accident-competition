@@ -1,0 +1,15 @@
+{
+  "purpose": "Confirm the fixed native-mass target-transport method across remaining grouped folds before choosing a multi-seed candidate",
+  "folds": [
+    1,
+    2,
+    3,
+    4
+  ],
+  "seed": 0,
+  "control": "Existing base checkpoints on identical grouped splits and thread settings",
+  "recipe": "Unchanged first-fold transport; no auxiliary head or inference change",
+  "resources": "One CPU trainer, nice15, hidden CUDA, existing RAM safeguards; use only stopped campaign service",
+  "selection": "Evaluate all five folds; compare pooled scores, per-source rates and event tails. Reject a uniformly robust claim if source/rate regressions persist. No leaderboard forecast from CV alone.",
+  "runner": "confirm_transport.py"
+}

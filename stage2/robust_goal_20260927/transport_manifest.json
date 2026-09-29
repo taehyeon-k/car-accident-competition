@@ -1,0 +1,10 @@
+{
+  "status": "first grouped fold completed; exact native parity passed; more-fold confirmation required",
+  "hypothesis": "Fixed sampled-index sigma broadens event supervision unevenly when stride changes. Transporting native target mass to the augmented grid may retain rate invariance with better native precision.",
+  "control": "Completed grouped-fold0 seed0 baseline, same .5/.25/.25 stride policy, 30 epochs ceiling, patience7, model and optimizer",
+  "change": "For augmented views only, assign each original Gaussian target mass to its nearest retained sampled frame. Keep native-view loss unchanged; no extra auxiliary head, no FPS, no source labels, no inference modification.",
+  "mechanism_test": "Verify mass conservation, identity on unchanged grids, and unchanged native loss before training. Report native/half/third rate and all event metrics against the matched baseline.",
+  "promotion": "One-fold result is only feasibility. Extend only on plausible native precision gain with no >.01 reduced-rate loss; require full grouped folds and matched seeds before candidate promotion.",
+  "risk": "Transport may become too sharp or alias near event boundaries. Do not retune target width after seeing the same fold; reject on failed mechanism or broad robustness regressions.",
+  "command": "CUDA_VISIBLE_DEVICES='' OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 PYTHONDONTWRITEBYTECODE=1 nice -n 15 /venv/main/bin/python -m stage2.robust_goal_20260927.train_transport --run-id RG_transport --seed 0 --motion both --stride-aug 0.5,0.25,0.25 --epochs 30 --patience 7 --train-split stage2/robust_goal_20260927/group_folds/fold0_train.jsonl --val-split stage2/robust_goal_20260927/group_folds/fold0_val.jsonl --output stage2/robust_goal_20260927/training/transport/cv/fold0_seed0"
+}
