@@ -1,0 +1,172 @@
+{
+  "name": "Baton_DriveDNA_V3",
+  "overrides": [
+    "data.manifest=/workspace/data/stage3/baton_drivedna_final/manifests/train.jsonl",
+    "data.val_manifest=/workspace/data/stage3/baton_drivedna_final/manifests/baton_val.jsonl",
+    "data.num_workers=2",
+    "data.prefetch_factor=1"
+  ],
+  "git_commit": "8b6eb5600ff3a4f4d92a0e94d75dd8acf2814b78+dirty",
+  "seed": 42,
+  "params": 1880679,
+  "trainable_params": 1880679,
+  "train_seconds": 79217.33532333374,
+  "train_peak_vram_mb": 5825.357421875,
+  "eval_seconds": 191.378515958786,
+  "eval_peak_vram_mb": 3069.7373046875,
+  "val_clips": 466,
+  "val_frames": 139281,
+  "eval_ms_per_frame": 1.3740461079313475,
+  "best_epoch": 90,
+  "epochs_run": 100,
+  "train_at_best": {
+    "loss": 2.3389646313692394,
+    "accel_direct": 0.08315528812818229,
+    "ordinal": 0.12784993038757853,
+    "stopped": 0.07475741265719224,
+    "speed": 1.0550274599539606,
+    "accel_speed_consistency": 0.10555890953952544,
+    "steering_angle": 7.731777157418822,
+    "yaw_aux": 0.0,
+    "acceleration_macro_f1": 0.6866053557096,
+    "steering_macro_f1": 0.8404473849638071,
+    "competition_score": 0.7327579644858622,
+    "acceleration_f1_accelerating": 0.5492458610420247,
+    "acceleration_f1_decelerating": 0.5323108312519788,
+    "acceleration_f1_constant": 0.7541819492949118,
+    "acceleration_f1_stopped": 0.9106827812494848,
+    "steering_f1_left": 0.7800673595770108,
+    "steering_f1_straight": 0.9616435171732435,
+    "steering_f1_right": 0.7796312781411671
+  },
+  "val": {
+    "acceleration_macro_f1": 0.7680576834409997,
+    "steering_macro_f1": 0.8886593258067457,
+    "competition_score": 0.8042381761507233,
+    "acceleration_f1_accelerating": 0.6986251677730619,
+    "acceleration_f1_decelerating": 0.6986835515489733,
+    "acceleration_f1_constant": 0.7303228439516712,
+    "acceleration_f1_stopped": 0.9445991704902923,
+    "steering_f1_left": 0.8517681774171239,
+    "steering_f1_straight": 0.9666570993788484,
+    "steering_f1_right": 0.8475527006242649,
+    "stopped_as_constant": 0.041349032129315504,
+    "constant_as_stopped": 0.00908392548492414,
+    "boundary_f1_0.5s": 0.18549637413115008,
+    "boundary_delay_0.5s": -3.5339600790243965e-05,
+    "boundary_f1_1.0s": 0.2459634835129881,
+    "boundary_delay_1.0s": -0.013416700728932486,
+    "acceleration_mae": 0.23442988097667694,
+    "speed_mae": 1.4366531372070312,
+    "steering_angle_mae": 4.0829644203186035,
+    "yaw_mae": 0.0,
+    "direct_acceleration_mae": 0.23442988097667694,
+    "loss": 2.3196135355167633,
+    "loss_accel_direct": 0.06115020242371784,
+    "loss_ordinal": 0.11072327692237535,
+    "loss_stopped": 0.06141075754472039,
+    "loss_speed": 1.0954554411282866,
+    "loss_accel_speed_consistency": 0.07118152951733749,
+    "loss_steering_angle": 7.784748410206496,
+    "loss_yaw_aux": 0.0,
+    "acceleration_macro_f1_threshold_grid_mean": 0.7661526806635904,
+    "acceleration_macro_f1_speed_stopped": 0.24396846710269848,
+    "acceleration_macro_f1_speed_low": 0.481050814306709,
+    "acceleration_macro_f1_speed_medium": 0.5613622291034506,
+    "acceleration_macro_f1_speed_high": 0.5087214149543251
+  },
+  "train_full": {
+    "acceleration_macro_f1": 0.70837304885471,
+    "steering_macro_f1": 0.8470481248929116,
+    "competition_score": 0.7499755716661705,
+    "acceleration_f1_accelerating": 0.5639440917495249,
+    "acceleration_f1_decelerating": 0.572658748963393,
+    "acceleration_f1_constant": 0.7749051367297461,
+    "acceleration_f1_stopped": 0.9219842179761757,
+    "steering_f1_left": 0.8091017500886325,
+    "steering_f1_straight": 0.9653942332128606,
+    "steering_f1_right": 0.7666483913772417,
+    "stopped_as_constant": 0.04681831289104675,
+    "constant_as_stopped": 0.015160512723271818,
+    "boundary_f1_0.5s": 0.10892640211103201,
+    "boundary_delay_0.5s": -0.004613858865914786,
+    "boundary_f1_1.0s": 0.14908775230360138,
+    "boundary_delay_1.0s": -0.012261990202779675,
+    "acceleration_mae": 0.23377776145935059,
+    "speed_mae": 1.7985100746154785,
+    "steering_angle_mae": 4.136944770812988,
+    "yaw_mae": 0.0,
+    "direct_acceleration_mae": 0.23377776145935059,
+    "loss": 2.667165505297874,
+    "loss_accel_direct": 0.06971775408451082,
+    "loss_ordinal": 0.11795016897744254,
+    "loss_stopped": 0.06928523094108946,
+    "loss_speed": 1.428498462513354,
+    "loss_accel_speed_consistency": 0.08946422005187982,
+    "loss_steering_angle": 8.836735753666021,
+    "loss_yaw_aux": 0.0,
+    "acceleration_macro_f1_threshold_grid_mean": 0.7074925095900191,
+    "acceleration_macro_f1_speed_stopped": 0.24032227488151658,
+    "acceleration_macro_f1_speed_low": 0.45077281410017195,
+    "acceleration_macro_f1_speed_medium": 0.5403571043744468,
+    "acceleration_macro_f1_speed_high": 0.4556648417769026
+  },
+  "confusion_acceleration": {
+    "labels": [
+      "ACCELERATING",
+      "DECELERATING",
+      "CONSTANT",
+      "STOPPED"
+    ],
+    "matrix": [
+      [
+        19259,
+        399,
+        10911,
+        443
+      ],
+      [
+        600,
+        19531,
+        10647,
+        366
+      ],
+      [
+        3984,
+        4666,
+        42947,
+        473
+      ],
+      [
+        279,
+        168,
+        1036,
+        23572
+      ]
+    ]
+  },
+  "confusion_steering": {
+    "labels": [
+      "LEFT",
+      "STRAIGHT",
+      "RIGHT"
+    ],
+    "matrix": [
+      [
+        9237,
+        1778,
+        139
+      ],
+      [
+        1223,
+        89250,
+        1070
+      ],
+      [
+        75,
+        2086,
+        9368
+      ]
+    ]
+  }
+}

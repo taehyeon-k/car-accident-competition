@@ -3,6 +3,7 @@ from __future__ import annotations
 import os
 import tempfile
 import gzip
+import io
 from pathlib import Path
 from typing import Any
 
@@ -45,7 +46,10 @@ def load_artifact(path: str | Path, weights_only: bool = False):
         compressed = stream.read(2) == b"\x1f\x8b"
     if compressed:
         with gzip.open(path, "rb") as stream:
-            return torch.load(stream, map_location="cpu", weights_only=weights_only)
+            # The torch zip reader seeks backward; gzip seeks repeatedly inflate
+            # the file. Inflate once, then seek within the decompressed buffer.
+            payload = stream.read()
+        return torch.load(io.BytesIO(payload), map_location="cpu", weights_only=weights_only)
     # Uncompressed artifacts are memory-mapped so crops read only the frames they use.
     return torch.load(path, map_location="cpu", weights_only=weights_only, mmap=True)
 

@@ -25,10 +25,11 @@ TARGET_NAMES = (
 
 class CachedMotionDataset(Dataset):
     def __init__(self, manifest: str, crop_frames: int = 96, training: bool = False, seed: int = 42, flip_probability: float = 0.5, target_cfg: dict | None = None, event_fraction: float = 0.5, event_position_margin: int = 8, expected_cache_key: str | None = None,
-                 visual_cache_dir: str | None = None):
+                 visual_cache_dir: str | None = None, load_motion: bool = True):
         self.rows = read_jsonl(manifest)
         # Optional frozen-DINO token cache (Stage 3 v2); None keeps v1 behaviour.
         self.visual_cache_dir = Path(visual_cache_dir) if visual_cache_dir else None
+        self.load_motion = load_motion
         self.crop_frames = crop_frames
         self.training = training
         self.seed = seed
@@ -78,14 +79,30 @@ class CachedMotionDataset(Dataset):
         else:
             start, stop = 0, length
         targets = {name: torch.from_numpy(generated[name][start:stop]) for name in TARGET_NAMES}
-        motion, physics = dequantize_motion(cache, start, stop), cache["physics"][start:stop]
+        physics = cache["physics"][start:stop]
+        if self.load_motion:
+            motion = dequantize_motion(cache, start, stop)
+        else:
+            # RGB-only students retain the common trainer interface but never
+            # consume motion. Avoid faulting the large mmap-backed motion tensor.
+            motion = torch.zeros((stop - start, 10, 1, 1), dtype=torch.float32)
         flipped = self.training and rng.random() < self.flip_probability
         if flipped:
             motion, physics, targets = horizontal_flip(motion, physics, targets)
         extra = {}
         if self.visual_cache_dir is not None:
-            with np.load(self.visual_cache_dir / f"{row['clip_id']}.npz") as visual:
-                extra["visual"] = torch.from_numpy(visual["tokens_flip" if flipped else "tokens"][start:stop].astype(np.float32))
+            key = "tokens_flip" if flipped else "tokens"
+            # A sidecar NPY supports true memory-mapped crop reads.  NPZ members
+            # must be read in full before slicing, which is expensive for short
+            # random crops.  Keep the NPZ fallback for existing visual caches.
+            sidecar = self.visual_cache_dir / f"{row['clip_id']}.{key}.npy"
+            if sidecar.exists():
+                visual = np.load(sidecar, mmap_mode="r")
+                value = visual[start:stop].astype(np.float32)
+            else:
+                with np.load(self.visual_cache_dir / f"{row['clip_id']}.npz") as visual:
+                    value = visual[key][start:stop].astype(np.float32)
+            extra["visual"] = torch.from_numpy(value)
         return {
             "motion": motion.float(), "physics": physics.float(), **targets, **extra,
             "time_valid": cache["time_valid"][start:stop].bool(), "clip_id": cache["clip_id"],

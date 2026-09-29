@@ -1,0 +1,91 @@
+{
+  "checkpoint": "runs/stage3_data_scaling/drivedna_interim/combined_snapshot.pt",
+  "acceleration_threshold": 0.25,
+  "device": "cpu",
+  "steering_threshold": 5.0,
+  "sources": {
+    "smoke": {
+      "manifest": "runs/stage3_data_scaling/drivedna_interim/one_clip.jsonl",
+      "clips": 1,
+      "frames": 301,
+      "seconds": 1.859039306640625,
+      "peak_allocated_vram_mb": 0.0,
+      "metrics": {
+        "acceleration_macro_f1": 0.3548040526190863,
+        "steering_macro_f1": 0.6320590207914152,
+        "competition_score": 0.43798054307078493,
+        "acceleration_f1_accelerating": 0.0,
+        "acceleration_f1_decelerating": 0.6411483253588517,
+        "acceleration_f1_constant": 0.7780678851174935,
+        "acceleration_f1_stopped": 0.0,
+        "steering_f1_left": 0.9142857142857143,
+        "steering_f1_straight": 0.9818913480885312,
+        "steering_f1_right": 0.0,
+        "stopped_as_constant": 0.0,
+        "constant_as_stopped": 0.0,
+        "boundary_f1_0.5s": 0.0,
+        "boundary_delay_0.5s": 0.0,
+        "boundary_f1_1.0s": 0.13333333333333333,
+        "boundary_delay_1.0s": 0.6,
+        "acceleration_mae": 0.261375367641449,
+        "speed_mae": 2.9497759342193604,
+        "steering_angle_mae": 1.066606879234314,
+        "yaw_mae": 0.0,
+        "direct_acceleration_mae": 0.261375367641449,
+        "loss": 0.8500701189041138,
+        "loss_accel_direct": 0.05022384226322174,
+        "loss_ordinal": 0.10685171186923981,
+        "loss_stopped": 0.0006996262236498296,
+        "loss_speed": 2.4497759342193604,
+        "loss_accel_speed_consistency": 0.05181638523936272,
+        "loss_steering_angle": 1.0037353038787842,
+        "loss_yaw_aux": 0.0,
+        "acceleration_macro_f1_threshold_grid_mean": 0.33493113085347287,
+        "acceleration_macro_f1_speed_high": 0.3548040526190863
+      },
+      "confusion_acceleration": [
+        [
+          0,
+          0,
+          10,
+          0
+        ],
+        [
+          0,
+          67,
+          62,
+          0
+        ],
+        [
+          0,
+          13,
+          149,
+          0
+        ],
+        [
+          0,
+          0,
+          0,
+          0
+        ]
+      ],
+      "confusion_steering": [
+        [
+          48,
+          5,
+          0
+        ],
+        [
+          4,
+          244,
+          0
+        ],
+        [
+          0,
+          0,
+          0
+        ]
+      ]
+    }
+  }
+}

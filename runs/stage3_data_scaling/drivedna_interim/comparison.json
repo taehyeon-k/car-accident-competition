@@ -1,0 +1,69 @@
+{
+  "snapshot": {
+    "epoch": 76,
+    "validation_metrics": {
+      "acceleration_macro_f1": 0.765169675135845,
+      "steering_macro_f1": 0.888843855442015,
+      "competition_score": 0.8022719292276961,
+      "acceleration_f1_accelerating": 0.6967466938686291,
+      "acceleration_f1_decelerating": 0.691237605053359,
+      "acceleration_f1_constant": 0.7310720826405827,
+      "acceleration_f1_stopped": 0.9416223189808095,
+      "steering_f1_left": 0.852427094441096,
+      "steering_f1_straight": 0.9668169492809707,
+      "steering_f1_right": 0.8472875226039783,
+      "stopped_as_constant": 0.045060866094591895,
+      "constant_as_stopped": 0.008258114077203765,
+      "boundary_f1_0.5s": 0.18076084917097823,
+      "boundary_delay_0.5s": 0.0005155323932147954,
+      "boundary_f1_1.0s": 0.24580542956141668,
+      "boundary_delay_1.0s": -0.019325226514067713,
+      "acceleration_mae": 0.2376672923564911,
+      "speed_mae": 1.5271596908569336,
+      "steering_angle_mae": 4.124064922332764,
+      "yaw_mae": 0.0,
+      "direct_acceleration_mae": 0.2376672923564911,
+      "loss": 2.3703413142666796,
+      "loss_accel_direct": 0.0629358289227721,
+      "loss_ordinal": 0.11182326970565984,
+      "loss_stopped": 0.06539361247562507,
+      "loss_speed": 1.1819554883906769,
+      "loss_accel_speed_consistency": 0.07281449558653033,
+      "loss_steering_angle": 7.900498016709422,
+      "loss_yaw_aux": 0.0,
+      "acceleration_macro_f1_threshold_grid_mean": 0.7619374602225562,
+      "acceleration_macro_f1_speed_stopped": 0.24287702814389492,
+      "acceleration_macro_f1_speed_low": 0.4812906465229291,
+      "acceleration_macro_f1_speed_medium": 0.5685137980405564,
+      "acceleration_macro_f1_speed_high": 0.5050787257384431
+    },
+    "manifest": "/workspace/data/stage3/baton_drivedna_final/manifests/drivedna_val.jsonl",
+    "clips": 1008,
+    "acceleration_threshold": 0.25,
+    "steering_threshold": 5.0,
+    "baseline_checkpoint": "runs/stage3_v2/V3_tcnssm_100ep/best.pt",
+    "combined_checkpoint": "runs/stage3_data_scaling/drivedna_interim/combined_snapshot.pt",
+    "device": "cuda",
+    "batch_size": 1,
+    "chunk_frames": 16,
+    "num_workers": 0,
+    "gpu_memory_fraction": 0.1
+  },
+  "clips": 1008,
+  "frames": 302408,
+  "baseline": {
+    "competition_score": 0.7502631681843781,
+    "acceleration_macro_f1": 0.7121743496163371,
+    "steering_macro_f1": 0.8391370781764739
+  },
+  "combined": {
+    "competition_score": 0.751135709945225,
+    "acceleration_macro_f1": 0.7196286529626538,
+    "steering_macro_f1": 0.8246521762378914
+  },
+  "delta": {
+    "competition_score": 0.0008725417608469455,
+    "acceleration_macro_f1": 0.007454303346316693,
+    "steering_macro_f1": -0.014484901938582428
+  }
+}

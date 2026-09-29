@@ -1,10 +1,10 @@
 {
-  "device": "NVIDIA L40S",
+  "device": "NVIDIA GeForce RTX 5090",
   "tests": {
     "stage1": {
       "rows": 1,
-      "seconds": 11.55662447900977,
-      "peak_allocated_MiB": 516.69287109375,
+      "seconds": 5.806418210268021,
+      "peak_allocated_MiB": 517.69287109375,
       "sample": [
         {
           "ID": "TEST_STAGE1",
@@ -14,23 +14,23 @@
     },
     "stage2": {
       "rows": 1,
-      "seconds": 2.66279072999896,
-      "peak_allocated_MiB": 583.48095703125,
+      "seconds": 1.855806827545166,
+      "peak_allocated_MiB": 557.3271484375,
       "sample": [
         {
           "ID": "TEST_S2_001",
-          "collision_frame": 98,
-          "entry_frame": 86,
+          "collision_frame": 97,
+          "entry_frame": 90,
           "evasion_space": 1,
-          "entry_side": "LEFT"
+          "entry_side": "RIGHT"
         }
       ]
     },
-    "streamed_resize_exact": true,
+    "decode_resize_exact": true,
     "stage3": {
       "rows": 32,
-      "seconds": 2.5725823800021317,
-      "peak_allocated_MiB": 594.59228515625,
+      "seconds": 1.6758597530424595,
+      "peak_allocated_MiB": 599.78369140625,
       "sample": [
         {
           "ID": "TEST_STAGE3",

@@ -64,6 +64,10 @@ def main() -> None:
         print(f"workers={sorted(pids)} segments={len(rows)}", flush=True)
         while True:
             running = [child for child in children if child.poll() is None]
+            failed = [(child.pid, child.returncode) for child in children
+                      if child.returncode not in (None, 0)]
+            if failed:
+                raise RuntimeError(f"Cache workers failed: {failed}; see worker logs")
             usage = _gpu_usage_mb(pids)
             if usage > args.max_vram_mb:
                 raise RuntimeError(f"DriveDNA caching exceeded GPU cap: {usage} MiB")

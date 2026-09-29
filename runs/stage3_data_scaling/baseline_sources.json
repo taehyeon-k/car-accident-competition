@@ -1,0 +1,180 @@
+{
+  "checkpoint": "runs/stage3_v2/V3_tcnssm_100ep/best.pt",
+  "acceleration_threshold": 0.5,
+  "device": "cuda",
+  "steering_threshold": 5.0,
+  "sources": {
+    "baton_val": {
+      "manifest": "/workspace/data/stage3/baton_drivedna_final/manifests/baton_val.jsonl",
+      "clips": 466,
+      "frames": 139281,
+      "seconds": 113.066645860672,
+      "peak_allocated_vram_mb": 3002.7646484375,
+      "metrics": {
+        "acceleration_macro_f1": 0.8022874706005318,
+        "steering_macro_f1": 0.8962395834475979,
+        "competition_score": 0.8304731044546516,
+        "acceleration_f1_accelerating": 0.7200062650099196,
+        "acceleration_f1_decelerating": 0.6820335373968592,
+        "acceleration_f1_constant": 0.8493363742705345,
+        "acceleration_f1_stopped": 0.9577737057248142,
+        "steering_f1_left": 0.8592103477906924,
+        "steering_f1_straight": 0.9683412239650016,
+        "steering_f1_right": 0.8611671785870996,
+        "stopped_as_constant": 0.041349032129315504,
+        "constant_as_stopped": 0.005779542695265075,
+        "boundary_f1_0.5s": 0.17477302136787146,
+        "boundary_delay_0.5s": 0.02215665236051502,
+        "boundary_f1_1.0s": 0.233821098802528,
+        "boundary_delay_1.0s": 0.03065936031064787,
+        "acceleration_mae": 0.29297587275505066,
+        "speed_mae": 3.461869239807129,
+        "steering_angle_mae": 3.8781445026397705,
+        "yaw_mae": 0.0,
+        "direct_acceleration_mae": 0.29297587275505066,
+        "loss": 2.654492094281405,
+        "loss_accel_direct": 0.0929705949236395,
+        "loss_ordinal": 0.13267344930269176,
+        "loss_stopped": 0.03825422001482513,
+        "loss_speed": 3.081578523879911,
+        "loss_accel_speed_consistency": 0.10398421570850544,
+        "loss_steering_angle": 7.397374145974417,
+        "loss_yaw_aux": 0.0,
+        "acceleration_macro_f1_threshold_grid_mean": 0.7568939515700074,
+        "acceleration_macro_f1_speed_stopped": 0.24503418379450903,
+        "acceleration_macro_f1_speed_low": 0.48416171507044153,
+        "acceleration_macro_f1_speed_medium": 0.5724306280520507,
+        "acceleration_macro_f1_speed_high": 0.5481974775844483
+      },
+      "confusion_acceleration": [
+        [
+          13791,
+          228,
+          4624,
+          255
+        ],
+        [
+          25,
+          12812,
+          3307,
+          112
+        ],
+        [
+          5532,
+          8099,
+          64984,
+          457
+        ],
+        [
+          62,
+          175,
+          1036,
+          23782
+        ]
+      ],
+      "confusion_steering": [
+        [
+          9499,
+          1491,
+          164
+        ],
+        [
+          1389,
+          88870,
+          1284
+        ],
+        [
+          69,
+          1647,
+          9813
+        ]
+      ]
+    },
+    "drivedna_val": {
+      "manifest": "/workspace/data/stage3/baton_drivedna_final/manifests/drivedna_val.jsonl",
+      "clips": 1008,
+      "frames": 302408,
+      "seconds": 239.74002194404602,
+      "peak_allocated_vram_mb": 3010.01123046875,
+      "metrics": {
+        "acceleration_macro_f1": 0.7599063002245574,
+        "steering_macro_f1": 0.8391639755296452,
+        "competition_score": 0.7836836028160836,
+        "acceleration_f1_accelerating": 0.602091594743799,
+        "acceleration_f1_decelerating": 0.5775653110692163,
+        "acceleration_f1_constant": 0.9003701886220706,
+        "acceleration_f1_stopped": 0.9595981064631437,
+        "steering_f1_left": 0.8100148224527937,
+        "steering_f1_straight": 0.9693067571329875,
+        "steering_f1_right": 0.7381703470031545,
+        "stopped_as_constant": 0.013603846604902076,
+        "constant_as_stopped": 0.0036079347606317257,
+        "boundary_f1_0.5s": 0.07800193679065658,
+        "boundary_delay_0.5s": -0.002346230158730159,
+        "boundary_f1_1.0s": 0.11376130074834313,
+        "boundary_delay_1.0s": -0.002041249370118416,
+        "acceleration_mae": 0.2734730839729309,
+        "speed_mae": 5.307170391082764,
+        "steering_angle_mae": 3.5720763206481934,
+        "yaw_mae": 0.0,
+        "direct_acceleration_mae": 0.2734730839729309,
+        "loss": 3.0408529573016696,
+        "loss_accel_direct": 0.08968539867136213,
+        "loss_ordinal": 0.13225297239564715,
+        "loss_stopped": 0.018969301352308916,
+        "loss_speed": 4.8675297974712315,
+        "loss_accel_speed_consistency": 0.09065960802965695,
+        "loss_steering_angle": 7.57193796975272,
+        "loss_yaw_aux": 0.0,
+        "acceleration_macro_f1_threshold_grid_mean": 0.7258759673667463,
+        "acceleration_macro_f1_speed_stopped": 0.24678041749965132,
+        "acceleration_macro_f1_speed_low": 0.5009128001367495,
+        "acceleration_macro_f1_speed_medium": 0.52520627154782,
+        "acceleration_macro_f1_speed_high": 0.49471728631020195
+      },
+      "confusion_acceleration": [
+        [
+          15487,
+          678,
+          10726,
+          399
+        ],
+        [
+          182,
+          17156,
+          9493,
+          140
+        ],
+        [
+          8352,
+          14335,
+          199075,
+          803
+        ],
+        [
+          133,
+          268,
+          348,
+          24832
+        ]
+      ],
+      "confusion_steering": [
+        [
+          12569,
+          3555,
+          171
+        ],
+        [
+          1896,
+          235006,
+          1236
+        ],
+        [
+          274,
+          8196,
+          13923
+        ]
+      ]
+    }
+  }
+}

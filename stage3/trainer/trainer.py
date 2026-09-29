@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import math
+import time
 from pathlib import Path
 
 import numpy as np
@@ -44,8 +45,15 @@ class Trainer:
             data.get("visual_cache_dir"),
         )
         loader_args = dict(batch_size=data["batch_size"], num_workers=data["num_workers"], collate_fn=motion_collate, pin_memory=True)
+        if data["num_workers"] > 0:
+            loader_args["prefetch_factor"] = int(data.get("prefetch_factor", 2))
         self.train_loader = DataLoader(self.train_set, shuffle=True, **loader_args)
-        self.val_loader = DataLoader(self.val_set, shuffle=False, **loader_args)
+        val_args = {**loader_args, "batch_size": int(data.get("val_batch_size", data["batch_size"])),
+                    "num_workers": int(data.get("val_num_workers", data["num_workers"])),
+                    "pin_memory": bool(data.get("val_pin_memory", True))}
+        if val_args["num_workers"] == 0:
+            val_args.pop("prefetch_factor", None)
+        self.val_loader = DataLoader(self.val_set, shuffle=False, **val_args)
         stats = torch.load(data["statistics"], map_location="cpu", weights_only=True)
         if stats.get("cache_key") != cache_key(self.cfg):
             raise ValueError("Stale physics statistics; rebuild motion caches and recompute statistics")
@@ -128,7 +136,9 @@ class Trainer:
             samples = 0
             evaluate = (epoch + 1) % val_every == 0 or epoch + 1 == opt["epochs"]
             train_metrics = TrainingCompetitionMetrics() if evaluate else None
-            for batch in self.train_loader:
+            epoch_start = time.monotonic()
+            log_every = max(1, int(self.cfg.get("logging", {}).get("log_every", 20)))
+            for batch_index, batch in enumerate(self.train_loader, 1):
                 batch = self._normalize(batch)
                 with self.accelerator.accumulate(self.model):
                     output = self.model(batch["motion"], batch["physics"], batch["lengths"], **self._extra(batch))
@@ -148,6 +158,14 @@ class Trainer:
                 samples += size
                 for name, value in {"loss": loss, **parts}.items():
                     totals[name] = totals.get(name, 0.0) + float(value.detach()) * size
+                if batch_index == 1 or batch_index % log_every == 0:
+                    self.accelerator.print(json.dumps({
+                        "phase": "train", "epoch": epoch + 1,
+                        "batch": batch_index, "batches": len(self.train_loader),
+                        "loss": totals["loss"] / max(samples, 1),
+                        "elapsed_seconds": round(time.monotonic() - epoch_start, 1),
+                    }))
+            self.accelerator.print(f"Epoch {epoch + 1}: training finished; validation={evaluate}")
             metrics = self.validate() if evaluate else {}
             log = {f"train/{key}": value / max(samples, 1) for key, value in totals.items()}
             if train_metrics is not None:

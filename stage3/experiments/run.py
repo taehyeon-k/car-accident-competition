@@ -66,7 +66,7 @@ def main() -> None:
             parser.error("CUDA is required for --gpu-memory-fraction")
         torch.cuda.set_per_process_memory_fraction(args.gpu_memory_fraction, 0)
 
-    out = Path(args.root) / args.name
+    out = (Path(args.root) / args.name).resolve()
     resume_from = None
     if args.resume:
         if args.set:
@@ -124,13 +124,17 @@ def main() -> None:
     eval_seconds = time.time() - t0
     pa, ta, ps, ts, am, sm = map(np.asarray, eval_trainer.last_validation_predictions)
     sm = sm & (ta != "STOPPED")
-    # Same full-clip EMA protocol on the training split (train/val gap without crop/augmentation bias).
-    train_cfg = copy.deepcopy(cfg)
-    train_cfg["data"]["val_manifest"] = cfg["data"]["manifest"]
-    train_eval = Trainer(Accelerator(mixed_precision=opt["mixed_precision"]), train_cfg)
-    train_eval.build()
-    train_eval.resume(str(out / "best.pt"))
-    train_full = train_eval.validate()
+    # Same full-clip EMA protocol on the training split (train/val gap without
+    # crop/augmentation bias). Validation-focused overnight screens may skip
+    # this diagnostic because it does not affect model selection or val metrics.
+    train_full = {}
+    if not cfg.get("evaluation", {}).get("skip_train_full", False):
+        train_cfg = copy.deepcopy(cfg)
+        train_cfg["data"]["val_manifest"] = cfg["data"]["manifest"]
+        train_eval = Trainer(Accelerator(mixed_precision=opt["mixed_precision"]), train_cfg)
+        train_eval.build()
+        train_eval.resume(str(out / "best.pt"))
+        train_full = train_eval.validate()
     history = [json.loads(x) for x in (out / "history.jsonl").read_text().splitlines() if x.strip()]
     best_epoch = max(history, key=lambda h: h.get("val/competition_score", -1))
     result = {
@@ -153,7 +157,7 @@ def main() -> None:
     np.savez_compressed(out / "predictions.npz", pred_accel=pa, true_accel=ta, pred_steer=ps, true_steer=ts,
                         accel_valid=am, steer_valid=sm)
     tr = result["train_at_best"]
-    print(json.dumps({"name": args.name, "train_crop_score": tr.get("competition_score"), "train_full_score": train_full["competition_score"], "val_score": metrics["competition_score"],
+    print(json.dumps({"name": args.name, "train_crop_score": tr.get("competition_score"), "train_full_score": train_full.get("competition_score"), "val_score": metrics["competition_score"],
                       "val_acc": metrics["acceleration_macro_f1"], "val_steer": metrics["steering_macro_f1"],
                       "params": trainable, "best_epoch": result["best_epoch"]}))
 

@@ -2,6 +2,9 @@
 set -euo pipefail
 cd /workspace/car-accident
 source /venv/main/bin/activate
+export PYTHONUNBUFFERED=1
+export OMP_NUM_THREADS=2
+export MKL_NUM_THREADS=2
 
 MANIFESTS=/workspace/data/stage3/baton_drivedna_final/manifests
 BASE=runs/stage3_v2/V3_tcnssm_100ep
@@ -32,7 +35,8 @@ if [ ! -f "${OUT}/metrics.json" ]; then
     python -m stage3.experiments.run --root "${ROOT}" --name "${NAME}" \
       --base "${BASE}/config.yaml" --gpu-memory-fraction 0.55 \
       --set data.manifest="${MANIFESTS}/train.jsonl" \
-      --set data.val_manifest="${MANIFESTS}/baton_val.jsonl"
+      --set data.val_manifest="${MANIFESTS}/baton_val.jsonl" \
+      --set data.num_workers=2 --set data.prefetch_factor=1
   fi
 fi
 

@@ -9,4 +9,4 @@ python -m stage3.scripts.cache_drivedna_parallel \
   --filter-report /workspace/data/stage3/drivedna/filtered/filter_report.json \
   --selection-report /workspace/data/stage3/drivedna/filtered/selection_report.json \
   --work-dir /workspace/data/stage3/baton_drivedna_final/cache_work \
-  --workers 4 --max-vram-mb 19000
+  --workers 2 --max-vram-mb 19000
