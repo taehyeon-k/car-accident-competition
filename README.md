@@ -57,6 +57,45 @@ Inference runs without internet access on an L40S evaluation server. Model loadi
 
 See [architecture details](docs/methods.md) for the full technical description.
 
+## Dataset
+
+### Stage 1 — Re-recording detection
+
+- **Dataset:** My own captured dataset, containing approximately **2 hours of video clips**.
+- **Devices:** **LG Gram** and **MacBook Air** laptops, and **Samsung Galaxy S20, A13, and S24** phones.
+- **Task:** Original-versus-re-recorded video classification. The reconstructed trainer accepts clips labeled `ORIGINAL` or `RERECORDED`.
+
+The dataset description is author-provided. The original trainer was unavailable; the retained Stage 1 trainer is a reconstruction using the submitted model, preprocessing, and recovered settings.
+
+### Stage 2 — Accident events and attributes
+
+The labeled accident dataset contains **349 videos** with ENTRY, COLLISION, entry-side, and evasion-space annotations:
+
+| Source | Labeled videos |
+|---|---:|
+| AI-Hub car-to-car footage | 88 |
+| CCD (Car Crash Dataset) | 83 |
+| NEXAR | 80 |
+| MM-AU | 97 |
+| CausalCrash | 1 |
+| **Total** | **349** |
+
+- **Evaluation:** Experiments used a 279/70 fixed train/validation split and five-fold cross-validation. The best Stage 2 models were then refitted on all **349 labeled videos**.
+- **Additional supervision:** The **XN4 family** also used **670 additional NEXAR clips** with weak labels: collision timing from public event timestamps and teacher-generated ENTRY labels. These clips do not have the complete manual annotations of the 349-video set.
+- **Backbone adaptation:** Before training the event models, the geometry-adapted DINOv3 backbone used **BDD100K, TuSimple, local CCD/NEXAR/AI-Hub footage, and BATON dashcam footage**. This step learned road geometry and motion; it did not use the four Stage 2 accident labels.
+
+Counts and training roles are recorded in the archived [Stage 2 dataset review](https://github.com/taehyeon-k/car-accident-competition/blob/2f065e3dd6e44d4f8d85c785c3d56a30c28f29c9/stage2/STAGE2_EXPERIMENTS_DATASETS_LEADERBOARD_REVIEW_2026-09-27.md) and [backbone adaptation report](https://github.com/taehyeon-k/car-accident-competition/blob/2f065e3dd6e44d4f8d85c785c3d56a30c28f29c9/reports/stage2_geometry_dino_pretraining.md).
+
+### Stage 3 — Vehicle behavior
+
+- **Dataset:** **BATON-Sample**, using dashcam videos (`qcamera.mp4`) paired with vehicle CAN signals (`vehicle_dynamics.csv`).
+- **Size:** **41 route folders**, divided into **2,159 thirty-second segments**—about **17.9 hours** in total.
+- **Split:** **1,693 training segments from 33 routes** and **466 validation segments from 8 routes**. Related route recordings can cover the same roads across the split.
+- **Targets:** Synchronized speed, longitudinal acceleration, and steering-wheel angle, aligned to a **10 Hz** video timeline.
+- **Retained model:** The best Stage 3 checkpoint was trained on **BATON-Sample only**. The later BATON + DriveDNA experiment scored lower on the leaderboard.
+
+See the archived [Stage 3 data and experiment report](https://github.com/taehyeon-k/car-accident-competition/blob/012883a417710f60db9963373148e34b592a75de/stage3/STAGE3_V1_TO_V3_REPORT.md) for the recorded split and preprocessing. Datasets and generated caches are not redistributed in this repository; see [training instructions](docs/training.md) for the required input formats.
+
 ## Run
 
 Python 3.12 and PyTorch 2.8 / torchvision 0.23 match the retained submission environment. Use CUDA builds for GPU inference.
@@ -67,7 +106,7 @@ python scripts/fetch_checkpoints.py
 python scripts/build_submission.py
 ```
 
-Checkpoint restoration downloads one verified v8 archive from the existing R2 bucket and extracts only the 16 required weight files. Git tracks the manifest and source; the binary weights remain in R2. Every archive and checkpoint has a recorded SHA-256. An existing archive can be reused with `--archive /path/to/v8.zip`.
+The 16 required weight files are available in the [best-model checkpoint release](https://github.com/taehyeon-k/car-accident-competition/releases/tag/best-models-v1). Download the three stage checkpoint ZIPs and extract them into the repository root. Alternatively, `fetch_checkpoints.py` downloads the verified source archive from Cloudflare R2 and restores the same weights. Git tracks the source and checkpoint manifest; every checkpoint has a recorded SHA-256. An existing R2 archive can be reused with `--archive /path/to/checkpoints.zip`.
 
 The built ZIP contains `inference.py`, `requirements.txt`, and `model/` at its root. The competition calls these functions:
 
@@ -95,11 +134,13 @@ Stage 2 expects numbered frames in `stage2/images/<ID>/`; Stage 1 and Stage 3 ac
 | `stage2/` | Original trainer, preprocessing and its shared source dependencies |
 | `docs/` | Method description, selection evidence, cleanup and verification records |
 
+`training/stage2/` provides the command-line entry point and saved configurations. It imports the actual trainer, model helpers, data loading, and preprocessing from `stage2/`; deleting `stage2/` would break Stage 2 training. The inference code is separately packaged under `model/stage2/`.
+
 The active tree excludes datasets, feature caches, training outputs, campaign queues, duplicate submission packages and superseded experiment reports. The retained Stage 2 and Stage 3 training code shows how the winning methods train on preprocessed inputs. Stage 1 has a clearly labeled reconstructed trainer because its original trainer was absent from the submitted assets. See [training instructions and data contracts](docs/training.md). Broader experiment history remains recoverable through the commits listed in [the cleanup record](docs/cleanup.md).
 
 ## What improved performance
 
-Temporal-rate augmentation moved Stage 2 from **0.5464** to **0.59293**, despite only a small native-validation change. Later models variants improved local validation but scored **0.5590/0.5635** on the leaderboard. This made measured transfer performance the criterion for retention.
+Temporal-rate augmentation moved Stage 2 from **0.5464** to **0.59293**, despite only a small native-validation change. Later model variants improved local validation but scored **0.5590/0.5635** on the leaderboard. This made measured transfer performance the criterion for retention.
 
 For Stage 3, the TCN+SSM temporal model and longer schedule were the main architectural gains. Decoder calibration further improved the same weights. Training the best method with BATON+DriveDNA reached higher local validation but fell to **0.6572** on the leaderboard; it is excluded from the retained method.
 
