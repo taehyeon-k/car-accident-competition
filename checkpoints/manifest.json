@@ -1,0 +1,110 @@
+{
+  "schema_version": 1,
+  "bucket": "car-accident-dataset",
+  "archive": {
+    "key": "submissions/2026-09-27/submit_v8_robust-E4E2XN4sa_V3_acc0p5_steer5.zip",
+    "url": "https://pub-4d1b029d39a64b6d9d09e5d706cb1ac3.r2.dev/submissions/2026-09-27/submit_v8_robust-E4E2XN4sa_V3_acc0p5_steer5.zip",
+    "size_bytes": 259878406,
+    "sha256": "1fbe784f57f81fa62c5e3e929e3af7c73c78bfe705193bb39bd588ab801feddb"
+  },
+  "checkpoints": [
+    {
+      "path": "model/stage2/backbone.pth",
+      "size_bytes": 86518299,
+      "sha256": "cc6b4cdc41f6bdb2c2ff6529d53ea55fdc37f078edf6f27378edfde123ea5b61",
+      "archive_member": "model/stage2/backbone.pth"
+    },
+    {
+      "path": "model/stage2/members/E4_sa_full_seed0.pt",
+      "size_bytes": 1233613,
+      "sha256": "fa6c66dbcccb52e5c263e5dacacd9efe9406ca785bf599a8093fa89e6c63cfd9",
+      "archive_member": "model/stage2/members/E4_sa_full_seed0.pt"
+    },
+    {
+      "path": "model/stage2/members/E4_sa_full_seed1.pt",
+      "size_bytes": 1233613,
+      "sha256": "5b448c37c93bafd1565d8d8ae4af9b4dfc5d5e3b11b15fcf80bca9d955d98bf9",
+      "archive_member": "model/stage2/members/E4_sa_full_seed1.pt"
+    },
+    {
+      "path": "model/stage2/members/E4_sa_full_seed2.pt",
+      "size_bytes": 1233613,
+      "sha256": "852293efdd48d6f0a3ba5220ec89b45df0fb01ec87623834488902df3130924b",
+      "archive_member": "model/stage2/members/E4_sa_full_seed2.pt"
+    },
+    {
+      "path": "model/stage2/members/E4_sa_full_seed3.pt",
+      "size_bytes": 1233613,
+      "sha256": "e7e244bac10389633a030ab129ec969e4a44566d4f9f87cd0fbf1ab061d0f9cf",
+      "archive_member": "model/stage2/members/E4_sa_full_seed3.pt"
+    },
+    {
+      "path": "model/stage2/members/E2_sa_full_seed0.pt",
+      "size_bytes": 1236249,
+      "sha256": "d89340a56dba5ff2f2d4d33853474c8355305670ecd41f77b4c7c69cb1670f46",
+      "archive_member": "model/stage2/members/E2_sa_full_seed0.pt"
+    },
+    {
+      "path": "model/stage2/members/E2_sa_full_seed1.pt",
+      "size_bytes": 1236249,
+      "sha256": "8486757c1fd15f81f6f27cbee4e073bfedf668e71af1c0750e9981c118d44181",
+      "archive_member": "model/stage2/members/E2_sa_full_seed1.pt"
+    },
+    {
+      "path": "model/stage2/members/E2_sa_full_seed2.pt",
+      "size_bytes": 1236249,
+      "sha256": "8a850d63f13bd7f7a58e1cb4396ca04aaa4316598da12f691774df5fac34ff0d",
+      "archive_member": "model/stage2/members/E2_sa_full_seed2.pt"
+    },
+    {
+      "path": "model/stage2/members/E2_sa_full_seed3.pt",
+      "size_bytes": 1236249,
+      "sha256": "7e29f64e91cf9e9d6742fced4feb9a355163ca727cdf5efd8141780f74da69d7",
+      "archive_member": "model/stage2/members/E2_sa_full_seed3.pt"
+    },
+    {
+      "path": "model/stage2/members/XN4_sa_full_seed0.pt",
+      "size_bytes": 1233681,
+      "sha256": "14c09617706dbc4b9d7271063020a347acb7d3cb3a64f4a3c8c7eca32ee290ca",
+      "archive_member": "model/stage2/members/XN4_sa_full_seed0.pt"
+    },
+    {
+      "path": "model/stage2/members/XN4_sa_full_seed1.pt",
+      "size_bytes": 1233681,
+      "sha256": "d73e78a25470e59a0305ae52bed2d2e8a23d167352e6e9cf489e8c5af7498bb0",
+      "archive_member": "model/stage2/members/XN4_sa_full_seed1.pt"
+    },
+    {
+      "path": "model/stage2/members/XN4_sa_full_seed2.pt",
+      "size_bytes": 1233681,
+      "sha256": "76fd6a373830d0179f7f69e28f8bc3596b21d6ee7982c367954471a9024c5f94",
+      "archive_member": "model/stage2/members/XN4_sa_full_seed2.pt"
+    },
+    {
+      "path": "model/stage2/members/XN4_sa_full_seed3.pt",
+      "size_bytes": 1233681,
+      "sha256": "0ca928a1cec1cb4f5cdfb0d64d31074f7e33785989e0482bc9b535c54b50baa6",
+      "archive_member": "model/stage2/members/XN4_sa_full_seed3.pt"
+    },
+    {
+      "path": "model/stage3/best.pt",
+      "size_bytes": 15299171,
+      "sha256": "ffb3b8d4c53c7350c95ea6e61bad15adc3b7c3fa16268ccf7455b757cfd442ec",
+      "archive_member": "model/stage3/best.pt"
+    },
+    {
+      "path": "model/stage3/pretrained/sea_raft/model.safetensors",
+      "size_bytes": 35595384,
+      "sha256": "9752a49fca0a3f33551d51fec7bc5bd87f93a155b1e9fadd803e8176f4edb423",
+      "archive_member": "model/stage3/pretrained/sea_raft/model.safetensors"
+    },
+    {
+      "path": "model/stage1/best.pt",
+      "size_bytes": 127805747,
+      "sha256": "5c1b5214972e85b6afa2afe1fb59103d3355f76ff42942ffdf886584c06bb669",
+      "archive_member": "model/stage1/best.pt"
+    }
+  ],
+  "decoder_source": "submissions/2026-09-27/submit_v10_XCE4-XSE2-XSXN4_V3_acc0p4_steer7.zip",
+  "note": "v8 and v10 Stage 1 / Stage 3 checkpoints are byte-identical. This repository combines the best recorded stages; the combined recipe has no separately recorded leaderboard score."
+}

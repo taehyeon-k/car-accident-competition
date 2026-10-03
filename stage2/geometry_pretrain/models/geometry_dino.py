@@ -24,6 +24,8 @@ IMAGENET_STD = (0.229, 0.224, 0.225)
 
 
 def build_dinov3(arch: str, checkpoint_path: str | None, source: str = "/workspace/pretrained/dinov3-source"):
+    if not Path(source).is_dir():
+        source = str(Path(__file__).resolve().parents[3] / "model/stage2/vendor")
     if source not in sys.path:
         sys.path.insert(0, source)
     from dinov3.hub import backbones

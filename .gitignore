@@ -1,34 +1,12 @@
-# Python bytecode and tooling
 __pycache__/
 *.py[cod]
 .pytest_cache/
-.mypy_cache/
-.ruff_cache/
-
-# Virtual environments and local editor configuration
 .venv/
-venv/
-.idea/
-.vscode/
-
-# Training outputs, experiments, and generated caches
-outputs/
-checkpoints/
-wandb/
-tensorboard/
-*.log
-*.pt
-*.pth
-*.ckpt
-*.safetensors
-
-# Dataset and pretrained-weight locations are intentionally local.
+model/**/*.pt
+model/**/*.pth
+model/**/*.safetensors
 /data/
-weights/
-datasets/
-geometry_cache/
-# Stage 2 DINO feature tensors are reproducible local caches (~2.5 GB).
-/stage2/artifacts/spotting_features/**/*.npz
-# Partial CV runs were superseded by the requested fixed train/validation split.
-/stage2/spotting_experiments/results/*/cv/
-# No broad !stage2/** exception: that re-includes checkpoints and bytecode.
+/cache/
+/runs/
+/outputs/
+*.zip
