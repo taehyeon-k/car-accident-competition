@@ -21,7 +21,7 @@ timing:
 flow:
   backend: sea_raft
   version: official-9137517-sea-raft-s
-  source_path: model/stage3/pretrained/sea_raft/source
+  source_path: code/stage3/inference/pretrained/sea_raft/source
   checkpoint: model/stage3/pretrained/sea_raft/model.safetensors
   checkpoint_sha256: 9752a49fca0a3f33551d51fec7bc5bd87f93a155b1e9fadd803e8176f4edb423
   factory: official_sea_raft_s

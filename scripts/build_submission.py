@@ -20,7 +20,7 @@ def main():
     args.output.parent.mkdir(parents=True, exist_ok=True)
     with zipfile.ZipFile(args.output, 'w', zipfile.ZIP_DEFLATED) as archive:
         archive.write(ROOT / 'submission-requirements.txt', 'requirements.txt')
-        for path in [ROOT / 'inference.py', *sorted((ROOT / 'model').rglob('*'))]:
+        for path in [ROOT / 'inference.py', *sorted((ROOT / 'code').rglob('*')), *sorted((ROOT / 'model').rglob('*'))]:
             if path.is_file() and '__pycache__' not in path.parts and path.suffix != '.pyc':
                 archive.write(path, path.relative_to(ROOT).as_posix())
     print(f'{args.output} ({args.output.stat().st_size:,} bytes)')

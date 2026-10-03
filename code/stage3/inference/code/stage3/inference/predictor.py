@@ -23,7 +23,7 @@ class Stage3Predictor:
         packaged = Path(checkpoint).resolve().parent / "pretrained" / "sea_raft"
         if packaged.is_dir():
             self.cfg["flow"] = dict(self.cfg["flow"])
-            self.cfg["flow"]["source_path"] = str(packaged / "source")
+            self.cfg["flow"]["source_path"] = str(Path(__file__).resolve().parents[3] / "pretrained/sea_raft/source")
             self.cfg["flow"]["checkpoint"] = str(packaged / "model.safetensors")
         self.model = Stage3MotionModel(self.cfg["model"]).to(self.device)
         self.model.load_state_dict(state.get("ema_model", state["model"]))

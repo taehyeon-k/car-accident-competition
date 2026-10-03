@@ -8,12 +8,13 @@ import torch
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
-sys.path.insert(0, str(ROOT / 'model/stage3/code'))
+sys.path.insert(0, str(ROOT / 'code/stage3/inference/code'))
+sys.path.insert(0, str(ROOT / 'code/stage2'))
 from fetch_checkpoints import digest
 
 
 def load_runtime(stage):
-    spec = importlib.util.spec_from_file_location(f'verify_{stage}', ROOT / f'model/{stage}/runtime.py')
+    spec = importlib.util.spec_from_file_location(f'verify_{stage}', ROOT / f'code/{stage}/inference/runtime.py')
     module = importlib.util.module_from_spec(spec); spec.loader.exec_module(module)
     return module
 

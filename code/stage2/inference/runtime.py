@@ -241,7 +241,7 @@ def build_member(spec):
 
 def load_models(model_dir, device):
     from dinov3.hub.backbones import dinov3_vits16
-    config = json.loads((model_dir / 'config.json').read_text())
+    config = json.loads((HERE / 'config.json').read_text())
     backbone = dinov3_vits16(pretrained=False)
     backbone.load_state_dict(torch.load(model_dir / 'backbone.pth', map_location='cpu', weights_only=True), strict=True)
     backbone.to(device).eval()

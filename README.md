@@ -108,7 +108,7 @@ python scripts/build_submission.py
 
 The 16 required weight files are available in the [best-model checkpoint release](https://github.com/taehyeon-k/car-accident-competition/releases/tag/best-models-v1). Download the three stage checkpoint ZIPs and extract them into the repository root. Alternatively, `fetch_checkpoints.py` downloads the verified source archive from Cloudflare R2 and restores the same weights. Git tracks the source and checkpoint manifest; every checkpoint has a recorded SHA-256. An existing R2 archive can be reused with `--archive /path/to/checkpoints.zip`.
 
-The built ZIP contains `inference.py`, `requirements.txt`, and `model/` at its root. The competition calls these functions:
+The built ZIP contains `inference.py`, `requirements.txt`, `code/`, and `model/` at its root. The competition calls these functions:
 
 ```python
 from inference import predict_stage1, predict_stage2, predict_stage3
@@ -125,16 +125,15 @@ Stage 2 expects numbered frames in `stage2/images/<ID>/`; Stage 1 and Stage 3 ac
 | Path | Purpose |
 |---|---|
 | `inference.py` | Three competition entry points |
-| `model/stage1/` | The best stage1 model's re-recording detector |
-| `model/stage2/` | The best stage2 model's runtime, pyramid models, sampling and DINOv3 source |
-| `model/stage3/` | The best stage3 model's runtime, motion/physics/temporal models and SEA-RAFT source |
-| `checkpoints/manifest.json` | Exact checkpoint names, sizes, hashes|
-| `scripts/` | Checkpoint restoration and offline ZIP creation |
-| `training/` | Per-stage training entry points, recovered settings and saved configs |
-| `stage2/` | Original trainer, preprocessing and its shared source dependencies |
-| `docs/` | Method description, selection evidence, cleanup and verification records |
+| `code/stage1/` | Re-recording detector, reconstructed trainer, preprocessing and recovered settings |
+| `code/stage2/` | Accident-event model, original training/preprocessing modules and ensemble configurations |
+| `code/stage3/` | Vehicle-behavior model, original trainer, preprocessing modules and configuration |
+| `model/` | Restored checkpoint binaries; paths match the GitHub Release downloads |
+| `checkpoints/manifest.json` | Exact checkpoint names, sizes and hashes |
+| `scripts/` | Checkpoint restoration, verification and offline ZIP creation |
+| `docs/` | Method description, training instructions, selection evidence and verification records |
 
-`training/stage2/` provides the command-line entry point and saved configurations. It imports the actual trainer, model helpers, data loading, and preprocessing from `stage2/`; deleting `stage2/` would break Stage 2 training. The inference code is separately packaged under `model/stage2/`.
+Each stage has a `train.py` entry point and an `inference/` directory. All stage-specific source and configurations live under `code/stage1/`, `code/stage2/`, or `code/stage3/`. The original Stage 2 implementation is retained as an internal Python package at `code/stage2/stage2/`; there is no separate top-level Stage 2 folder.
 
 The active tree excludes datasets, feature caches, training outputs, campaign queues, duplicate submission packages and superseded experiment reports. The retained Stage 2 and Stage 3 training code shows how the winning methods train on preprocessed inputs. Stage 1 has a clearly labeled reconstructed trainer because its original trainer was absent from the submitted assets. See [training instructions and data contracts](docs/training.md). Broader experiment history remains recoverable through the commits listed in [the cleanup record](docs/cleanup.md).
 
@@ -146,4 +145,4 @@ For Stage 3, the TCN+SSM temporal model and longer schedule were the main archit
 
 ## Third-party components
 
-Bundled DINOv3 source retains its [license](model/stage2/vendor/LICENSE.md). Bundled SEA-RAFT source retains its [BSD-3-Clause license](model/stage3/pretrained/sea_raft/source/LICENSE). Their licenses also govern the corresponding pretrained assets. The project does not redistribute training datasets.
+Bundled DINOv3 source retains its [license](code/stage2/inference/vendor/LICENSE.md). Bundled SEA-RAFT source retains its [BSD-3-Clause license](code/stage3/inference/pretrained/sea_raft/source/LICENSE). Their licenses also govern the corresponding pretrained assets. The project does not redistribute training datasets.
