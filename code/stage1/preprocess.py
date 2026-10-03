@@ -12,7 +12,7 @@ def main():
     parser.add_argument('--output', required=True, help='Output folder for tensors and manifest.jsonl')
     args = parser.parse_args()
     manifest = Path(args.manifest).resolve()
-    cfg = json.loads((ROOT / 'training/stage1/recovered_config.json').read_text())
+    cfg = json.loads((ROOT / 'code/stage1/recovered_config.json').read_text())
     output = Path(args.output).resolve(); output.mkdir(parents=True, exist_ok=True)
     rows = []
     for i,line in enumerate(manifest.read_text().splitlines()):

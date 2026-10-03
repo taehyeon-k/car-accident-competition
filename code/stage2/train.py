@@ -1,11 +1,11 @@
-"""Launch a retained v8 family using its actual saved full-data refit settings."""
+"""Launch a best Stage 2 family using its actual saved full-data refit settings."""
 import argparse
 import json
 from pathlib import Path
 import sys
 
 ROOT = Path(__file__).resolve().parents[2]
-sys.path.insert(0, str(ROOT))
+sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 
 def main():
@@ -22,7 +22,7 @@ def main():
     args = parser.parse_args()
     from stage2.long_context_v2_experiments import common as common
     from stage2.aux_signal_experiments import train as trainer
-    cfg = json.loads((ROOT / f'training/stage2/configs/{args.family}_sa_full_seed{args.seed}.json').read_text())
+    cfg = json.loads((ROOT / f'code/stage2/configs/{args.family}_sa_full_seed{args.seed}.json').read_text())
     common.DENSE = Path(args.dense_cache).resolve()
     trainer.RESIDUAL = Path(args.residual_cache).resolve()
     trainer.STRIDE = Path(args.stride_cache).resolve()

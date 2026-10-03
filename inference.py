@@ -15,7 +15,7 @@ def _stage_dir(model_dir, stage):
 def _load(stage):
     name = '_dacon_' + stage
     if name not in sys.modules:
-        spec = importlib.util.spec_from_file_location(name, ROOT / 'model' / stage / 'runtime.py')
+        spec = importlib.util.spec_from_file_location(name, ROOT / 'code' / stage / 'inference' / 'runtime.py')
         module = importlib.util.module_from_spec(spec)
         sys.modules[name] = module
         spec.loader.exec_module(module)

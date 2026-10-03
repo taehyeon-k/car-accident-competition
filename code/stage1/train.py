@@ -16,7 +16,7 @@ from torch.utils.data import DataLoader, Dataset
 from sklearn.metrics import f1_score
 
 ROOT = Path(__file__).resolve().parents[2]
-spec = importlib.util.spec_from_file_location('stage1_runtime', ROOT / 'model/stage1/runtime.py')
+spec = importlib.util.spec_from_file_location('stage1_runtime', ROOT / 'code/stage1/inference/runtime.py')
 runtime = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(runtime)
 
@@ -47,7 +47,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--train-manifest', required=True)
     parser.add_argument('--val-manifest', required=True)
-    parser.add_argument('--config', default=ROOT / 'training/stage1/recovered_config.json')
+    parser.add_argument('--config', default=ROOT / 'code/stage1/recovered_config.json')
     parser.add_argument('--output', default='runs/stage1/reconstructed_g1')
     parser.add_argument('--init', choices=['imagenet', 'random', 'checkpoint'], default='imagenet')
     args = parser.parse_args()
