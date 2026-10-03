@@ -8,7 +8,7 @@ This project analyzes dashcam footage across three tasks: detecting re-recorded 
 
 | Stage | Retained method | Best recorded leaderboard score |
 |---|---|---:|
-| 1 — re-recording detection | ConvNeXt-Tiny local/global RGB + native-rate burst profiles (`global_g1_threshold_0_50`) | 0.953197975 |
+| 1 — re-recording detection | ConvNeXt-Tiny local/global RGB + native-rate burst profiles (`global_g1_threshold_0_50`) | **0.953197975** |
 | 2 — accident events and attributes | v8: geometry-adapted DINOv3-S + temporal pyramid + global/residual motion; E4/E2/XN4 ensemble with temporal-rate augmentation | **0.59293** |
 | 3 — vehicle behavior | V3: SEA-RAFT-S + motion/physics features + gated dual-TCN/Bi-SSM; acceleration ±0.4, steering 7° | **0.7475** |
 
@@ -28,11 +28,34 @@ Inference runs without internet access on an L40S evaluation server. Model loadi
 
 ## Methods
 
-**Stage 1.** A ConvNeXt-Tiny encoder combines local image patches and global frames with temporal burst statistics. Attention pools the frame and burst representations; gated fusion produces the re-recording probability. The retained checkpoint uses a 0.5 decision threshold.
+### Stage 1 — Re-recording detection
 
-**Stage 2.** A frozen, geometry-adapted DINOv3 ViT-S/16 encodes sampled frames into a 7×10 token grid. Frame-count-adaptive sampling supports short and long inputs without requiring FPS or duration metadata. A temporal pyramid combines appearance with camera motion and residual motion after camera alignment. The v8 ensemble has 12 learned members: four seeds each of E4, E2, and XN4. E2 adds boundary supervision; XN4 uses weakly supervised NEXAR expansion. Direct event supervision and training at native, half and third temporal rates improve event localization under changes in frame spacing. The saved winning configs disable phase loss. Joint decoding enforces ENTRY ≤ COLLISION and snaps COLLISION to a native-frame motion peak.
+- **Visual features:** ConvNeXt-Tiny examines local image patches and whole frames to capture both fine detail and the overall image.
+- **Temporal features:** Burst statistics summarize changes across short sequences of frames.
+- **Fusion:** Attention pooling summarizes the frame and burst features; gated fusion combines them into a re-recording probability.
+- **Decision:** A probability threshold of **0.5** separates `ORIGINAL` from `RERECORDED`.
 
-**Stage 3.** Frozen SEA-RAFT-S estimates optical flow and confidence. Geometry derives camera rotation, expansion, focus-of-expansion and acceleration/speed-ratio features. A MotionCNN and physics MLP feed a gated dual-dilated TCN plus bidirectional state-space model. Physical regression heads predict acceleration, speed, stop probability and steering angle. Thresholds and Potts/Viterbi decoding convert these into competition categories. The winning V3 checkpoint uses EMA weights from epoch 91 of a 100-epoch BATON training run. [Architecture details](docs/methods.md).
+### Stage 2 — Accident events and attributes
+
+- **Frame sampling:** Sampling adapts to the frame count, supporting short and long inputs without FPS or duration metadata.
+- **Appearance:** A frozen, geometry-adapted **DINOv3 ViT-S/16** represents each sampled frame as a **7×10 grid of visual features**.
+- **Motion:** The model uses camera motion and residual motion—the movement remaining after camera alignment—alongside appearance features.
+- **Temporal model:** A temporal pyramid combines information across different time scales to locate ENTRY and COLLISION.
+- **Ensemble:** v8 averages **12 models**, with four training seeds each for **E4, E2, and XN4**. E2 adds boundary supervision; XN4 adds weakly supervised NEXAR examples.
+- **Training:** Direct event supervision and native, half, and third temporal-rate augmentation help the model handle changes in frame spacing. **Phase loss is disabled** in the saved winning configurations.
+- **Decoding:** Joint decoding enforces **ENTRY ≤ COLLISION** and refines COLLISION by snapping it to a motion peak in the original frame sequence.
+
+### Stage 3 — Vehicle behavior
+
+- **Motion extraction:** Frozen **SEA-RAFT-S** estimates optical flow (image movement between frames) and confidence.
+- **Physics features:** Geometry derives camera rotation, expansion, focus of expansion, and acceleration/speed-ratio features.
+- **Feature fusion:** A MotionCNN processes motion maps, while a physics MLP processes the geometry-derived features.
+- **Temporal model:** A gated dual-dilated **TCN** and a bidirectional **state-space model** track how these features change over time.
+- **Prediction:** Regression heads estimate acceleration, speed, stop probability, and steering angle.
+- **Decoding:** Thresholds convert predictions into competition categories; **Potts/Viterbi sequence decoding** smooths the labels over time. The retained settings use acceleration **±0.4** and steering **7°**.
+- **Checkpoint:** The winning V3 model uses **EMA weights from epoch 91** of a **100-epoch BATON training run**.
+
+See [architecture details](docs/methods.md) for the full technical description.
 
 ## Run
 
