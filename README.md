@@ -8,9 +8,9 @@ This project analyzes dashcam footage across three tasks: detecting re-recorded 
 
 | Stage | Retained method | Best recorded leaderboard score |
 |---|---|---:|
-| 1 — re-recording detection | ConvNeXt-Tiny local/global RGB + native-rate burst profiles (`global_g1_threshold_0_50`) | **0.953197975** |
-| 2 — accident events and attributes | v8: geometry-adapted DINOv3-S + temporal pyramid + global/residual motion; E4/E2/XN4 ensemble with temporal-rate augmentation | **0.59293** |
-| 3 — vehicle behavior | V3: SEA-RAFT-S + motion/physics features + gated dual-TCN/Bi-SSM; acceleration ±0.4, steering 7° | **0.7475** |
+| 1. re-recording detection | ConvNeXt-Tiny local/global RGB + native-rate burst profiles (`global_g1_threshold_0_50`) | **0.953197975** |
+| 2. accident events and attributes | Geometry-adapted DINOv3-S + temporal pyramid + global/residual motion; E4/E2/XN4 ensemble with temporal-rate augmentation | **0.59293** |
+| 3. vehicle behavior | SEA-RAFT-S + motion/physics features + gated dual-TCN/Bi-SSM; acceleration ±0.4, steering 7° | **0.7475** |
 
 Rank is participant-reported. Scores are the stage-specific results recorded in the project reports, not an overall score. These stage bests came from different submissions. The retained combination has no separately recorded leaderboard result and is not claimed to be the exact final ranked submission. [Selection evidence and checkpoint provenance](docs/selection.md).
 
@@ -41,7 +41,7 @@ Inference runs without internet access on an L40S evaluation server. Model loadi
 - **Appearance:** A frozen, geometry-adapted **DINOv3 ViT-S/16** represents each sampled frame as a **7×10 grid of visual features**.
 - **Motion:** The model uses camera motion and residual motion—the movement remaining after camera alignment—alongside appearance features.
 - **Temporal model:** A temporal pyramid combines information across different time scales to locate ENTRY and COLLISION.
-- **Ensemble:** v8 averages **12 models**, with four training seeds each for **E4, E2, and XN4**. E2 adds boundary supervision; XN4 adds weakly supervised NEXAR examples.
+- **Ensemble:** The final model averages **12 models**, with four training seeds each for **E4, E2, and XN4**. E2 adds boundary supervision; XN4 adds weakly supervised NEXAR examples.
 - **Training:** Direct event supervision and native, half, and third temporal-rate augmentation help the model handle changes in frame spacing. **Phase loss is disabled** in the saved winning configurations.
 - **Decoding:** Joint decoding enforces **ENTRY ≤ COLLISION** and refines COLLISION by snapping it to a motion peak in the original frame sequence.
 
@@ -53,7 +53,7 @@ Inference runs without internet access on an L40S evaluation server. Model loadi
 - **Temporal model:** A gated dual-dilated **TCN** and a bidirectional **state-space model** track how these features change over time.
 - **Prediction:** Regression heads estimate acceleration, speed, stop probability, and steering angle.
 - **Decoding:** Thresholds convert predictions into competition categories; **Potts/Viterbi sequence decoding** smooths the labels over time. The retained settings use acceleration **±0.4** and steering **7°**.
-- **Checkpoint:** The winning V3 model uses **EMA weights from epoch 91** of a **100-epoch BATON training run**.
+- **Checkpoint:** The winning model uses **EMA weights from epoch 91** of a **100-epoch BATON training run**.
 
 See [architecture details](docs/methods.md) for the full technical description.
 
@@ -86,22 +86,22 @@ Stage 2 expects numbered frames in `stage2/images/<ID>/`; Stage 1 and Stage 3 ac
 | Path | Purpose |
 |---|---|
 | `inference.py` | Three competition entry points |
-| `model/stage1/` | Retained re-recording detector |
-| `model/stage2/` | v8 runtime, pyramid models, sampling and DINOv3 source |
-| `model/stage3/` | V3 runtime, motion/physics/temporal models and SEA-RAFT source |
-| `checkpoints/manifest.json` | Exact checkpoint names, sizes, hashes and R2 location |
+| `model/stage1/` | The best stage1 model's re-recording detector |
+| `model/stage2/` | The best stage2 model's runtime, pyramid models, sampling and DINOv3 source |
+| `model/stage3/` | The best stage3 model's runtime, motion/physics/temporal models and SEA-RAFT source |
+| `checkpoints/manifest.json` | Exact checkpoint names, sizes, hashes|
 | `scripts/` | Checkpoint restoration and offline ZIP creation |
-| `training/` | Per-stage training entry points, recovered settings and saved v8 configs |
-| `stage2/` | Original v8 trainer, preprocessing and its shared source dependencies |
+| `training/` | Per-stage training entry points, recovered settings and saved configs |
+| `stage2/` | Original trainer, preprocessing and its shared source dependencies |
 | `docs/` | Method description, selection evidence, cleanup and verification records |
 
 The active tree excludes datasets, feature caches, training outputs, campaign queues, duplicate submission packages and superseded experiment reports. The retained Stage 2 and Stage 3 training code shows how the winning methods train on preprocessed inputs. Stage 1 has a clearly labeled reconstructed trainer because its original trainer was absent from the submitted assets. See [training instructions and data contracts](docs/training.md). Broader experiment history remains recoverable through the commits listed in [the cleanup record](docs/cleanup.md).
 
 ## What improved performance
 
-Temporal-rate augmentation moved Stage 2 from v7 **0.5464** to v8 **0.59293**, despite only a small native-validation change. Later v10/v12 variants improved local validation but scored **0.5590/0.5635** on the leaderboard. This made measured transfer performance the criterion for retention.
+Temporal-rate augmentation moved Stage 2 from **0.5464** to **0.59293**, despite only a small native-validation change. Later models variants improved local validation but scored **0.5590/0.5635** on the leaderboard. This made measured transfer performance the criterion for retention.
 
-For Stage 3, the TCN+SSM temporal model and longer schedule were the main architectural gains. Decoder calibration further improved the same V3 weights. Training V3 with BATON+DriveDNA reached higher local validation but fell to **0.6572** on the leaderboard; it is excluded from the retained method.
+For Stage 3, the TCN+SSM temporal model and longer schedule were the main architectural gains. Decoder calibration further improved the same weights. Training the best method with BATON+DriveDNA reached higher local validation but fell to **0.6572** on the leaderboard; it is excluded from the retained method.
 
 ## Third-party components
 
