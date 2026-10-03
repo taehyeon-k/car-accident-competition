@@ -1,0 +1,4 @@
+# All dependencies are preinstalled in DACON's evaluation environment.
+# torch 2.8.0+cu128, torchvision 0.23.0+cu128, numpy, pandas, scipy,
+# OpenCV, PyAV, Pillow, safetensors, huggingface-hub, einops, PyYAML, tqdm.
+# DINOv3 and SEA-RAFT source are bundled; no inference-time downloads.
