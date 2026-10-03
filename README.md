@@ -8,7 +8,7 @@ This project analyzes dashcam footage across three tasks: detecting re-recorded 
 
 | Stage | Retained method | Best recorded leaderboard score |
 |---|---|---:|
-| 1. re-recording detection | ConvNeXt-Tiny local/global RGB + native-rate burst profiles (`global_g1_threshold_0_50`) | **0.953197975** |
+| 1. re-recording detection | ConvNeXt-Tiny local/global RGB + native-rate burst profiles | **0.953197975** |
 | 2. accident events and attributes | Geometry-adapted DINOv3-S + temporal pyramid + global/residual motion; E4/E2/XN4 ensemble with temporal-rate augmentation | **0.59293** |
 | 3. vehicle behavior | SEA-RAFT-S + motion/physics features + gated dual-TCN/Bi-SSM; acceleration ±0.4, steering 7° | **0.7475** |
 
